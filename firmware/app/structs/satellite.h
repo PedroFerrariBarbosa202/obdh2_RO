@@ -122,6 +122,14 @@ typedef enum {
 } data_id_e;
 
 /**
+ * \brief Memory IDs
+ */
+typedef enum {
+    MEMORY_ID_NOR                       = 0,
+    MEMORY_ID_FRAM                      = 1,
+} memory_id_e;
+
+/**
  * \brief OBDH telemetry type.
  */
 typedef struct
