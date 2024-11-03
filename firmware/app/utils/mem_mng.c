@@ -289,6 +289,35 @@ int mem_mng_erase_flash(obdh_telemetry_t *tel)
     return err;
 }
 
+int mem_mng_erase_fram(obdh_telemetry_t *tel)
+{
+    int err = 0;
+    uint8_t buf[8] = {0};
+
+    if (media_write(MEDIA_FRAM, CONFIG_MEM_ADR_INIT_WORD, buf, 8U) != 0)
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, MEM_MNG_NAME, "Failed to erase init word ADDR!");
+        sys_log_new_line();
+        err--;
+    }
+
+    if (media_write(MEDIA_FRAM, CONFIG_MEM_ADR_SYS_TIME, buf, 4U) != 0)
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, MEM_MNG_NAME, "Failed to erase system time ADDR!");
+        sys_log_new_line();
+        err--;
+    }
+
+    if (mem_mng_load_obdh_data_from_default_values(tel) != 0)
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, MEM_MNG_NAME, "Failed to reset OBDH data to default values!");
+        sys_log_new_line();
+        err--;
+    }
+
+    return err;
+}
+
 static uint8_t crc8(uint8_t *data, uint8_t len)
 {
     uint8_t crc = CRC8_INITIAL_VAL;

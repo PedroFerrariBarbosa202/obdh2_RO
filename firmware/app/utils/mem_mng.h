@@ -148,6 +148,15 @@ void mem_mng_reset_page_count(media_data_t *media);
  */
 int mem_mng_erase_flash(obdh_telemetry_t *tel);
 
+/**
+ * \brief Resets the FRAM memory and sets OBDH telemetry data to default values.
+ *
+ * \param[in] tel is the OBDH telemetry data.
+ *
+ * \return The status/error code.
+ */
+int mem_mng_erase_fram(obdh_telemetry_t *tel)
+
 #endif /* MEM_MNG_H_ */
 
 /** \} End of mem_mng group */
