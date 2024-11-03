@@ -1291,21 +1291,49 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
 {
-    if (pkt_len >= 28U)
+    int8_t err = 0;
+    
+    if (pkt_len >= 29U)
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_ERASE_MEMORY;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_ERASE_MEMORY)-1U))
+        if (process_tc_validate_hmac(pkt, 1U + 1U + 7U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ERASE_MEMORY)-1U))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
 
-            if (mem_mng_erase_flash(&sat_data_buf.obdh) < 0)
+            switch (pkt[8]) 
             {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing flash memory!");
-                sys_log_new_line();
+                case MEMORY_ID_NOR:
+                {
+                    if (mem_mng_erase_flash(&sat_data_buf.obdh) < 0)
+                    {
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing NOR memory!");
+                        sys_log_new_line();
+                        err = -1;
+                    }
+
+                    break;
+                }
+                case MEMORY_ID_FRAM:
+                {
+                    if (mem_mng_erase_fram(&sat_data_buf.obdh) < 0)
+                    {
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing FRAM memory!");
+                        sys_log_new_line();
+                        err = -1;
+                    }
+
+                    break;
+                }
+                default:
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Invalid memory ID received!!");
+                    sys_log_new_line();
+                    err = -1;
+                    break;
             }
-            else 
+
+            if (err == 0)
             {
                 (void)send_tc_feedback(pkt);
             }
