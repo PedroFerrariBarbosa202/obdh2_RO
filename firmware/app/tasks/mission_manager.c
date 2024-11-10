@@ -317,6 +317,9 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
             if (err == 0)
             {
                 satellite_change_mode(OBDH_MODE_NORMAL);
+
+                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Entering Nominal Mode!");
+                sys_log_new_line();
             }
 
             break;
@@ -357,6 +360,9 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
             }
             
             satellite_change_mode(OBDH_MODE_STAND_BY);
+
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Entering Stand-by Mode!");
+            sys_log_new_line();
 
             break;
         }
