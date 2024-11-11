@@ -308,13 +308,6 @@ int mem_mng_erase_fram(obdh_telemetry_t *tel)
         err--;
     }
 
-    if (mem_mng_load_obdh_data_from_default_values(tel) != 0)
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, MEM_MNG_NAME, "Failed to reset OBDH data to default values!");
-        sys_log_new_line();
-        err--;
-    }
-
     return err;
 }
 
