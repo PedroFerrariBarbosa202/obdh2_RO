@@ -113,6 +113,15 @@ int eps_get_bat_charge(eps_charge_t *charge);
  */
 int eps_get_data(eps_data_t *data);
 
+/**
+ * \brief Prints EPS housekeeping data. 
+ *
+ * \param[int] data is a pointer to the EPS data.
+ *
+ * \return The status/error code.
+ */
+void eps_print_data(const eps_data_t *data);
+
 #endif /* EPS_H_ */
 
 /** \} End of eps group */
