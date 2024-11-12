@@ -1317,7 +1317,7 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
                 }
                 case MEMORY_ID_FRAM:
                 {
-                    if (mem_mng_erase_fram(&sat_data_buf.obdh) < 0)
+                    if (mem_mng_reset_fram() < 0)
                     {
                         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing FRAM memory!");
                         sys_log_new_line();
