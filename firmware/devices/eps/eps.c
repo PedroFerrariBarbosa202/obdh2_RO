@@ -215,6 +215,8 @@ int eps_get_data(eps_data_t *data)
 
 void eps_print_data(const eps_data_t *data)
 {
+    int16_t tmp = 0;
+
     sys_log_print_event_from_module(SYS_LOG_INFO, EPS_MODULE_NAME, "uC Temperature: ");
     sys_log_print_uint((uint32_t)data->temperature_uc);
     sys_log_print_msg(" oC");
@@ -335,12 +337,14 @@ void eps_print_data(const eps_data_t *data)
     sl_eps2_delay_ms(10U);
 
     sys_log_print_event_from_module(SYS_LOG_INFO, EPS_MODULE_NAME, "Battery current: ");
-    sys_log_print_int((int32_t)data->battery_current);
+    tmp = (int16_t)data->battery_current;
+    sys_log_print_int((int32_t)tmp);
     sys_log_print_msg(" mA");
     sys_log_new_line();
 
     sys_log_print_event_from_module(SYS_LOG_INFO, EPS_MODULE_NAME, "Battery average current: ");
-    sys_log_print_int((int32_t)data->battery_average_current);
+    tmp = (int16_t)data->battery_average_current;
+    sys_log_print_int((int32_t)tmp);
     sys_log_print_msg(" mA");
     sys_log_new_line();
 
