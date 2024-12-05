@@ -156,6 +156,28 @@ void vTaskStartup(void)
 
                         break;
                     }
+                    else 
+                    {
+                        /* Failed to read FRAM data or CRC was not valid */
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_STARTUP_NAME, "Failed to load OBDH data correctly!");
+                        sys_log_new_line();
+
+                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Loading default values to memory...");
+                        sys_log_new_line();
+
+                        /* Load default values to the OBDH data buffer */
+                        mem_mng_load_obdh_data_from_default_values(&sat_data_buf.obdh);
+
+                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Saving default values to FRAM...");
+                        sys_log_new_line();
+
+                        /* Write the OBDH data to the FRAM memory */
+                        if (mem_mng_save_obdh_data_to_fram(&sat_data_buf.obdh) == 0)
+                        {
+                            err = 0;
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -170,10 +192,13 @@ void vTaskStartup(void)
                     /* Initialize FRAM */
                     if (mem_mng_init_fram() == 0)
                     {
+                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Loading default values to memory...");
+                        sys_log_new_line();
+
                         /* Load default values to the OBDH data buffer */
                         mem_mng_load_obdh_data_from_default_values(&sat_data_buf.obdh);
 
-                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Loading default values to FRAM!");
+                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Saving default values to FRAM...");
                         sys_log_new_line();
 
                         /* Write the OBDH data to the FRAM memory */
