@@ -36,6 +36,7 @@
 
 #include <config/config.h>
 #include <system/sys_log/sys_log.h>
+#include <libs/crc/crc.h>
 
 #include "sl_ttc2.h"
 
@@ -60,6 +61,9 @@ int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
 
     /* Adding preamble byte */
     wbuf[0] = 0x7EU;
+
+    /* Adding CRC */ 
+    wbuf[len - 1] = crc8_get_val(wbuf, len - 1);
     
     return spi_transfer(config.port, config.cs_pin, wbuf, data, len);
 }
