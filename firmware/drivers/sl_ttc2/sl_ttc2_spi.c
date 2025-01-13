@@ -40,22 +40,22 @@
 
 #include "sl_ttc2.h"
 
-int sl_ttc2_spi_init(sl_ttc2_config_t config)
+int sl_ttc2_spi_init(sl_ttc2_config_t *config)
 {
-    return spi_init(config.port, config.port_config);
+    return spi_init(config->port, config->port_config);
 }
 
-int sl_ttc2_spi_write(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
+int sl_ttc2_spi_write(sl_ttc2_config_t *config, uint8_t *data, uint16_t len)
 {
-    return spi_write(config.port, config.cs_pin, data, len);
+    return spi_write(config->port, config->cs_pin, data, len);
 }
 
-int sl_ttc2_spi_transfer(sl_ttc2_config_t config, uint8_t *wdata, uint8_t *rdata, uint16_t len)
+int sl_ttc2_spi_transfer(sl_ttc2_config_t *config, uint8_t *wdata, uint8_t *rdata, uint16_t len)
 {
-    return spi_transfer(config.port, config.cs_pin, wdata, rdata, len);
+    return spi_transfer(config->port, config->cs_pin, wdata, rdata, len);
 }
 
-int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
+int sl_ttc2_spi_read(sl_ttc2_config_t *config, uint8_t *data, uint16_t len)
 {
     uint8_t wbuf[230] = {0};
 
@@ -65,7 +65,7 @@ int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
     /* Adding CRC */ 
     wbuf[len - 1] = crc8_get_val(wbuf, len - 1);
     
-    return spi_transfer(config.port, config.cs_pin, wbuf, data, len);
+    return spi_transfer(config->port, config->cs_pin, wbuf, data, len);
 }
 
 /** \} End of sl_ttc2 group */

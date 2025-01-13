@@ -42,7 +42,7 @@
 
 #include "sl_ttc2.h"
 
-int sl_ttc2_init(sl_ttc2_config_t config)
+int sl_ttc2_init(sl_ttc2_config_t *config)
 {
     int err = -1;
 
@@ -66,7 +66,7 @@ int sl_ttc2_init(sl_ttc2_config_t config)
     return err;
 }
 
-int sl_ttc2_check_device(sl_ttc2_config_t config)
+int sl_ttc2_check_device(sl_ttc2_config_t *config)
 {
     int err = 0;
 
@@ -76,11 +76,11 @@ int sl_ttc2_check_device(sl_ttc2_config_t config)
     {
         uint16_t ref_id = 0;
 
-        if (config.id == SL_TTC2_RADIO_0)
+        if (config->id == SL_TTC2_RADIO_0)
         {
             ref_id = SL_TTC2_DEVICE_ID_RADIO_0;
         }
-        else if (config.id == SL_TTC2_RADIO_1)
+        else if (config->id == SL_TTC2_RADIO_1)
         {
             ref_id = SL_TTC2_DEVICE_ID_RADIO_1;
         }
@@ -113,7 +113,7 @@ int sl_ttc2_check_device(sl_ttc2_config_t config)
     return err;
 }
 
-int sl_ttc2_write_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t val)
+int sl_ttc2_write_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t val)
 {
     int err = -1;
 
@@ -235,7 +235,7 @@ int sl_ttc2_write_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t val)
     return err;
 }
 
-int sl_ttc2_read_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t *val)
+int sl_ttc2_read_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t *val)
 {
     int err = -1;
 
@@ -349,7 +349,7 @@ int sl_ttc2_read_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t *val)
     return err;
 }
 
-int sl_ttc2_read_hk_data(sl_ttc2_config_t config, sl_ttc2_hk_data_t *data)
+int sl_ttc2_read_hk_data(sl_ttc2_config_t *config, sl_ttc2_hk_data_t *data)
 {
     int err_counter = 0;
 
@@ -463,7 +463,7 @@ int sl_ttc2_read_hk_data(sl_ttc2_config_t config, sl_ttc2_hk_data_t *data)
 
 }
 
-int sl_ttc2_read_device_id(sl_ttc2_config_t config, uint16_t *val)
+int sl_ttc2_read_device_id(sl_ttc2_config_t *config, uint16_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -474,7 +474,7 @@ int sl_ttc2_read_device_id(sl_ttc2_config_t config, uint16_t *val)
     return res;
 }
 
-int sl_ttc2_read_hardware_version(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_hardware_version(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -485,17 +485,17 @@ int sl_ttc2_read_hardware_version(sl_ttc2_config_t config, uint8_t *val)
     return res;
 }
 
-int sl_ttc2_read_firmware_version(sl_ttc2_config_t config, uint32_t *val)
+int sl_ttc2_read_firmware_version(sl_ttc2_config_t *config, uint32_t *val)
 {
     return sl_ttc2_read_reg(config, SL_TTC2_REG_FIRMWARE_VERSION, val);
 }
 
-int sl_ttc2_read_time_counter(sl_ttc2_config_t config, uint32_t *val)
+int sl_ttc2_read_time_counter(sl_ttc2_config_t *config, uint32_t *val)
 {
     return sl_ttc2_read_reg(config, SL_TTC2_REG_TIME_COUNTER, val);
 }
 
-int sl_ttc2_read_reset_counter(sl_ttc2_config_t config, uint16_t *val)
+int sl_ttc2_read_reset_counter(sl_ttc2_config_t *config, uint16_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -506,7 +506,7 @@ int sl_ttc2_read_reset_counter(sl_ttc2_config_t config, uint16_t *val)
     return res;
 }
 
-int sl_ttc2_read_reset_cause(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_reset_cause(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -517,7 +517,7 @@ int sl_ttc2_read_reset_cause(sl_ttc2_config_t config, uint8_t *val)
     return res;
 }
 
-int sl_ttc2_read_voltage(sl_ttc2_config_t config, uint8_t volt, sl_ttc2_voltage_t *val)
+int sl_ttc2_read_voltage(sl_ttc2_config_t *config, uint8_t volt, sl_ttc2_voltage_t *val)
 {
     int res = -1;
 
@@ -548,7 +548,7 @@ int sl_ttc2_read_voltage(sl_ttc2_config_t config, uint8_t volt, sl_ttc2_voltage_
     return res;
 }
 
-int sl_ttc2_read_current(sl_ttc2_config_t config, uint8_t cur, sl_ttc2_current_t *val)
+int sl_ttc2_read_current(sl_ttc2_config_t *config, uint8_t cur, sl_ttc2_current_t *val)
 {
     int res = -1;
 
@@ -579,7 +579,7 @@ int sl_ttc2_read_current(sl_ttc2_config_t config, uint8_t cur, sl_ttc2_current_t
     return res;
 }
 
-int sl_ttc2_read_temp(sl_ttc2_config_t config, uint8_t temp, sl_ttc2_temp_t *val)
+int sl_ttc2_read_temp(sl_ttc2_config_t *config, uint8_t temp, sl_ttc2_temp_t *val)
 {
     int res = -1;
 
@@ -616,7 +616,7 @@ int sl_ttc2_read_temp(sl_ttc2_config_t config, uint8_t temp, sl_ttc2_temp_t *val
     return res;
 }
 
-int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -627,7 +627,7 @@ int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t config, uint8_t *val)
     return res;
 }
 
-int sl_ttc2_read_rssi(sl_ttc2_config_t config, sl_ttc2_rssi_t *val)
+int sl_ttc2_read_rssi(sl_ttc2_config_t *config, sl_ttc2_rssi_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -638,7 +638,7 @@ int sl_ttc2_read_rssi(sl_ttc2_config_t config, sl_ttc2_rssi_t *val)
     return res;
 }
 
-int sl_ttc2_read_antenna_status(sl_ttc2_config_t config, uint16_t *val)
+int sl_ttc2_read_antenna_status(sl_ttc2_config_t *config, uint16_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -649,7 +649,7 @@ int sl_ttc2_read_antenna_status(sl_ttc2_config_t config, uint16_t *val)
     return res;
 }
 
-int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -660,7 +660,7 @@ int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t config, uint8_t *val
     return res;
 }
 
-int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -671,7 +671,7 @@ int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t config, 
     return res;
 }
 
-int sl_ttc2_read_tx_enable(sl_ttc2_config_t config, uint8_t *val)
+int sl_ttc2_read_tx_enable(sl_ttc2_config_t *config, uint8_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -682,12 +682,12 @@ int sl_ttc2_read_tx_enable(sl_ttc2_config_t config, uint8_t *val)
     return res;
 }
 
-int sl_ttc2_set_tx_enable(sl_ttc2_config_t config, bool en)
+int sl_ttc2_set_tx_enable(sl_ttc2_config_t *config, bool en)
 {
     return sl_ttc2_write_reg(config, SL_TTC2_REG_TX_ENABLE, (en? 1UL : 0UL));
 }
 
-int sl_ttc2_read_pkt_counter(sl_ttc2_config_t config, uint8_t pkt, uint32_t *val)
+int sl_ttc2_read_pkt_counter(sl_ttc2_config_t *config, uint8_t pkt, uint32_t *val)
 {
     int err = -1;
 
@@ -706,7 +706,7 @@ int sl_ttc2_read_pkt_counter(sl_ttc2_config_t config, uint8_t pkt, uint32_t *val
     return err;
 }
 
-int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t config, uint8_t pkt, uint8_t *val)
+int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t *config, uint8_t pkt, uint8_t *val)
 {
     int res = -1;
 
@@ -737,7 +737,7 @@ int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t config, uint8_t pkt, uint8_t *val)
     return res;
 }
 
-int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t config, uint16_t *val)
+int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t *config, uint16_t *val)
 {
     uint32_t buf = UINT32_MAX;
 
@@ -748,7 +748,7 @@ int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t config, uint16_t *val)
     return res;
 }
 
-int sl_ttc2_check_pkt_avail(sl_ttc2_config_t config)
+int sl_ttc2_check_pkt_avail(sl_ttc2_config_t *config)
 {
     int res = -1;
 
@@ -769,7 +769,7 @@ int sl_ttc2_check_pkt_avail(sl_ttc2_config_t config)
     return res;
 }
 
-int sl_ttc2_transmit_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
+int sl_ttc2_transmit_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t len)
 {
     int err = -1;
 
@@ -817,7 +817,7 @@ int sl_ttc2_transmit_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t len
     return err;
 }
 
-int sl_ttc2_read_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t *len)
+int sl_ttc2_read_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t *len)
 {
     int err = -1;
 
