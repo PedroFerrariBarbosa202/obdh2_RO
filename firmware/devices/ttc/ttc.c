@@ -105,15 +105,15 @@ int ttc_init(ttc_e dev)
         sys_log_print_msg("...");
         sys_log_new_line();
 
-        if (sl_ttc2_init(ttc_config) == 0)
+        if (sl_ttc2_init(&ttc_config) == 0)
         {
             uint8_t hw_ver = 0;
 
-            if (sl_ttc2_read_hardware_version(ttc_config, &hw_ver) == 0)
+            if (sl_ttc2_read_hardware_version(&ttc_config, &hw_ver) == 0)
             {
                 uint32_t fw_ver = 0;
 
-                if (sl_ttc2_read_firmware_version(ttc_config, &fw_ver) == 0)
+                if (sl_ttc2_read_firmware_version(&ttc_config, &fw_ver) == 0)
                 {
                     sys_log_print_event_from_module(SYS_LOG_INFO, TTC_MODULE_NAME, "SpaceLab TTC 2.0 detected! (hw=");
                     sys_log_print_uint(hw_ver);
@@ -171,8 +171,8 @@ int ttc_set_param(ttc_e dev, ttc_param_id_t param, uint32_t val)
 
     switch(dev)
     {
-        case TTC_0:     err = sl_ttc2_write_reg(ttc_0_config, param, val);  break;
-        case TTC_1:     err = sl_ttc2_write_reg(ttc_1_config, param, val);  break;
+        case TTC_0:     err = sl_ttc2_write_reg(&ttc_0_config, param, val);  break;
+        case TTC_1:     err = sl_ttc2_write_reg(&ttc_1_config, param, val);  break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, TTC_MODULE_NAME, "Error writing a parameter to the TTC device! Invalid device!");
             sys_log_new_line();
@@ -189,8 +189,8 @@ int ttc_get_param(ttc_e dev, ttc_param_id_t param, uint32_t *val)
 
     switch(dev)
     {
-        case TTC_0:     err = sl_ttc2_read_reg(ttc_0_config, param, val);   break;
-        case TTC_1:     err = sl_ttc2_read_reg(ttc_1_config, param, val);   break;
+        case TTC_0:     err = sl_ttc2_read_reg(&ttc_0_config, param, val);   break;
+        case TTC_1:     err = sl_ttc2_read_reg(&ttc_1_config, param, val);   break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, TTC_MODULE_NAME, "Error reading a parameter from the TTC device! Invalid device!");
             sys_log_new_line();
@@ -220,9 +220,9 @@ int ttc_get_data(ttc_e dev, ttc_data_t *data)
 
     if (err == 0)
     {
-        if (sl_ttc2_check_device(ttc_config) == 0)
+        if (sl_ttc2_check_device(&ttc_config) == 0)
         {
-            if (sl_ttc2_read_hk_data(ttc_config, data) != 0)
+            if (sl_ttc2_read_hk_data(&ttc_config, data) != 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TTC_MODULE_NAME, "Error reading the data from the TTC device ");
                 sys_log_print_uint(ttc_config.id);
@@ -263,9 +263,9 @@ int ttc_send(ttc_e dev, uint8_t *data, uint16_t len)
 
     if (err == 0)
     {
-        if (sl_ttc2_check_device(ttc_config) == 0)
+        if (sl_ttc2_check_device(&ttc_config) == 0)
         {
-            if (sl_ttc2_transmit_packet(ttc_config, data, len) != 0)
+            if (sl_ttc2_transmit_packet(&ttc_config, data, len) != 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TTC_MODULE_NAME, "Error sending data to the TTC device ");
                 sys_log_print_uint(ttc_config.id);
@@ -310,7 +310,7 @@ int ttc_recv(ttc_e dev, uint8_t *data, uint16_t *len)
     {
         if (ttc_avail(dev) > 0)
         {
-            if (sl_ttc2_read_packet(ttc_config, data, len) != 0)
+            if (sl_ttc2_read_packet(&ttc_config, data, len) != 0)
             {
                 err = -1;
             }
@@ -344,7 +344,7 @@ int ttc_avail(ttc_e dev)
 
     if (err == 0)
     {
-        err = sl_ttc2_check_pkt_avail(ttc_config);
+        err = sl_ttc2_check_pkt_avail(&ttc_config);
     }
 
     return err;
@@ -369,7 +369,7 @@ int ttc_enter_hibernation(ttc_e dev)
 
     if (err == 0)
     {
-        err = sl_ttc2_set_tx_enable(ttc_config, false);
+        err = sl_ttc2_set_tx_enable(&ttc_config, false);
     }
 
     return err;
@@ -394,7 +394,7 @@ int ttc_leave_hibernation(ttc_e dev)
 
     if (err == 0)
     {
-        err = sl_ttc2_set_tx_enable(ttc_config, true);
+        err = sl_ttc2_set_tx_enable(&ttc_config, true);
     }
 
     return err;
