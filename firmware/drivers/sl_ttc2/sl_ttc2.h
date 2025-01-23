@@ -43,7 +43,7 @@
 
 #include <drivers/spi/spi.h>
 
-#define SL_TTC2_MODULE_NAME                     "SpaceLab TTC 2.0"
+#define SL_TTC2_MODULE_NAME                     "SL_TTC2"
 
 /* TTC 2.0 IDs */
 #define SL_TTC2_DEVICE_ID_RADIO_0               0xCC2AU /**< TTC 2.0 device ID (radio 1). */
