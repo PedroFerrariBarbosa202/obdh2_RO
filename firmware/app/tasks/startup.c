@@ -259,6 +259,12 @@ void vTaskStartup(void)
     }
 #endif /* CONFIG_DEV_EPS_ENABLED */
 
+    /* Payload enables initialization */
+    if (payload_init_gpio_enables() < 0)
+    {
+        error_counter++;
+    }
+
 #if defined(CONFIG_DEV_PAYLOAD_EDC_ENABLED) && (CONFIG_DEV_PAYLOAD_EDC_ENABLED == 1)
     /* Payload EDC device initialization */
     sat_data_buf.edc_0.id = PL_ID_EDC_1;
