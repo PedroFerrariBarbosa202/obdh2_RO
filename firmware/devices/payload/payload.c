@@ -35,6 +35,7 @@
  * \{
  */
 
+#include <config/config.h>
 #include <system/system.h>
 #include <system/sys_log/sys_log.h>
 
@@ -685,6 +686,28 @@ int payload_get_data(payload_t pl, payload_data_id_t id, uint8_t *data, int32_t 
 
             break;
     }
+
+    return err;
+}
+
+int payload_init_gpio_enables(void)
+{
+    int err = 0;
+
+    #if defined (CONFIG_MISSION_GOLDS_UFSC) && (CONFIG_MISSION_GOLDS_UFSC == 1)
+    const gpio_config_t conf = { .mode = GPIO_MODE_OUTPUT };
+
+    /* Initializes enable pins */
+    (void)gpio_init(GPIO_PIN_29, conf); /* EDC 0 */
+    (void)gpio_init(GPIO_PIN_30, conf); /* EDC 1 */
+    (void)gpio_init(GPIO_PIN_37, conf); /* Payload X */
+
+    /* Make sure payloads are disabled */
+    (void)gpio_set_state(GPIO_PIN_29, false); /* EDC 0 */
+    (void)gpio_set_state(GPIO_PIN_30, false); /* EDC 1 */
+    (void)gpio_set_state(GPIO_PIN_37, false); /* Payload X */
+
+    #endif
 
     return err;
 }

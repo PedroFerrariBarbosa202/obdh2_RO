@@ -166,6 +166,14 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd);
  */
 int payload_get_data(payload_t pl, payload_data_id_t id, uint8_t *data, int32_t *len);
 
+/**
+ * \brief Initialize mission specific payload gpio enable pins, making sure 
+ * the payloads can be initialized from a disable state on startup.
+ *
+ * \return The status/error code.
+ */
+int payload_init_gpio_enables(void);
+
 #endif /* PAYLOAD_H_ */
 
 /** \} End of payload group */
