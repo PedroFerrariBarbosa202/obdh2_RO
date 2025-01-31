@@ -37,6 +37,9 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+/* Mission Defines */
+#define CONFIG_MISSION_GOLDS_UFSC                       1
+
 /* Tasks */
 #define CONFIG_TASK_STARTUP_ENABLED                     1
 #define CONFIG_TASK_WATCHDOG_RESET_ENABLED              1
