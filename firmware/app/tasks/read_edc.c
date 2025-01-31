@@ -127,6 +127,8 @@ void vTaskReadEDC(void)
 
                                 edc_ptt_t *ptt = (edc_ptt_t*)&ptt_arr[0];
 
+                                int32_t ptt_power = -67 + (20 * log10(ptt->carrier_abs/32768.0));
+
                                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "Received PTT packet:");
                                 sys_log_new_line();
                                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "\tTime: ");
@@ -140,8 +142,9 @@ void vTaskReadEDC(void)
                                 sys_log_print_uint(ptt->carrier_freq);
                                 sys_log_print_msg(" Hz");
                                 sys_log_new_line();
-                                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "\tCarrier amplitude: ");
-                                sys_log_print_uint(ptt->carrier_abs);
+                                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "\tReceived signal power: ");
+                                sys_log_print_int(ptt_power);
+                                sys_log_print_msg(" dBm");
                                 sys_log_new_line();
                                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "\tUser message: ");
                                 sys_log_dump_hex(ptt->user_msg, ptt->msg_byte_length);
