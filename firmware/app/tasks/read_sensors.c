@@ -89,6 +89,9 @@ void vTaskReadSensors(void)
             sys_log_new_line();
         }
 
+        /* Saving readings timestamp */
+        sat_data_buf.obdh.data.ts_read_sensors = system_get_time();
+
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_READ_SENSORS_PERIOD_MS));
     }
 }
