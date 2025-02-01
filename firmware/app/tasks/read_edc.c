@@ -71,6 +71,13 @@ void vTaskReadEDC(void)
 
         if ((pl_edc_active != PAYLOAD_NONE) && (sat_data_buf.state.edc_active))
         {
+            /* Update EDC clock */
+            if (payload_set_clock(pl_edc_active, system_get_time()) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EDC_NAME, "Error while setting EDC clock!");
+                sys_log_new_line();
+            }
+
             /* Read housekeeping data */
             if (payload_get_data(pl_edc_active, PAYLOAD_EDC_RAW_HK, edc_hk_buf.buffer, &edc_hk_buf.length) != 0)
             {
