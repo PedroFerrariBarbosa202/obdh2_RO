@@ -174,6 +174,17 @@ int payload_get_data(payload_t pl, payload_data_id_t id, uint8_t *data, int32_t 
  */
 int payload_init_gpio_enables(void);
 
+/**
+ * \brief Sets the payload clock to a provided unix timestamp.
+ *
+ * \param[in] pl is the payload device to set the clock.
+ *
+ * \param[in] time is the unix timestamp to set in the payload.
+ *
+ * \return The status/error code.
+ */
+int payload_set_clock(const payload_t pl, const uint32_t time);
+
 #endif /* PAYLOAD_H_ */
 
 /** \} End of payload group */

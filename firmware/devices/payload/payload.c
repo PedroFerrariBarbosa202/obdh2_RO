@@ -712,4 +712,46 @@ int payload_init_gpio_enables(void)
     return err;
 }
 
+int payload_set_clock(const payload_t pl, const uint32_t time)
+{
+    int err = 0;
+
+    switch(pl)
+    {
+        case PAYLOAD_EDC_0:
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 0: Setting Clock/RTC time...");
+            sys_log_new_line();
+
+            if (edc_set_rtc_time(edc_0_conf, PAYLOAD_UNIX_TO_J2000_EPOCH(time)) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 0: Error setting the Clock/RTC time!");
+                sys_log_new_line();
+                err = -1;
+            }
+            break;
+        case PAYLOAD_EDC_1:
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 1: Setting Clock/RTC time...");
+            sys_log_new_line();
+
+            if (edc_set_rtc_time(edc_1_conf, PAYLOAD_UNIX_TO_J2000_EPOCH(time)) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 1: Error setting the Clock/RTC time!");
+                sys_log_new_line();
+                err = -1;
+            }
+            break;
+        case PAYLOAD_X:
+            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "PX: set_clock() routine not implemented yet!");
+            sys_log_new_line();
+            err = -1;
+        default:
+            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to set clock!");
+            sys_log_new_line();
+            err = -1;
+            break;
+    }
+
+    return err;
+}
+
 /** \} End of payload group */
