@@ -94,7 +94,7 @@ void vTaskPosDet(void)
 
             sys_time_t now = system_get_time();
 
-            predict_julian_date_t curr_time = julian_from_timestamp(now + 1723341922ULL);   /* 1723341922ULL Corresponds to ISO Time Stamp: 2024-08-11T02:05:22Z */
+            predict_julian_date_t curr_time = julian_from_timestamp(now);
 
             (void)predict_orbit(&satellite, &my_orbit, curr_time);
 
