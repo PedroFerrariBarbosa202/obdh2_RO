@@ -84,6 +84,7 @@
 #define OBDH_PARAM_ID_GENERAL_TELEMETRY_ON      35  /**< General telemetry on flag. */
 #define OBDH_PARAM_ID_RESET_DEVICE              36  /**< Resets device (Only write param, writing "0x01" to it resets OBDH). */
 #define OBDH_PARAM_ID_TS_LAST_TLE_UPDATE        37  /**< Timestamp of the last TLE update. */
+#define OBDH_PARAM_ID_TS_READ_SENSORS           38  /**< Timestamp of the last sensor readings. */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -120,6 +121,7 @@
 #define OBDH_PARAM_MEDIA_LAST_EDC_DATA_DEFAULT_VAL      CONFIG_MEM_EDC_DATA_START_PAGE
 #define OBDH_PARAM_MEDIA_LAST_PX_DATA_DEFAULT_VAL       CONFIG_MEM_PX_DATA_START_PAGE
 #define OBDH_PARAM_MEDIA_LAST_SBCD_PKTS_DEFAULT_VAL     CONFIG_MEM_SBCD_PKTS_START_PAGE
+#define OBDH_PARAM_TS_READ_SENSORS_DEFAULT_VAL          0U
 
 /* Operation modes */
 #define OBDH_MODE_NORMAL            0
@@ -173,6 +175,7 @@ typedef struct
     uint8_t hw_version;             /**< Hardware version. */
     uint32_t fw_version;            /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
     sys_time_t ts_last_mode_change; /**< Timestamp of the last change in the operation mode. */
+    sys_time_t ts_read_sensors;     /**< Timestamp of the last sensor readings. */
     sys_time_t mode_duration;       /**< Mode duration (valid only in hibernation mode). */
     bool initial_hib_executed;      /**< Initial hibernation executed flag. */
     bool ant_deployment_executed;   /**< Antenna deployment executed flag. */
