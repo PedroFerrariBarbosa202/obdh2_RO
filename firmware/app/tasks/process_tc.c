@@ -1777,8 +1777,6 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
      * That is the reason for the `7U + 1U` offset */
 	uint8_t *pl = &pkt_pl[7U + 1U]; 
 
-uint32_t timestamp = system_get_time();
-
 	switch (data_id)
 	{
 		case DATA_ID_OBDH:
@@ -1786,10 +1784,10 @@ uint32_t timestamp = system_get_time();
 			obdh_telemetry_t *tel = (obdh_telemetry_t *)data;
 			sys_time_t mode_duration = system_get_time() - sat_data_buf.obdh.data.ts_last_mode_change;
 
-			pl[0] = (timestamp >> 24U) & 0xFFU;
-			pl[1] = (timestamp >> 16U) & 0xFFU;
-			pl[2] = (timestamp >> 8U) & 0xFFU;
-			pl[3] = timestamp & 0xFFU;
+			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
+			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
+			pl[2] = (tel->timestamp >> 8U) & 0xFFU;
+			pl[3] = tel->timestamp & 0xFFU;
 			pl[4] = (tel->data.temperature >> 8U) & 0xFFU;
 			pl[5] = tel->data.temperature & 0xFFU;
 			pl[6] = (tel->data.current >> 8U) & 0xFFU;
