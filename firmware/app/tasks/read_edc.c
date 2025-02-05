@@ -42,6 +42,7 @@
 #include <drivers/edc/edc.h>
 #include <system/system.h>
 #include <utils/mem_mng.h>
+#include <math.h>
 
 #include <structs/satellite.h>
 
