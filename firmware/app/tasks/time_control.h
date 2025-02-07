@@ -42,7 +42,7 @@
 
 #define TASK_TIME_CONTROL_NAME                  "Time Control"      /**< Task name. */
 #define TASK_TIME_CONTROL_STACK_SIZE            128                 /**< Stack size in bytes. */
-#define TASK_TIME_CONTROL_PRIORITY              3                   /**< Task priority. */
+#define TASK_TIME_CONTROL_PRIORITY              4                   /**< Task priority. */
 #define TASK_TIME_CONTROL_PERIOD_MS             1000                /**< Task period in milliseconds. */
 #define TASK_TIME_CONTROL_INIT_TIMEOUT_MS       1000                /**< Wait time to initialize the task in milliseconds. */
 
