@@ -72,8 +72,8 @@ void vTaskPosDet(void)
         /* Reload TLE lines if an update occured */
         if (xTaskNotifyWait(0UL, UINT32_MAX, NULL, 0UL) == pdTRUE)
         {
-            (void)strncpy(tle_line_1, (const char*)sat_data_buf.obdh.data.position.tle_line1, 70U);
-            (void)strncpy(tle_line_2, (const char*)sat_data_buf.obdh.data.position.tle_line2, 70U);
+            (void)strncpy((char*)sat_data_buf.obdh.data.position.tle_line1, tle_line_1, 70U);
+            (void)strncpy((char*)sat_data_buf.obdh.data.position.tle_line2, tle_line_2, 70U);
 
             /* Save new OBDH data to fram */
             if (mem_mng_save_obdh_data_to_fram(&sat_data_buf.obdh) != 0)
