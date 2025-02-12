@@ -793,13 +793,12 @@ int sl_ttc2_transmit_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t le
         {
             sl_ttc2_delay_ms(110);
 
-            if (memcpy(&buf[3], data, len) == &buf[3])
-            {
-                /* Calculate CRC */
-                buf[len] = crc8_get_val(buf, len + 3U);
+            (void)memcpy(&buf[3], data, len);
 
-                err = sl_ttc2_spi_write(config, buf, 3U + len + 1U);
-            }
+            /* Calculate CRC */
+            buf[len + 3U] = crc8_get_val(buf, len + 3U);
+
+            err = sl_ttc2_spi_write(config, buf, 3U + len + 1U);
         }
 
         sl_ttc2_delay_ms(110);
@@ -844,12 +843,10 @@ int sl_ttc2_read_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t *len)
 
                     if (sl_ttc2_spi_read(config, data, 1U + 1U + (*len) + 1U) == 0)
                     {
-                        if (crc8_get_val(data, 1U + 1U + (*len)) == data[3U + (*len)])
+                        if (crc8_get_val(data, 1U + 1U + (*len)) == data[2U + (*len)])
                         {
-                            if (memcpy(data, &data[2], (*len) + 1U) == data)
-                            {
-                                err = 0;
-                            }
+                            (void)memcpy(data, &data[2], *len);
+                            err = 0;
                         }
                         else
                         {
