@@ -50,6 +50,9 @@ int edc_init(edc_config_t config)
     {
         if (edc_enable(config) == 0)
         {
+            /* Used to make sure it can reply to requests after enabling */
+            edc_delay_ms(650U);
+
             switch(config.interface)
             {
                 case EDC_IF_UART:
