@@ -73,6 +73,15 @@ void vTaskGeneralTelemetry(void)
 
             uint32_t timestamp = system_get_time();
 
+            uint32_t obdh_data_page = sat_data_buf.obdh.data.media.last_page_obdh_data - CONFIG_MEM_OBDH_DATA_START_PAGE;
+            uint32_t eps_data_page = sat_data_buf.obdh.data.media.last_page_eps_data - CONFIG_MEM_EPS_DATA_START_PAGE;
+            uint32_t ttc_0_data_page = sat_data_buf.obdh.data.media.last_page_ttc_0_data - CONFIG_MEM_TTC_0_DATA_START_PAGE;
+            uint32_t ttc_1_data_page = sat_data_buf.obdh.data.media.last_page_ttc_1_data - CONFIG_MEM_TTC_1_DATA_START_PAGE;
+            uint32_t ant_data_page = sat_data_buf.obdh.data.media.last_page_ant_data - CONFIG_MEM_ANT_DATA_START_PAGE;
+            uint32_t px_data_page = sat_data_buf.obdh.data.media.last_page_px_data - CONFIG_MEM_PX_DATA_START_PAGE;
+            uint32_t edc_data_page = sat_data_buf.obdh.data.media.last_page_edc_data - CONFIG_MEM_EDC_DATA_START_PAGE;
+            uint32_t sbcd_pkts_page = sat_data_buf.obdh.data.media.last_page_sbcd_pkts - CONFIG_MEM_SBCD_PKTS_START_PAGE;
+
             /* Payload data */
             gen_tel_pl.payload[0] = (timestamp >> 24) & 0xFFU;
             gen_tel_pl.payload[1] = (timestamp >> 16) & 0xFFU;
@@ -143,38 +152,38 @@ void vTaskGeneralTelemetry(void)
             gen_tel_pl.payload[66] = sat_data_buf.obdh.data.main_edc;
             gen_tel_pl.payload[67] = sat_data_buf.state.active_payload[0];
             gen_tel_pl.payload[68] = sat_data_buf.state.active_payload[1];
-			gen_tel_pl.payload[69] = (sat_data_buf.obdh.data.media.last_page_obdh_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[70] = (sat_data_buf.obdh.data.media.last_page_obdh_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[71] = (sat_data_buf.obdh.data.media.last_page_obdh_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[72] = sat_data_buf.obdh.data.media.last_page_obdh_data & 0xFFU;
-			gen_tel_pl.payload[73] = (sat_data_buf.obdh.data.media.last_page_eps_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[74] = (sat_data_buf.obdh.data.media.last_page_eps_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[75] = (sat_data_buf.obdh.data.media.last_page_eps_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[76] = sat_data_buf.obdh.data.media.last_page_eps_data & 0xFFU;
-			gen_tel_pl.payload[77] = (sat_data_buf.obdh.data.media.last_page_ttc_0_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[78] = (sat_data_buf.obdh.data.media.last_page_ttc_0_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[79] = (sat_data_buf.obdh.data.media.last_page_ttc_0_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[80] = sat_data_buf.obdh.data.media.last_page_ttc_0_data & 0xFFU;
-			gen_tel_pl.payload[81] = (sat_data_buf.obdh.data.media.last_page_ttc_1_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[82] = (sat_data_buf.obdh.data.media.last_page_ttc_1_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[83] = (sat_data_buf.obdh.data.media.last_page_ttc_1_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[84] = sat_data_buf.obdh.data.media.last_page_ttc_1_data & 0xFFU;
-			gen_tel_pl.payload[85] = (sat_data_buf.obdh.data.media.last_page_ant_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[86] = (sat_data_buf.obdh.data.media.last_page_ant_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[87] = (sat_data_buf.obdh.data.media.last_page_ant_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[88] = sat_data_buf.obdh.data.media.last_page_ant_data & 0xFFU;
-			gen_tel_pl.payload[89] = (sat_data_buf.obdh.data.media.last_page_edc_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[90] = (sat_data_buf.obdh.data.media.last_page_edc_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[91] = (sat_data_buf.obdh.data.media.last_page_edc_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[92] = sat_data_buf.obdh.data.media.last_page_edc_data & 0xFFU;
-			gen_tel_pl.payload[93] = (sat_data_buf.obdh.data.media.last_page_px_data >> 24U) & 0xFFU;
-			gen_tel_pl.payload[94] = (sat_data_buf.obdh.data.media.last_page_px_data >> 16U) & 0xFFU;
-			gen_tel_pl.payload[95] = (sat_data_buf.obdh.data.media.last_page_px_data >> 8U) & 0xFFU;
-			gen_tel_pl.payload[96] = sat_data_buf.obdh.data.media.last_page_px_data & 0xFFU;
-			gen_tel_pl.payload[97] = (sat_data_buf.obdh.data.media.last_page_sbcd_pkts >> 24U) & 0xFFU;
-			gen_tel_pl.payload[98] = (sat_data_buf.obdh.data.media.last_page_sbcd_pkts >> 16U) & 0xFFU;
-			gen_tel_pl.payload[99] = (sat_data_buf.obdh.data.media.last_page_sbcd_pkts >> 8U) & 0xFFU;
-			gen_tel_pl.payload[100] = sat_data_buf.obdh.data.media.last_page_sbcd_pkts & 0xFFU;
+			gen_tel_pl.payload[69] = (obdh_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[70] = (obdh_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[71] = (obdh_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[72] = obdh_data_page & 0xFFU;
+			gen_tel_pl.payload[73] = (eps_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[74] = (eps_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[75] = (eps_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[76] = eps_data_page & 0xFFU;
+			gen_tel_pl.payload[77] = (ttc_0_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[78] = (ttc_0_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[79] = (ttc_0_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[80] = ttc_0_data_page & 0xFFU;
+			gen_tel_pl.payload[81] = (ttc_1_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[82] = (ttc_1_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[83] = (ttc_1_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[84] = ttc_1_data_page & 0xFFU;
+			gen_tel_pl.payload[85] = (ant_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[86] = (ant_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[87] = (ant_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[88] = ant_data_page & 0xFFU;
+			gen_tel_pl.payload[89] = (edc_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[90] = (edc_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[91] = (edc_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[92] = edc_data_page & 0xFFU;
+			gen_tel_pl.payload[93] = (px_data_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[94] = (px_data_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[95] = (px_data_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[96] = px_data_page & 0xFFU;
+			gen_tel_pl.payload[97] = (sbcd_pkts_page >> 24U) & 0xFFU;
+			gen_tel_pl.payload[98] = (sbcd_pkts_page >> 16U) & 0xFFU;
+			gen_tel_pl.payload[99] = (sbcd_pkts_page >> 8U) & 0xFFU;
+			gen_tel_pl.payload[100] = sbcd_pkts_page & 0xFFU;
 
             gen_tel_pl.length = 101U;
 
