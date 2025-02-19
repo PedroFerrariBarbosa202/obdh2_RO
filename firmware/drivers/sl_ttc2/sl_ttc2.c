@@ -220,7 +220,7 @@ int sl_ttc2_write_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t val)
     {
         err = sl_ttc2_spi_write(config, buf, 8U);
 
-        sl_ttc2_delay_ms(110);
+        sl_ttc2_delay_ms(SL_TTC2_EXTRA_MUTEX_DELAY_MS);
 
         (void)sl_ttc2_mutex_give();
     }
@@ -258,7 +258,7 @@ int sl_ttc2_read_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t *val)
         /* Register data */
         if (sl_ttc2_spi_write(config, wbuf, 8U) == 0)
         {
-            sl_ttc2_delay_ms(110);
+            sl_ttc2_delay_ms(SL_TTC2_TRANSACTION_DELAY_MS);
 
             if (sl_ttc2_spi_read(config, rbuf, 8U) == 0)
             {
@@ -334,7 +334,7 @@ int sl_ttc2_read_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t *val)
         #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
         }
 
-        sl_ttc2_delay_ms(110);
+        sl_ttc2_delay_ms(SL_TTC2_EXTRA_MUTEX_DELAY_MS);
 
         (void)sl_ttc2_mutex_give();
     }
@@ -791,7 +791,7 @@ int sl_ttc2_transmit_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t le
     {
         if (sl_ttc2_spi_write(config, buf, 8U) == 0)
         {
-            sl_ttc2_delay_ms(110);
+            sl_ttc2_delay_ms(SL_TTC2_TRANSACTION_DELAY_MS);
 
             (void)memcpy(&buf[3], data, len);
 
@@ -801,7 +801,7 @@ int sl_ttc2_transmit_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t le
             err = sl_ttc2_spi_write(config, buf, 3U + len + 1U);
         }
 
-        sl_ttc2_delay_ms(110);
+        sl_ttc2_delay_ms(SL_TTC2_EXTRA_MUTEX_DELAY_MS);
 
         (void)sl_ttc2_mutex_give();
     }
@@ -839,7 +839,7 @@ int sl_ttc2_read_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t *len)
             {
                 if (sl_ttc2_spi_write(config, buf, 8U) == 0)
                 {
-                    sl_ttc2_delay_ms(110);
+                    sl_ttc2_delay_ms(SL_TTC2_TRANSACTION_DELAY_MS);
 
                     if (sl_ttc2_spi_read(config, data, 1U + 1U + (*len) + 1U) == 0)
                     {
@@ -856,7 +856,7 @@ int sl_ttc2_read_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t *len)
                     }
                 }
 
-                sl_ttc2_delay_ms(110);
+                sl_ttc2_delay_ms(SL_TTC2_EXTRA_MUTEX_DELAY_MS);
 
                 (void)sl_ttc2_mutex_give();
             }
