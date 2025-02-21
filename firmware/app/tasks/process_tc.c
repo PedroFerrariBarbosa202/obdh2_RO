@@ -1782,7 +1782,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 		case DATA_ID_OBDH:
 		{
 			obdh_telemetry_t *tel = (obdh_telemetry_t *)data;
-			sys_time_t mode_duration = system_get_time() - sat_data_buf.obdh.data.ts_last_mode_change;
+			sys_time_t mode_duration = tel->timestamp - tel->data.ts_last_mode_change;
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2172,7 +2172,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[32] = st->ptt_available;
 			pl[33] = st->ptt_is_paused;
 			pl[34] = st->sampler_state;
-			pl[35] = st->id;
+			pl[35] = tel->id;
 
 			*pkt_pl_len = (uint16_t) 44U; /* 7b RQ CALLSIGN + 1b TC ID + 36b EDC STATE + HK DATA + EDC ID */
 
