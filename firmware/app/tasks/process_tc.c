@@ -1861,12 +1861,16 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[74] = ((uint16_t)tel->data.position.longitude) & 0xFFU;
 			pl[75] = (((uint16_t)tel->data.position.altitude) >> 8U) & 0xFFU;
 			pl[76] = ((uint16_t)tel->data.position.altitude) & 0xFFU;
-			pl[77] = (tel->data.ts_read_sensors >> 24U) & 0xFFU;
-			pl[78] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
-			pl[79] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
-			pl[80] = tel->data.ts_read_sensors & 0xFFU;
+			pl[77] = (tel->data.ts_last_tle_update >> 24U) & 0xFFU;
+			pl[78] = (tel->data.ts_last_tle_update >> 16U) & 0xFFU;
+			pl[79] = (tel->data.ts_last_tle_update >> 8U) & 0xFFU;
+			pl[80] = tel->data.ts_last_tle_update & 0xFFU;
+			pl[81] = (tel->data.ts_read_sensors >> 24U) & 0xFFU;
+			pl[82] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
+			pl[83] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
+			pl[84] = tel->data.ts_read_sensors & 0xFFU;
 
-			*pkt_pl_len = (uint16_t) 89U; /* 7b RQ CALLSIGN + 1b TC ID + 81b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 93U; /* 7b RQ CALLSIGN + 1b TC ID + 85b OBDH DATA */
 
 			break;
 		}
