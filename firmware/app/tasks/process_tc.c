@@ -2087,9 +2087,9 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[15] = tel->data.status.antenna_4.status;
 			pl[16] = tel->data.status.antenna_4.timeout;
 			pl[17] = tel->data.status.antenna_4.burning;
-            pl[18] = tel->data.status.ignoring_switches;
-            pl[19] = tel->data.status.independent_burn;
-            pl[20] = tel->data.status.armed;
+			pl[18] = tel->data.status.ignoring_switches;
+			pl[19] = tel->data.status.independent_burn;
+			pl[20] = tel->data.status.armed;
 			pl[21] = (tel->data.temperature >> 8U) & 0xFFU;
 			pl[22] = tel->data.temperature & 0xFFU;
 
@@ -2116,7 +2116,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[11] = tel->msg_byte_length;
 
             /* Copying PTT user message */
-            (void)memcpy(&pl[12], tel->user_msg, 36U);
+			(void)memcpy(&pl[12], tel->user_msg, 36U);
 
 			*pkt_pl_len = (uint16_t) 56U; /* 7b RQ CALLSIGN + 1b TC ID + 48b SBCD PKT DATA */
 
@@ -2125,13 +2125,13 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_PAYLOAD_INFO:
 		{
-            payload_telemetry_t *tel = (payload_telemetry_t *)data;
-            edc_hk_t *hk = (edc_hk_t*)&tel->data[0];
+			payload_telemetry_t *tel = (payload_telemetry_t *)data;
+			edc_hk_t *hk = (edc_hk_t*)&tel->data[0];
 
             /* The state data is stored right after the housekeeping data 
              * on payload_telemetry_t's data field. The offset of 26 is 
              * precisely the housekeeping data length*/
-            edc_state_t *st = (edc_state_t*)&tel->data[26];
+			edc_state_t *st = (edc_state_t*)&tel->data[26];
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2168,7 +2168,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[32] = st->ptt_available;
 			pl[33] = st->ptt_is_paused;
 			pl[34] = st->sampler_state;
-            pl[35] = tel->id;
+			pl[35] = st->id;
 
 			*pkt_pl_len = (uint16_t) 44U; /* 7b RQ CALLSIGN + 1b TC ID + 36b EDC STATE + HK DATA + EDC ID */
 
