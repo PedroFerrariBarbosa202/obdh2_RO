@@ -44,7 +44,7 @@
 #define TASK_READ_ANTENNA_STACK_SIZE            150                 /**< Stack size in bytes. */
 #define TASK_READ_ANTENNA_PRIORITY              2                   /**< Task priority. */
 #define TASK_READ_ANTENNA_PERIOD_MS             (60000)             /**< Task period in milliseconds. */
-#define TASK_READ_ANTENNA_INIT_TIMEOUT_MS       2000                /**< Wait time to initialize the task in milliseconds. */
+#define TASK_READ_ANTENNA_INIT_TIMEOUT_MS       5000                /**< Wait time to initialize the task in milliseconds. */
 
 /**
  * \brief Read Antenna handle.

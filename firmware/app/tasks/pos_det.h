@@ -49,7 +49,7 @@
 #define TASK_POS_DET_STACK_SIZE                 1024                /**< Stack size in bytes. */
 #define TASK_POS_DET_PRIORITY                   2                   /**< Task priority. */
 #define TASK_POS_DET_PERIOD_MS                  60000               /**< Task period in milliseconds. */
-#define TASK_POS_DET_INIT_TIMEOUT_MS            1000                /**< Wait time to initialize the task in milliseconds. */
+#define TASK_POS_DET_INIT_TIMEOUT_MS            5000                /**< Wait time to initialize the task in milliseconds. */
 
 #define POS_BRAZIL_LIM_N                        (6L)                /**< Brazil territory North limit (Rounded up) */
 #define POS_BRAZIL_LIM_S                        (-34L)              /**< Brazil territory South limit (Rounded up) */

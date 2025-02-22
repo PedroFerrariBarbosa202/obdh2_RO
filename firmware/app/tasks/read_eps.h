@@ -44,7 +44,7 @@
 #define TASK_READ_EPS_STACK_SIZE                384                 /**< Stack size in bytes. */
 #define TASK_READ_EPS_PRIORITY                  3                   /**< Task priority. */
 #define TASK_READ_EPS_PERIOD_MS                 (60000)             /**< Task period in milliseconds. */
-#define TASK_READ_EPS_INIT_TIMEOUT_MS           2000                /**< Wait time to initialize the task in milliseconds. */
+#define TASK_READ_EPS_INIT_TIMEOUT_MS           5000                /**< Wait time to initialize the task in milliseconds. */
 
 /**
  * \brief Read EPS handle.

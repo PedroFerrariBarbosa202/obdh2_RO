@@ -284,6 +284,11 @@ void vTaskStartup(void)
     {
         error_counter++;
     }
+
+    if (payload_disable(PAYLOAD_EDC_0) != 0)
+    {
+        error_counter++;
+    }
 #endif /* CONFIG_DEV_PAYLOAD_EDC_ENABLED */
 
 #if defined(CONFIG_DEV_ANTENNA_ENABLED) && (CONFIG_DEV_ANTENNA_ENABLED == 1)
