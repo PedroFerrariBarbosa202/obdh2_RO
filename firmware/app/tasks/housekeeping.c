@@ -61,7 +61,23 @@ void vTaskHousekeeping(void)
         /* Hibernation mode check */
         if (sat_data_buf.obdh.data.mode == OBDH_MODE_HIBERNATION)
         {
-            if ((sat_data_buf.obdh.data.ts_last_mode_change + sat_data_buf.obdh.data.mode_duration) <= system_get_time())
+            uint32_t hib = sat_data_buf.obdh.data.hib_duration;
+
+            if (hib > 0U) 
+            {
+                if (hib <= 60U) {
+                    taskENTER_CRITICAL();
+                    sat_data_buf.obdh.data.hib_duration = 0U;
+                    taskEXIT_CRITICAL();
+                } else {
+                    hib -= 60U;
+                    taskENTER_CRITICAL();
+                    sat_data_buf.obdh.data.hib_duration = hib;
+                    taskEXIT_CRITICAL();
+                }
+            }
+
+            if (sat_data_buf.obdh.data.hib_duration == 0U)
             {
                 const event_t leave_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_WAKE_UP,  .args[1] = HOUSEKEEPING_WAKE_UP_RQ, .args[2] = 0U };
 
