@@ -325,6 +325,8 @@ void vTaskStartup(void)
         led_clear(LED_FAULT);
     }
 
+    sat_data_buf.obdh.data.hw_version = system_get_hw_version();
+
 #if defined (CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED) && (CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED == 1)
     if (!sat_data_buf.obdh.data.initial_hib_executed)
     {
