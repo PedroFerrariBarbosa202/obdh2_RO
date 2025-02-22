@@ -46,7 +46,7 @@
 #define TASK_READ_EDC_PRIORITY              3                   /**< Task priority. */
 #define TASK_READ_EDC_PERIOD_MS             (60000)             /**< Task period in milliseconds. */
 #define TASK_READ_EDC_INIT_TIMEOUT_MS       5000                /**< Wait time to initialize the task in milliseconds. */
-
+#define TASK_READ_EDC_INITIAL_DELAY_MS      5500                /**< Delay, in milliseconds, before the first execution. */
 /**
  * \brief EDC housekeeping raw data type.
  */

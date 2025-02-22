@@ -60,6 +60,8 @@ void vTaskReadPX(void)
     /* Wait startup task to finish */
     xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_PX_INIT_TIMEOUT_MS));
 
+    vTaskDelay(pdMS_TO_TICKS(TASK_READ_PX_INITIAL_DELAY_MS));
+
     while(1)
     {
         uint32_t cancel_flag;
@@ -67,7 +69,7 @@ void vTaskReadPX(void)
 
         BaseType_t result = xTaskNotifyWait(0UL, UINT32_MAX, &active_period_ms, pdMS_TO_TICKS(TASK_READ_PX_MAX_WAIT_TIME_MS));
 
-        payload_t pl_px_active = sat_data_buf.state.active_payload[1];
+        payload_t pl_px_active = (payload_t)sat_data_buf.obdh.data.sec_payload_state;
 
         if ((pl_px_active == PAYLOAD_X) && (result == pdTRUE)) 
         {

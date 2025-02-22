@@ -82,7 +82,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_0) || (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_1));
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1));
 
             sys_log_print_test_result(test_result, "In Brazil Notify Test");
             sys_log_new_line();
@@ -97,7 +97,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.state.active_payload[1] == PAYLOAD_X) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE); 
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == PAYLOAD_X) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE); 
 
             sys_log_print_test_result(test_result, "Out of Brazil Notify Test");
             sys_log_new_line();
@@ -112,7 +112,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(150));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE);
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE);
 
             sys_log_print_test_result(test_result, "Payload X finished Notify Test");
             sys_log_new_line();
@@ -125,7 +125,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE);
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE);
 
             sys_log_print_test_result(test_result, "Position relative Notifications Test");
             sys_log_new_line();
@@ -140,7 +140,7 @@ void vTaskHealthCheckMode(void)
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
             uint32_t hib_time = ((uint32_t)0x1111UL * (uint32_t)60UL * (uint32_t)60UL);
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_HIBERNATION) && (sat_data_buf.obdh.data.mode_duration  == hib_time);
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_HIBERNATION) && (sat_data_buf.obdh.data.hib_duration == hib_time);
 
             sys_log_print_test_result(test_result, "Enter hibernation Test");
             sys_log_new_line();
@@ -207,7 +207,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_0) || (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_1));
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_1));
 
             sys_log_print_test_result(test_result, "TC change mode to NORMAL Test");
             sys_log_new_line();
@@ -222,7 +222,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE);
+            test_result = (sat_data_buf.obdh.data.mode == (uint8_t)OBDH_MODE_STAND_BY) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE);
 
             sys_log_print_test_result(test_result, "TC change mode to STAND_BY Test");
             sys_log_new_line();
@@ -237,7 +237,7 @@ void vTaskHealthCheckMode(void)
                 sys_log_new_line();
             }
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE);
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE);
 
             sys_log_print_test_result(test_result, "Manual mode check");
             sys_log_new_line();

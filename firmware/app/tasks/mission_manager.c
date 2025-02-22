@@ -51,11 +51,13 @@
 #include "read_px.h"
 #include "system_reset.h"
 #include "process_tc.h"
+#include "startup.h"
 
-static inline void handle_event(const event_t *ev);
-static inline int8_t handle_mode_change_rq(const uint8_t *args);
-static inline int8_t activate_payload_rq(const uint8_t *args);
-static inline int8_t deactivate_payload_rq(const uint8_t *args);
+static void handle_event(const event_t *ev);
+static int8_t handle_mode_change_rq(const uint8_t *args);
+static int8_t activate_payload_rq(const uint8_t *args);
+static int8_t deactivate_payload_rq(const uint8_t *args);
+static int8_t satellite_persist_state(sat_data_t *sat);
 
 static int enable_ttc_tx(void);
 static int disable_ttc_tx(void);
@@ -70,10 +72,14 @@ TaskHandle_t xTaskMissionManagerHandle;
 void vTaskMissionManager(void)
 {
     event_t ev;
-    sat_data_buf.state.c_edc = &sat_data_buf.edc_0;
-    sat_data_buf.state.active_payload[0] = PAYLOAD_NONE;
-    sat_data_buf.state.active_payload[1] = PAYLOAD_NONE;
-    sat_data_buf.state.edc_active = false;
+
+    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_MISSION_MANAGER_STARTUP_TIMEOUT_MS));
+
+    if (satellite_persist_state(&sat_data_buf) != 0) 
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to restore state!");
+        sys_log_new_line();
+    }
 
     while (1) 
     {
@@ -113,13 +119,53 @@ void satellite_change_mode(const uint8_t mode)
     taskEXIT_CRITICAL();
 }
 
-static inline void handle_event(const event_t *ev)
+static int8_t satellite_persist_state(sat_data_t *sat)
+{
+    int8_t err = 0;
+    uint8_t args[3] = {0};
+
+    uint8_t main_pl = sat->obdh.data.main_payload_state;
+    uint8_t sec_pl = sat->obdh.data.sec_payload_state;
+
+    if (main_pl != PAYLOAD_NONE) 
+    {
+        args[0] = main_pl;
+
+        if (activate_payload_rq(args) == 0)
+        {
+            sat->state.c_edc = (main_pl == (uint8_t)PAYLOAD_EDC_0) ? &sat_data_buf.edc_0 : &sat_data_buf.edc_1;
+        }
+        else 
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to activate main payload on Mission Manager initialization!");
+            sys_log_new_line();
+            sat->state.c_edc = NULL;
+            err = -1;
+        }
+    } 
+
+    if (sec_pl != PAYLOAD_NONE) 
+    {
+        args[0] = sec_pl;
+
+        if (activate_payload_rq(args) != 0)
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to activate secundary payload on Mission Manager initialization!");
+            sys_log_new_line();
+            err = -1;
+        }
+    }
+
+    return err;
+}
+
+static void handle_event(const event_t *ev)
 {
     switch (ev->event)
     {
         case EV_NOTIFY_IN_BRAZIL:
         {
-            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Satellite in Brazil");
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Satellite in Brazil!");
             sys_log_new_line();
             
             in_brazil = true;
@@ -131,17 +177,13 @@ static inline void handle_event(const event_t *ev)
 
                 if (main != PAYLOAD_NONE)
                 {
-                    if (sat_data_buf.state.active_payload[0] != main)
+                    if (sat_data_buf.obdh.data.main_payload_state != (uint8_t)main)
                     {
-                        if (sat_data_buf.state.edc_active) // cppcheck-suppress misra-c2012-14.4
-                        {
-                            (void)payload_disable(sat_data_buf.state.active_payload[0]);
-                        }
+                        (void)payload_disable(sat_data_buf.obdh.data.main_payload_state);
 
                         /* Update satellite state */
-                        sat_data_buf.state.active_payload[0] = main;
+                        sat_data_buf.obdh.data.main_payload_state = (uint8_t)main;
                         sat_data_buf.state.c_edc = (main == PAYLOAD_EDC_0) ? &sat_data_buf.edc_0 : &sat_data_buf.edc_1;
-                        sat_data_buf.state.edc_active = true;
 
                         (void)payload_enable(main);
 
@@ -157,26 +199,25 @@ static inline void handle_event(const event_t *ev)
         }
         case EV_NOTIFY_OUT_OF_BRAZIL:
         {
-            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Satellite out of Brazil");
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Satellite out of Brazil!");
             sys_log_new_line();
 
             in_brazil = false;
 
             if (!sat_data_buf.obdh.data.manual_mode_on)
             {
-                if (sat_data_buf.state.edc_active && (sat_data_buf.state.active_payload[0] != PAYLOAD_NONE))
+                if (sat_data_buf.obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
                 {
-                    (void)payload_disable(sat_data_buf.state.active_payload[0]);
-                    sat_data_buf.state.active_payload[0] = PAYLOAD_NONE;
-                    sat_data_buf.state.edc_active = false;
+                    (void)payload_disable((payload_t)sat_data_buf.obdh.data.main_payload_state);
+                    sat_data_buf.obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
                 }
 
                 #if defined (CONFIG_DEV_PAYLOAD_X_ENABLED) && defined (CONFIG_TASK_PAYLOAD_X_ENABLED) && (CONFIG_DEV_PAYLOAD_X_ENABLED == 1) && (CONFIG_TASK_PAYLOAD_X_ENABLED == 1)
                     /* Activate PX */
-                    if (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE)
+                    if (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE)
                     {
                         const uint32_t px_active_time_ms = (uint32_t)PAYLOAD_X_EXPERIMENT_PERIOD_MS;
-                        sat_data_buf.state.active_payload[1] = PAYLOAD_X;
+                        sat_data_buf.obdh.data.sec_payload_state = (uint8_t)PAYLOAD_X;
 
                         (void)payload_enable(PAYLOAD_X);
 
@@ -206,17 +247,14 @@ static inline void handle_event(const event_t *ev)
 
                 if (!sat_data_buf.obdh.data.manual_mode_on)
                 {
-                    /* Activate PX */
-                    if (sat_data_buf.state.active_payload[1] == PAYLOAD_X)
+                    /* Deactivate PX */
+                    sat_data_buf.obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
+
+                    (void)payload_disable(PAYLOAD_X);
+
+                    if (!in_hibernation)
                     {
-                        sat_data_buf.state.active_payload[1] = PAYLOAD_NONE;
-
-                        (void)payload_disable(PAYLOAD_X);
-
-                        if (!in_hibernation)
-                        {
-                            satellite_change_mode(OBDH_MODE_STAND_BY);
-                        }
+                        satellite_change_mode(OBDH_MODE_STAND_BY);
                     }
                 }
 
@@ -240,7 +278,7 @@ static inline void handle_event(const event_t *ev)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to handle mode change EV");
                 sys_log_new_line();
-            }
+            
             break;
         }
         case EV_NOTIFY_ACTIVATE_PAYLOAD_RQ:
@@ -276,7 +314,7 @@ static inline void handle_event(const event_t *ev)
     }
 }
 
-static inline int8_t handle_mode_change_rq(const uint8_t *args)
+static int8_t handle_mode_change_rq(const uint8_t *args)
 {
     int8_t err = 0;
 
@@ -296,15 +334,19 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
                 }
             }
 
-            if ((sat_data_buf.state.active_payload[0] == PAYLOAD_NONE) && (err == 0))
+            if ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (err == 0))
             {
-                payload_t main = sat_data_buf.obdh.data.main_edc;
+                payload_t main = sat_data_buf.obdh.data.main_payload_state;
 
                 if (main != PAYLOAD_NONE)
                 {
-                    sat_data_buf.state.active_payload[0] = main;
+                    if (sat_data_buf.obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
+                    {
+                        (void)payload_disable((payload_t)sat_data_buf.obdh.data.sec_payload_state);
+                    }
+
+                    sat_data_buf.obdh.data.main_payload_state = (uint8_t)main;
                     sat_data_buf.state.c_edc = (main == PAYLOAD_EDC_0) ? &sat_data_buf.edc_0 : &sat_data_buf.edc_1;
-                    sat_data_buf.state.edc_active = true;
 
                     (void)payload_enable(main);
                 }
@@ -330,7 +372,7 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
 
             in_hibernation = true;
             sys_time_t hib_duration_hours = (((sys_time_t)args[1] << 8) | (sys_time_t)args[2]);
-            sat_data_buf.obdh.data.mode_duration = hib_duration_hours * 60UL * 60UL;
+            sat_data_buf.obdh.data.hib_duration = hib_duration_hours * 60UL * 60UL;
 
             taskEXIT_CRITICAL();
 
@@ -346,17 +388,16 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
         }
         case OBDH_MODE_STAND_BY:
         {
-            if (sat_data_buf.state.active_payload[0] != PAYLOAD_NONE)
+            if (sat_data_buf.obdh.data.main_payload_state != PAYLOAD_NONE)
             {
-                (void)payload_disable(sat_data_buf.state.active_payload[0]);
-                sat_data_buf.state.active_payload[0] = PAYLOAD_NONE;
-                sat_data_buf.state.edc_active = false;
+                (void)payload_disable((payload_t)sat_data_buf.obdh.data.main_payload_state);
+                sat_data_buf.obdh.data.main_payload_state = PAYLOAD_NONE;
             }
 
-            if (sat_data_buf.state.active_payload[1] != PAYLOAD_NONE)
+            if (sat_data_buf.obdh.data.sec_payload_state != PAYLOAD_NONE)
             {
-                (void)payload_disable(sat_data_buf.state.active_payload[1]);
-                sat_data_buf.state.active_payload[1] = PAYLOAD_NONE;
+                (void)payload_disable((payload_t)sat_data_buf.obdh.data.sec_payload_state);
+                sat_data_buf.obdh.data.sec_payload_state = PAYLOAD_NONE;
             }
             
             satellite_change_mode(OBDH_MODE_STAND_BY);
@@ -370,7 +411,7 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
         {
             in_hibernation = false;
 
-            if (in_brazil || (sat_data_buf.state.active_payload[1] != PAYLOAD_NONE) || (sat_data_buf.state.active_payload[0] != PAYLOAD_NONE))
+            if (in_brazil || (sat_data_buf.obdh.data.main_payload_state != PAYLOAD_NONE) || (sat_data_buf.obdh.data.sec_payload_state != PAYLOAD_NONE))
             {
                 satellite_change_mode(OBDH_MODE_NORMAL);
             }
@@ -398,7 +439,7 @@ static inline int8_t handle_mode_change_rq(const uint8_t *args)
     return err;
 }
 
-static inline int8_t activate_payload_rq(const uint8_t *args)
+static int8_t activate_payload_rq(const uint8_t *args)
 {
     int8_t err = 0;
     uint8_t pl = args[0];
@@ -407,15 +448,14 @@ static inline int8_t activate_payload_rq(const uint8_t *args)
     {
         case PL_ID_EDC_1: 
         {
-            if (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_1)
+            if (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_1)
             {
-                (void)payload_disable(sat_data_buf.state.active_payload[0]);
+                (void)payload_disable(PAYLOAD_EDC_1);
             }
 
             /* Update satellite state */
-            sat_data_buf.state.active_payload[0] = PAYLOAD_EDC_0;
+            sat_data_buf.obdh.data.main_payload_state = (uint8_t)PAYLOAD_EDC_0;
             sat_data_buf.state.c_edc = &sat_data_buf.edc_0;
-            sat_data_buf.state.edc_active = true;
 
             (void)payload_enable(PAYLOAD_EDC_0);
 
@@ -428,15 +468,14 @@ static inline int8_t activate_payload_rq(const uint8_t *args)
         }
         case PL_ID_EDC_2: 
         {
-            if (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_0)
+            if (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_0)
             {
-                (void)payload_disable(sat_data_buf.state.active_payload[0]);
+                (void)payload_disable(PAYLOAD_EDC_0);
             }
 
             /* Update satellite state */
-            sat_data_buf.state.active_payload[0] = PAYLOAD_EDC_1;
+            sat_data_buf.obdh.data.main_payload_state = (uint8_t)PAYLOAD_EDC_1;
             sat_data_buf.state.c_edc = &sat_data_buf.edc_1;
-            sat_data_buf.state.edc_active = true;
 
             (void)payload_enable(PAYLOAD_EDC_1);
 
@@ -450,10 +489,10 @@ static inline int8_t activate_payload_rq(const uint8_t *args)
         #if defined (CONFIG_DEV_PAYLOAD_X_ENABLED) && defined (CONFIG_TASK_PAYLOAD_X_ENABLED) && (CONFIG_DEV_PAYLOAD_X_ENABLED == 1) && (CONFIG_TASK_PAYLOAD_X_ENABLED == 1)
             case PL_ID_PAYLOAD_X: 
             {
-                if (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE)
+                if (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE)
                 {
                     const uint32_t px_active_time_ms = (uint32_t)PAYLOAD_X_EXPERIMENT_PERIOD_MS;
-                    sat_data_buf.state.active_payload[1] = PAYLOAD_X;
+                    sat_data_buf.obdh.data.sec_payload_state = (uint8_t)PAYLOAD_X;
 
                     (void)payload_enable(PAYLOAD_X);
 
@@ -479,7 +518,7 @@ static inline int8_t activate_payload_rq(const uint8_t *args)
     return err;
 }
 
-static inline int8_t deactivate_payload_rq(const uint8_t *args)
+static int8_t deactivate_payload_rq(const uint8_t *args)
 {
     int8_t err = 0;
     uint8_t pl = args[0];
@@ -488,14 +527,13 @@ static inline int8_t deactivate_payload_rq(const uint8_t *args)
     {
         case PL_ID_EDC_1: 
         {
-            if (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_0)
+            if (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0)
             {
-                sat_data_buf.state.active_payload[0] = PAYLOAD_NONE; 
-                sat_data_buf.state.edc_active = false;
+                sat_data_buf.obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE; 
 
                 (void)payload_disable(PAYLOAD_EDC_0);
 
-                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE))
+                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == PAYLOAD_NONE))
                 {
                     satellite_change_mode(OBDH_MODE_STAND_BY);
                 }
@@ -505,14 +543,13 @@ static inline int8_t deactivate_payload_rq(const uint8_t *args)
         }
         case PL_ID_EDC_2: 
         {
-            if (sat_data_buf.state.active_payload[0] == PAYLOAD_EDC_1)
+            if (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1)
             {
-                sat_data_buf.state.active_payload[0] = PAYLOAD_NONE; 
-                sat_data_buf.state.edc_active = false;
+                sat_data_buf.obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE; 
 
                 (void)payload_disable(PAYLOAD_EDC_1);
 
-                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.state.active_payload[1] == PAYLOAD_NONE))
+                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE))
                 {
                     satellite_change_mode(OBDH_MODE_STAND_BY);
                 }
@@ -523,16 +560,16 @@ static inline int8_t deactivate_payload_rq(const uint8_t *args)
         #if defined (CONFIG_DEV_PAYLOAD_X_ENABLED) && defined (CONFIG_TASK_PAYLOAD_X_ENABLED) && (CONFIG_DEV_PAYLOAD_X_ENABLED == 1) && (CONFIG_TASK_PAYLOAD_X_ENABLED == 1)
             case PL_ID_PAYLOAD_X: 
             {
-                if (sat_data_buf.state.active_payload[1] == PAYLOAD_X)
+                if (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_X)
                 {
-                    sat_data_buf.state.active_payload[1] = PAYLOAD_NONE; 
+                    sat_data_buf.obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE; 
 
                     /* Sends notification to read_px task to stop experiment */
                     xTaskNotify(xTaskReadPXHandle, PAYLOAD_X_CANCEL_EXPERIMENT_FLAG, eSetValueWithOverwrite);
 
                     (void)payload_disable(PAYLOAD_X);
 
-                    if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.state.active_payload[0] == PAYLOAD_NONE))
+                    if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE))
                     {
                         satellite_change_mode(OBDH_MODE_STAND_BY);
                     }

@@ -150,8 +150,8 @@ void vTaskGeneralTelemetry(void)
             gen_tel_pl.payload[64] = sat_data_buf.eps.data.battery_heater_1_duty_cycle;
             gen_tel_pl.payload[65] = sat_data_buf.eps.data.battery_heater_2_duty_cycle;
             gen_tel_pl.payload[66] = sat_data_buf.obdh.data.main_edc;
-            gen_tel_pl.payload[67] = sat_data_buf.state.active_payload[0];
-            gen_tel_pl.payload[68] = sat_data_buf.state.active_payload[1];
+            gen_tel_pl.payload[67] = sat_data_buf.obdh.data.main_payload_state;
+            gen_tel_pl.payload[68] = sat_data_buf.obdh.data.sec_payload_state;
             gen_tel_pl.payload[69] = (obdh_data_page >> 24U) & 0xFFU;
             gen_tel_pl.payload[70] = (obdh_data_page >> 16U) & 0xFFU;
             gen_tel_pl.payload[71] = (obdh_data_page >> 8U) & 0xFFU;

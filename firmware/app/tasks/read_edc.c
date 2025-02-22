@@ -60,17 +60,19 @@ void vTaskReadEDC(void)
     /* Wait startup task to finish */
     xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_EDC_INIT_TIMEOUT_MS));
 
+    vTaskDelay(pdMS_TO_TICKS(TASK_READ_EDC_INITIAL_DELAY_MS));
+
     media_info_t nor_info = media_get_info(MEDIA_NOR);
 
     TickType_t last_cycle = xTaskGetTickCount();
 
     while(1)
     {
-        payload_t pl_edc_active = sat_data_buf.state.active_payload[0];
+        payload_t pl_edc_active = (payload_t)sat_data_buf.obdh.data.main_payload_state;
 
         payload_telemetry_t * const edc = sat_data_buf.state.c_edc;
 
-        if ((pl_edc_active != PAYLOAD_NONE) && (sat_data_buf.state.edc_active))
+        if ((pl_edc_active != PAYLOAD_NONE) && (edc != NULL))
         {
             /* Update EDC clock */
             if (payload_set_clock(pl_edc_active, system_get_time()) != 0)

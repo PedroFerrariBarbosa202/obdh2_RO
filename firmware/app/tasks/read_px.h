@@ -46,6 +46,7 @@
 #define TASK_READ_PX_PERIOD_MS             (60000UL)           /**< Task period in milliseconds. */
 #define TASK_READ_PX_INIT_TIMEOUT_MS       5000                /**< Wait time to initialize the task in milliseconds. */
 #define TASK_READ_PX_MAX_WAIT_TIME_MS      (60000UL * 60UL)    /**< Max time to wait for notifications. (1 hour)*/
+#define TASK_READ_PX_INITIAL_DELAY_MS      5500                /**< Delay, in milliseconds, before the first execution. */
 
 #define PX_PONG_BUF_SIZE                   4                   /**< Size of pong response message. */
 /**

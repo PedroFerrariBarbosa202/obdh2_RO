@@ -50,6 +50,7 @@
 #define TASK_MISSION_MANAGER_STACK_SIZE                512U                   /**< Stack size in bytes. */
 #define TASK_MISSION_MANAGER_PRIORITY                  4U                     /**< Task priority. */
 #define TASK_MISSION_MANAGER_EV_NOTIFICATION_TIMEOUT   (3600000UL)            /**< Task maximum block time waiting for event notifications */
+#define TASK_MISSION_MANAGER_STARTUP_TIMEOUT_MS        (5000UL)               /**< Task startup event group notification timeout */
 
 #define PAYLOAD_X_EXPERIMENT_PERIOD_MS                 (600000UL)             /**< Payload X default experiment time in milliseconds. */
 #define PAYLOAD_X_CANCEL_EXPERIMENT_FLAG               (1UL << 31UL)          /**< Flag used as a notification to cancel running experiment */

@@ -1869,8 +1869,14 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[82] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
 			pl[83] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
 			pl[84] = tel->data.ts_read_sensors & 0xFFU;
+			pl[85] = tel->data.main_payload_state;
+			pl[86] = tel->data.sec_payload_state;
+			pl[87] = (tel->data.hib_duration >> 24U) & 0xFFU;
+			pl[88] = (tel->data.hib_duration >> 16U) & 0xFFU;
+			pl[89] = (tel->data.hib_duration >> 8U) & 0xFFU;
+			pl[90] = tel->data.hib_duration & 0xFFU;
 
-			*pkt_pl_len = (uint16_t) 93U; /* 7b RQ CALLSIGN + 1b TC ID + 85b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 96U; /* 7b RQ CALLSIGN + 1b TC ID + 85b OBDH DATA */
 
 			break;
 		}
