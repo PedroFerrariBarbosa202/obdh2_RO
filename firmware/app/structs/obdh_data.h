@@ -53,38 +53,37 @@
 #define OBDH_PARAM_ID_LAST_RESET_CAUSE          4   /**< Last reset cause. */
 #define OBDH_PARAM_ID_RESET_COUNTER             5   /**< Reset counter. */
 #define OBDH_PARAM_ID_LAST_VALID_TC             6   /**< Last valid telecommand (uplink packet ID). */
-#define OBDH_PARAM_ID_TEMPERATURE_RADIO         7   /**< Temperature of the radio in Kelvin. */
-#define OBDH_PARAM_ID_RSSI_LAST_TC              8   /**< RSSI of the last valid telecommand. */
-#define OBDH_PARAM_ID_TEMPERATURE_ANTENNA       9   /**< Temperature of the antenna in Kelvin. */
-#define OBDH_PARAM_ID_ANTENNA_STATUS            10  /**< Antenna status bits. */
-#define OBDH_PARAM_ID_HARDWARE_VERSION          11  /**< Hardware version. */
-#define OBDH_PARAM_ID_FIRMWARE_VERSION          12  /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
-#define OBDH_PARAM_ID_MODE                      13  /**< Mode ("Normal" = 0, "Hibernation" = 1). */
-#define OBDH_PARAM_ID_TIMESTAMP_LAST_MODE       14  /**< Timestamp of the last mode change. */
-#define OBDH_PARAM_ID_MODE_DURATION             15  /**< Mode duration in sec. (valid only in hibernation mode). */
-#define OBDH_PARAM_ID_INITIAL_HIB_EXECUTED      16  /**< Initial hibernation executed flag. */
-#define OBDH_PARAM_ID_INITIAL_HIB_TIME_COUNTER  17  /**< Initial hibernation time counter in minutes. */
-#define OBDH_PARAM_ID_ANT_DEPLOYMENT_EXECUTED   18  /**< Antenna deployment executed flag. */
-#define OBDH_PARAM_ID_ANT_DEPLOYMENT_COUNTER    19  /**< Antenna deployment counter. */
-#define OBDH_PARAM_ID_TLE_LINE1                 20  /**< TLE line 1. */
-#define OBDH_PARAM_ID_TLE_LINE2                 21  /**< TLE line 2. */
-#define OBDH_PARAM_ID_LATITUDE                  22  /**< Latitude in degrees. */
-#define OBDH_PARAM_ID_LONGITUDE                 23  /**< Longitude in degrees. */
-#define OBDH_PARAM_ID_ALTITUDE                  24  /**< Altitude in kilometers. */
-#define OBDH_PARAM_ID_LAST_PAGE_OBDH_DATA       25  /**< Last used memory page of the OBDH data. */
-#define OBDH_PARAM_ID_LAST_PAGE_EPS_DATA        26  /**< Last used memory page of the EPS data. */
-#define OBDH_PARAM_ID_LAST_PAGE_TTC_0_DATA      27  /**< Last used memory page of the TTC 0 data. */
-#define OBDH_PARAM_ID_LAST_PAGE_TTC_1_DATA      28  /**< Last used memory page of the TTC 1 data. */
-#define OBDH_PARAM_ID_LAST_PAGE_ANT_DATA        29  /**< Last used memory page of the Antenna data. */
-#define OBDH_PARAM_ID_LAST_PAGE_EDC_DATA        30  /**< Last used memory page of the EDC data. */
-#define OBDH_PARAM_ID_LAST_PAGE_PX_DATA         31  /**< Last used memory page of the Payload-X data. */
-#define OBDH_PARAM_ID_LAST_PAGE_SBCD_PKTS       32  /**< Last used memory page of the SBCD packets. */
-#define OBDH_PARAM_ID_MANUAL_MODE_ON            33  /**< Manual operation mode selection flag. */
-#define OBDH_PARAM_ID_MAIN_EDC                  34  /**< Main EDC ID. */
-#define OBDH_PARAM_ID_GENERAL_TELEMETRY_ON      35  /**< General telemetry on flag. */
-#define OBDH_PARAM_ID_RESET_DEVICE              36  /**< Resets device (Only write param, writing "0x01" to it resets OBDH). */
-#define OBDH_PARAM_ID_TS_LAST_TLE_UPDATE        37  /**< Timestamp of the last TLE update. */
-#define OBDH_PARAM_ID_TS_READ_SENSORS           38  /**< Timestamp of the last sensor readings. */
+#define OBDH_PARAM_ID_HARDWARE_VERSION          7   /**< Hardware version. */
+#define OBDH_PARAM_ID_FIRMWARE_VERSION          8   /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
+#define OBDH_PARAM_ID_MODE                      9   /**< Mode ("Normal" = 0, "Hibernation" = 1). */
+#define OBDH_PARAM_ID_TIMESTAMP_LAST_MODE       10  /**< Timestamp of the last mode change. */
+#define OBDH_PARAM_ID_MODE_DURATION             11  /**< Mode duration in sec. (valid only in hibernation mode). */
+#define OBDH_PARAM_ID_INITIAL_HIB_EXECUTED      12  /**< Initial hibernation executed flag. */
+#define OBDH_PARAM_ID_INITIAL_HIB_TIME_COUNTER  13  /**< Initial hibernation time counter in minutes. */
+#define OBDH_PARAM_ID_ANT_DEPLOYMENT_EXECUTED   14  /**< Antenna deployment executed flag. */
+#define OBDH_PARAM_ID_ANT_DEPLOYMENT_COUNTER    15  /**< Antenna deployment counter. */
+#define OBDH_PARAM_ID_TLE_LINE1                 16  /**< TLE line 1. */
+#define OBDH_PARAM_ID_TLE_LINE2                 17  /**< TLE line 2. */
+#define OBDH_PARAM_ID_LATITUDE                  18  /**< Latitude in degrees. */
+#define OBDH_PARAM_ID_LONGITUDE                 19  /**< Longitude in degrees. */
+#define OBDH_PARAM_ID_ALTITUDE                  20  /**< Altitude in kilometers. */
+#define OBDH_PARAM_ID_LAST_PAGE_OBDH_DATA       21  /**< Last used memory page of the OBDH data. */
+#define OBDH_PARAM_ID_LAST_PAGE_EPS_DATA        22  /**< Last used memory page of the EPS data. */
+#define OBDH_PARAM_ID_LAST_PAGE_TTC_0_DATA      23  /**< Last used memory page of the TTC 0 data. */
+#define OBDH_PARAM_ID_LAST_PAGE_TTC_1_DATA      24  /**< Last used memory page of the TTC 1 data. */
+#define OBDH_PARAM_ID_LAST_PAGE_ANT_DATA        25  /**< Last used memory page of the Antenna data. */
+#define OBDH_PARAM_ID_LAST_PAGE_EDC_DATA        26  /**< Last used memory page of the EDC data. */
+#define OBDH_PARAM_ID_LAST_PAGE_PX_DATA         27  /**< Last used memory page of the Payload-X data. */
+#define OBDH_PARAM_ID_LAST_PAGE_SBCD_PKTS       28  /**< Last used memory page of the SBCD packets. */
+#define OBDH_PARAM_ID_MANUAL_MODE_ON            29  /**< Manual operation mode selection flag. */
+#define OBDH_PARAM_ID_MAIN_EDC                  30  /**< Main EDC ID. */
+#define OBDH_PARAM_ID_GENERAL_TELEMETRY_ON      31  /**< General telemetry on flag. */
+#define OBDH_PARAM_ID_RESET_DEVICE              32  /**< Resets device (Only write param, writing "0x01" to it resets OBDH). */
+#define OBDH_PARAM_ID_TS_LAST_TLE_UPDATE        33  /**< Timestamp of the last TLE update. */
+#define OBDH_PARAM_ID_TS_READ_SENSORS           34  /**< Timestamp of the last sensor readings. */
+#define OBDH_PARAM_ID_MAIN_PAYLOAD_STATE        35  /**< Main payload state. (PL_ID for active and 0 for inactive.) */
+#define OBDH_PARAM_ID_SEC_PAYLOAD_STATE         36  /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
+#define OBDH_PARAM_ID_HIB_DURATION              37  /**< Remaining hibernation time in seconds. */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -95,16 +94,18 @@
 #define OBDH_PARAM_RESET_COUNTER_DEFAULT_VAL            0U
 #define OBDH_PARAM_LAST_VALID_TC_DEFAULT_VAL            0U
 #define OBDH_PARAM_HW_VERSION_DEFAULT_VAL               0U
-#define OBDH_PARAM_FW_VERSION_DEFAULT_VAL               0U
+#define OBDH_PARAM_FW_VERSION_DEFAULT_VAL               0x00001020U
 #define OBDH_PARAM_MODE_DEFAULT_VAL                     0U
 #define OBDH_PARAM_TS_LAST_MODE_CHANGE_DEFAULT_VAL      0U
-#define OBDH_PARAM_MODE_DURATION_DEFAULT_VAL            0U
+#define OBDH_PARAM_HIB_DURATION_DEFAULT_VAL             0U
 #define OBDH_PARAM_INITIAL_HIB_EXECUTED_DEFAULT_VAL     0U
 #define OBDH_PARAM_INITIAL_HIB_TIME_COUNT_DEFAULT_VAL   0U
 #define OBDH_PARAM_ANT_DEPLOYMENT_EXECUTED_DEFAULT_VAL  0U
 #define OBDH_PARAM_ANT_DEPLOYMENT_COUNTER_DEFAULT_VAL   0U
 #define OBDH_PARAM_MANUAL_MODE_ON_DEFAULT_VAL           0U
 #define OBDH_PARAM_MAIN_EDC_DEFAULT_VAL                 1U
+#define OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL       0U
+#define OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL        0U
 #define OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL      1U
 #define OBDH_PARAM_POSITION_TIMESTAMP_DEFAULT_VAL       0U
 #define OBDH_PARAM_POSITION_TS_LAST_TLE_UPT_DEFAULT_VAL 0U
@@ -134,13 +135,13 @@
  */
 typedef struct
 {
-    sys_time_t timestamp;           /**< Timestamp of the position data. */
-    sys_time_t ts_last_tle_update;  /**< Timestamp of the last TLE update. */
     uint8_t tle_line1[70];          /**< TLE line 1 in ASCII. */
     uint8_t tle_line2[70];          /**< TLE line 2 in ASCII. */
+    sys_time_t timestamp;           /**< Timestamp of the position data. */
+    sys_time_t ts_last_tle_update;  /**< Timestamp of the last TLE update. */
     int16_t latitude;               /**< Latitude in degrees. */
-    int16_t longitude;              /**< Lontitude in degrees. */
     int16_t altitude;               /**< Altitude in kilometers. */
+    int16_t longitude;              /**< Lontitude in degrees. */
 } position_data_t;
 
 /**
@@ -163,26 +164,28 @@ typedef struct
  */
 typedef struct
 {
+    media_data_t media;             /**< Memories data. */
+    sys_time_t ts_last_mode_change; /**< Timestamp of the last change in the operation mode. */
+    sys_time_t ts_read_sensors;     /**< Timestamp of the last sensor readings. */
+    sys_time_t hib_duration;        /**< Hibernation duration in seconds. */
+    uint32_t fw_version;            /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
     uint16_t temperature;           /**< Temperature of the uC in Kelvin. */
     uint16_t current;               /**< Input current in mA. */
     uint16_t voltage;               /**< Input voltage in mV. */
     uint16_t reset_counter;         /**< Reset counter. */
+    uint8_t mode;                   /**< Satellite mode. */
     uint8_t last_reset_cause;       /**< Last reset cause code. */
     uint8_t last_valid_tc;          /**< Last valid telecommand ID. */
-    uint8_t mode;                   /**< Satellite mode. */
     uint8_t ant_deployment_counter; /**< Antenna deployment counter. */
     uint8_t initial_hib_time_count; /**< Initial hibernation time counter in minutes. */
     uint8_t hw_version;             /**< Hardware version. */
-    uint32_t fw_version;            /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
-    sys_time_t ts_last_mode_change; /**< Timestamp of the last change in the operation mode. */
-    sys_time_t ts_read_sensors;     /**< Timestamp of the last sensor readings. */
-    sys_time_t mode_duration;       /**< Mode duration (valid only in hibernation mode). */
+    uint8_t main_edc;               /**< Main EDC. */
+    uint8_t main_payload_state;     /**< Main payload state. (PL_ID for active and 0 for inactive.) */
+    uint8_t sec_payload_state;      /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
     bool initial_hib_executed;      /**< Initial hibernation executed flag. */
     bool ant_deployment_executed;   /**< Antenna deployment executed flag. */
     bool manual_mode_on;		    /**< Manual operation mode selection flag. */
     bool general_telemetry_on;      /**< General telemetry on flag. */
-    uint8_t main_edc;               /**< Main EDC. */
-    media_data_t media;             /**< Memories data. */
     position_data_t position;       /**< Current position of the satellite. */
 } obdh_data_t;
 

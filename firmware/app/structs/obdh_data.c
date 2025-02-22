@@ -59,7 +59,7 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
 
             if (notify_event_to_mission_manager(&mode_change) != 0)
             {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Invalid Mode requested!");
+                sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Failed to notify mode change to Mission Manager!");
                 sys_log_new_line();
                 err = -1;
             }
@@ -78,27 +78,18 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             }
             break;
         }
-        case OBDH_PARAM_ID_MODE_DURATION:
-        {
-            sat_data_buf.obdh.data.mode_duration = *buf;
-            break;
-        }
         case OBDH_PARAM_ID_MANUAL_MODE_ON:
         {
             if (*buf == 0x00U)
             {
-                taskENTER_CRITICAL();
                 sat_data_buf.obdh.data.manual_mode_on = false;
-                taskEXIT_CRITICAL();
 
                 sys_log_print_event_from_module(SYS_LOG_INFO, OBDH_DATA_LOG_NAME, "Manual mode is now Off!");
                 sys_log_new_line();
             }
             else if (*buf == 0x01U)
             {
-                taskENTER_CRITICAL();
                 sat_data_buf.obdh.data.manual_mode_on = true;
-                taskEXIT_CRITICAL();
 
                 sys_log_print_event_from_module(SYS_LOG_INFO, OBDH_DATA_LOG_NAME, "Manual mode is now On!");
                 sys_log_new_line();
@@ -116,9 +107,7 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
         {
             if ((*buf == PL_ID_EDC_1) || (*buf == PL_ID_EDC_2))
             {
-                taskENTER_CRITICAL();
                 sat_data_buf.obdh.data.main_edc = (uint8_t)(*buf);
-                taskEXIT_CRITICAL();
             }
             else 
             {
@@ -149,6 +138,73 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
 
             break;
         }
+        case OBDH_PARAM_ID_MAIN_PAYLOAD_STATE:
+        {
+            if ((*buf == PL_ID_EDC_1) || (*buf == PL_ID_EDC_2))
+            {
+                const event_t payload_activate = { .event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)(*buf), .args[1] = 0U, .args[2] = 0U };
+
+                if (notify_event_to_mission_manager(&payload_activate) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Failed to notify payload activation to Mission Manager!");
+                    sys_log_new_line();
+                    err = -1;
+                }
+            }
+            else if (*buf == 0U)
+            {
+                const event_t payload_deactivate = { .event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ, .args[0] = sat_data_buf.obdh.data.main_payload_state, .args[1] = 0U, .args[2] = 0U };
+
+                if (notify_event_to_mission_manager(&payload_deactivate) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Failed to notify payload deactivation to Mission Manager!");
+                    sys_log_new_line();
+                    err = -1;
+                }
+            }
+            else 
+            {
+                err = -1;
+            }
+            break;
+        }
+        case OBDH_PARAM_ID_SEC_PAYLOAD_STATE:
+        {
+            if (*buf == PL_ID_PAYLOAD_X)
+            {
+                const event_t payload_activate = { .event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)(*buf), .args[1] = 0U, .args[2] = 0U };
+
+                if (notify_event_to_mission_manager(&payload_activate) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Failed to notify payload activation to Mission Manager!");
+                    sys_log_new_line();
+                    err = -1;
+                }
+            }
+            else if (*buf == 0U)
+            {
+                const event_t payload_deactivate = { .event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)PL_ID_PAYLOAD_X, .args[1] = 0U, .args[2] = 0U };
+
+                if (notify_event_to_mission_manager(&payload_deactivate) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Failed to notify payload deactivation to Mission Manager!");
+                    sys_log_new_line();
+                    err = -1;
+                }
+            }
+            else 
+            {
+                err = -1;
+            }
+            break;
+        }
+        case OBDH_PARAM_ID_HIB_DURATION:
+        {
+            taskENTER_CRITICAL();
+            sat_data_buf.obdh.data.hib_duration = *buf;
+            taskEXIT_CRITICAL();
+            break;
+        }
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);
@@ -173,8 +229,6 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_LAST_RESET_CAUSE:         *buf = sat_data_buf.obdh.data.last_reset_cause;                          break;
         case OBDH_PARAM_ID_RESET_COUNTER:            *buf = sat_data_buf.obdh.data.reset_counter;                             break;
         case OBDH_PARAM_ID_LAST_VALID_TC:            *buf = sat_data_buf.obdh.data.last_valid_tc;                             break;
-        case OBDH_PARAM_ID_TEMPERATURE_ANTENNA:      *buf = sat_data_buf.antenna.data.temperature;                            break;
-        case OBDH_PARAM_ID_ANTENNA_STATUS:           *buf = sat_data_buf.antenna.data.status.code;                            break;
         case OBDH_PARAM_ID_HARDWARE_VERSION:         *buf = sat_data_buf.obdh.data.hw_version;                                break;
         case OBDH_PARAM_ID_FIRMWARE_VERSION:         *buf = sat_data_buf.obdh.data.fw_version;                                break;
         case OBDH_PARAM_ID_MODE:                     *buf = sat_data_buf.obdh.data.mode;                                      break;
@@ -200,6 +254,9 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_GENERAL_TELEMETRY_ON:     *buf = sat_data_buf.obdh.data.general_telemetry_on;                      break;
         case OBDH_PARAM_ID_TS_LAST_TLE_UPDATE:       *buf = sat_data_buf.obdh.data.position.ts_last_tle_update;               break;
         case OBDH_PARAM_ID_TS_READ_SENSORS:          *buf = sat_data_buf.obdh.data.ts_read_sensors;                           break;
+        case OBDH_PARAM_ID_MAIN_PAYLOAD_STATE:       *buf = sat_data_buf.obdh.data.main_payload_state;
+        case OBDH_PARAM_ID_SEC_PAYLOAD_STATE:        *buf = sat_data_buf.obdh.data.sec_payload_state;
+        case OBDH_PARAM_ID_HIB_DURATION:             *buf = sat_data_buf.obdh.data.hib_duration;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);
