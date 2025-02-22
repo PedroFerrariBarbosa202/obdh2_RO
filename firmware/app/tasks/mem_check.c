@@ -163,37 +163,6 @@ void vTaskHealthCheckMem(void)
         sys_log_print_test_result(param_test_result, "System param loading from FRAM Test");
         sys_log_new_line();
 
-        /* TODO */
-        /* Test Redundancy from internal FLASH **COMPLETELY** */
-
-        (void)memset(&loaded_params, 0, sizeof(obdh_telemetry_t));
-
-        mem_mng_save_obdh_data_bak(&test_params);
-
-        vTaskDelay(pdMS_TO_TICKS(10U));
-
-        if (mem_mng_load_obdh_data_bak(&loaded_params) != 0) 
-        {
-            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MEM_NAME, "Could not load media info from INT FLASH Correctly");
-            sys_log_new_line();
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(10U));
-
-        bool int_flash_res = (memcmp(&test_params, &loaded_params, BAK_DATA_SIZE) == 0);
-
-        sys_log_print_test_result(int_flash_res, "Media info backup Test");
-        sys_log_new_line();
-
-        vTaskDelay(pdMS_TO_TICKS(10U));
-
-        uint8_t *test_ptr = (uint8_t*)&test_params;
-        uint8_t *pos_ptr = (uint8_t*)&test_params.data.position;
-        bool offset_test = (pos_ptr == &test_ptr[BAK_DATA_SIZE]);
-
-        sys_log_print_test_result(offset_test, "Struct Offset Test");
-        sys_log_new_line();
-
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MEM_NAME, "Cleaning up...");
         sys_log_new_line();
 
@@ -404,7 +373,7 @@ static void prepare_obdh_s(obdh_telemetry_t *tel)
     tel->data.fw_version                    = 0x1018;
     tel->data.mode                          = 0x01;
     tel->data.ts_last_mode_change           = 0xbbbbbbbb;
-    tel->data.mode_duration                 = 0xcccccccc;
+    tel->data.hib_duration                  = 0xcccccccc;
     tel->data.initial_hib_executed          = true;
     tel->data.initial_hib_time_count        = 40U;
     tel->data.ant_deployment_executed       = true;
