@@ -821,7 +821,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
 {
-    if (pkt_len >= 15U)
+    if ((pkt_len >= 15U) && (pkt_len <= 53U))
     {
         /* Update last valid tc parameter */
         sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1711,7 +1711,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
 {
-    if (pkt_len >= (1U + 7U + 20U))
+    if ((pkt_len >= (1U + 7U + 20U)) && (pkt_len <= 73U))
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_TRANSMIT_PACKET;
 
