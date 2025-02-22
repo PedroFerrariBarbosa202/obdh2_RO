@@ -116,7 +116,7 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.fw_version                    = OBDH_PARAM_FW_VERSION_DEFAULT_VAL;
     tel->data.mode                          = OBDH_PARAM_MODE_DEFAULT_VAL;
     tel->data.ts_last_mode_change           = OBDH_PARAM_TS_LAST_MODE_CHANGE_DEFAULT_VAL;
-    tel->data.mode_duration                 = OBDH_PARAM_MODE_DURATION_DEFAULT_VAL;
+    tel->data.hib_duration                  = OBDH_PARAM_HIB_DURATION_DEFAULT_VAL;
     tel->data.initial_hib_executed          = OBDH_PARAM_INITIAL_HIB_EXECUTED_DEFAULT_VAL;
     tel->data.initial_hib_time_count        = OBDH_PARAM_INITIAL_HIB_TIME_COUNT_DEFAULT_VAL;
     tel->data.ant_deployment_executed       = OBDH_PARAM_ANT_DEPLOYMENT_EXECUTED_DEFAULT_VAL;
@@ -126,6 +126,8 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.main_edc                      = OBDH_PARAM_MAIN_EDC_DEFAULT_VAL;
     tel->data.general_telemetry_on          = OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL;
     tel->data.ts_read_sensors               = OBDH_PARAM_TS_READ_SENSORS_DEFAULT_VAL;
+    tel->data.main_payload_state            = OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL;
+    tel->data.sec_payload_state             = OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL;
 
     (void)strncpy((char*)tel->data.position.tle_line1, OBDH_PARAM_POSITION_TLE_LINE1_DEFAULT_VAL, 70U);
     (void)strncpy((char*)tel->data.position.tle_line2, OBDH_PARAM_POSITION_TLE_LINE2_DEFAULT_VAL, 70U);
@@ -133,6 +135,7 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.position.latitude             = OBDH_PARAM_POSITION_LATITUDE_DEFAULT_VAL;
     tel->data.position.longitude            = OBDH_PARAM_POSITION_LONGITUDE_DEFAULT_VAL;
     tel->data.position.altitude             = OBDH_PARAM_POSITION_ALTITUDE_DEFAULT_VAL;
+    tel->data.position.ts_last_tle_update   = OBDH_PARAM_POSITION_TS_LAST_TLE_UPT_DEFAULT_VAL;
     tel->data.media.last_page_obdh_data     = OBDH_PARAM_MEDIA_LAST_OBDH_DATA_DEFAULT_VAL;
     tel->data.media.last_page_eps_data      = OBDH_PARAM_MEDIA_LAST_EPS_DATA_DEFAULT_VAL;
     tel->data.media.last_page_ttc_0_data    = OBDH_PARAM_MEDIA_LAST_TTC_0_DATA_DEFAULT_VAL;
