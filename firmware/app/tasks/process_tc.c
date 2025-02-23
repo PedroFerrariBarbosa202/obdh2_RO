@@ -1876,7 +1876,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[89] = (tel->data.hib_duration >> 8U) & 0xFFU;
 			pl[90] = tel->data.hib_duration & 0xFFU;
 
-			*pkt_pl_len = (uint16_t) 96U; /* 7b RQ CALLSIGN + 1b TC ID + 85b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 99U; /* 7b RQ CALLSIGN + 1b TC ID + 91b OBDH DATA */
 
 			break;
 		}
