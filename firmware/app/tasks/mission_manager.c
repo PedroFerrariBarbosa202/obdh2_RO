@@ -278,7 +278,7 @@ static void handle_event(const event_t *ev)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to handle mode change EV");
                 sys_log_new_line();
-            
+            }           
             break;
         }
         case EV_NOTIFY_ACTIVATE_PAYLOAD_RQ:
@@ -336,7 +336,7 @@ static int8_t handle_mode_change_rq(const uint8_t *args)
 
             if ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (err == 0))
             {
-                payload_t main = sat_data_buf.obdh.data.main_payload_state;
+                payload_t main = sat_data_buf.obdh.data.main_edc;
 
                 if (main != PAYLOAD_NONE)
                 {
