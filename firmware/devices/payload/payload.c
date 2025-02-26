@@ -299,26 +299,87 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd)
     switch(pl)
     {
         case PAYLOAD_EDC_0:
+        {
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 0: ");
             sys_log_print_hex(cmd);
             sys_log_print_msg(" command received!");
             sys_log_new_line();
 
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: write_cmd() routine not implemented yet!");
-            sys_log_new_line();
+            const edc_cmd_t edc_cmd = {
+                .id = cmd,
+                .param = 0U,
+            };
+
+            switch (cmd) 
+            {
+                case EDC_CMD_PTT_RESUME:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_PAUSE:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_POP:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                default: 
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: Received command is not implemented yet!");
+                    sys_log_new_line();
+                    break;
+            }
 
             break;
+        }
         case PAYLOAD_EDC_1:
+        {
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 1: ");
             sys_log_print_hex(cmd);
             sys_log_print_msg(" command received!");
             sys_log_new_line();
 
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: write_cmd() routine not implemented yet!");
-            sys_log_new_line();
+            const edc_cmd_t edc_cmd = {
+                .id = cmd,
+                .param = 0U,
+            };
+
+            switch (cmd) 
+            {
+                case EDC_CMD_PTT_RESUME:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_PAUSE:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_POP:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                default: 
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: Received command is not implemented yet!");
+                    sys_log_new_line();
+                    break;
+            }
 
             break;
+        }
         case PAYLOAD_X:
+        {
             if (px_write(&px_conf, &cmd, 1U) == 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "Payload-X: ");
@@ -338,6 +399,7 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd)
             sys_log_new_line();
 
             break;
+        }
     }
 
     return err;
