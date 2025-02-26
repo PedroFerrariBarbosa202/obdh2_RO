@@ -81,19 +81,30 @@ void vTaskReadEDC(void)
                 sys_log_new_line();
             }
 
-            /* Read housekeeping data */
-            if (payload_get_data(pl_edc_active, PAYLOAD_EDC_RAW_HK, edc_hk_buf.buffer, &edc_hk_buf.length) != 0)
+            vTaskDelay(pdMS_TO_TICKS(50));     /* Wait a while for the next command */
+
+            /* Force EDC PTT task on */
+            if (payload_write_cmd(pl_edc_active, EDC_CMD_PTT_RESUME) != 0)
             {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EDC_NAME, "Error reading the housekeeping data!");
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EDC_NAME, "Error while resuming EDC PTT task!");
                 sys_log_new_line();
             }
-            else 
+
+            vTaskDelay(pdMS_TO_TICKS(50));     /* Wait a while for the next command */
+
+            /* Read housekeeping data */
+            if (payload_get_data(pl_edc_active, PAYLOAD_EDC_RAW_HK, edc_hk_buf.buffer, &edc_hk_buf.length) == 0)
             {
                 (void)memcpy(edc->data, edc_hk_buf.buffer, EDC_FRAME_HK_LEN);
 
                 vTaskDelay(pdMS_TO_TICKS(50U));
 
                 print_edc_hk(edc_hk_buf.buffer);
+            }
+            else 
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EDC_NAME, "Error reading the housekeeping data!");
+                sys_log_new_line();
             }
 
             vTaskDelay(pdMS_TO_TICKS(500));     /* Wait a while for the next command */
