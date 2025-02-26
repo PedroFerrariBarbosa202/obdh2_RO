@@ -178,7 +178,7 @@ void vTaskGeneralTelemetry(void)
 
             fsat_pkt_encode(&gen_tel_pl, gen_tel_pl_raw, &gen_tel_pl_raw_len);
 
-            if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+            if ((sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION) && (sat_data_buf.obdh.data.general_telemetry_on))
             {
                 if (ttc_send(TTC_0, gen_tel_pl_raw, gen_tel_pl_raw_len) != 0)
                 {
