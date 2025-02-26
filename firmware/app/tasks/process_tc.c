@@ -506,7 +506,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if (end_page <= CONFIG_MEM_OBDH_DATA_END_PAGE)
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(obdh_telemetry_t)) == 0)
                             {
@@ -550,7 +550,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_EPS_DATA_START_PAGE) && (end_page <= CONFIG_MEM_EPS_DATA_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(eps_telemetry_t)) == 0)
                             {
@@ -594,7 +594,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_TTC_0_DATA_START_PAGE) && (end_page <= CONFIG_MEM_TTC_0_DATA_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(ttc_telemetry_t)) == 0)
                             {
@@ -638,7 +638,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_TTC_1_DATA_START_PAGE) && (end_page <= CONFIG_MEM_TTC_1_DATA_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(ttc_telemetry_t)) == 0)
                             {
@@ -682,7 +682,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_ANT_DATA_START_PAGE) && (end_page <= CONFIG_MEM_ANT_DATA_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(antenna_telemetry_t)) == 0)
                             {
@@ -726,7 +726,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_SBCD_PKTS_START_PAGE) && (end_page <= CONFIG_MEM_SBCD_PKTS_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(edc_ptt_t)) == 0)
                             {
@@ -770,7 +770,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
                     if ((start_page >= CONFIG_MEM_EDC_DATA_START_PAGE) && (end_page <= CONFIG_MEM_EDC_DATA_END_PAGE))
                     {
                         uint32_t i = 0;
-                        for(i = start_page; i < end_page; i++)
+                        for(i = start_page; i <= end_page; i++)
                         {
                             if (media_read(MEDIA_NOR, i * nor_info.page_size, page_buf, sizeof(payload_telemetry_t)) == 0)
                             {
@@ -1861,10 +1861,10 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[74] = ((uint16_t)tel->data.position.longitude) & 0xFFU;
 			pl[75] = (((uint16_t)tel->data.position.altitude) >> 8U) & 0xFFU;
 			pl[76] = ((uint16_t)tel->data.position.altitude) & 0xFFU;
-			pl[77] = (tel->data.ts_last_tle_update >> 24U) & 0xFFU;
-			pl[78] = (tel->data.ts_last_tle_update >> 16U) & 0xFFU;
-			pl[79] = (tel->data.ts_last_tle_update >> 8U) & 0xFFU;
-			pl[80] = tel->data.ts_last_tle_update & 0xFFU;
+			pl[77] = (tel->data.position.ts_last_tle_update >> 24U) & 0xFFU;
+			pl[78] = (tel->data.position.ts_last_tle_update >> 16U) & 0xFFU;
+			pl[79] = (tel->data.position.ts_last_tle_update >> 8U) & 0xFFU;
+			pl[80] = tel->data.position.ts_last_tle_update & 0xFFU;
 			pl[81] = (tel->data.ts_read_sensors >> 24U) & 0xFFU;
 			pl[82] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
 			pl[83] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
