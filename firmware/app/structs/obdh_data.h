@@ -62,28 +62,27 @@
 #define OBDH_PARAM_ID_INITIAL_HIB_TIME_COUNTER  13  /**< Initial hibernation time counter in minutes. */
 #define OBDH_PARAM_ID_ANT_DEPLOYMENT_EXECUTED   14  /**< Antenna deployment executed flag. */
 #define OBDH_PARAM_ID_ANT_DEPLOYMENT_COUNTER    15  /**< Antenna deployment counter. */
-#define OBDH_PARAM_ID_TLE_LINE1                 16  /**< TLE line 1. */
-#define OBDH_PARAM_ID_TLE_LINE2                 17  /**< TLE line 2. */
-#define OBDH_PARAM_ID_LATITUDE                  18  /**< Latitude in degrees. */
-#define OBDH_PARAM_ID_LONGITUDE                 19  /**< Longitude in degrees. */
-#define OBDH_PARAM_ID_ALTITUDE                  20  /**< Altitude in kilometers. */
-#define OBDH_PARAM_ID_LAST_PAGE_OBDH_DATA       21  /**< Last used memory page of the OBDH data. */
-#define OBDH_PARAM_ID_LAST_PAGE_EPS_DATA        22  /**< Last used memory page of the EPS data. */
-#define OBDH_PARAM_ID_LAST_PAGE_TTC_0_DATA      23  /**< Last used memory page of the TTC 0 data. */
-#define OBDH_PARAM_ID_LAST_PAGE_TTC_1_DATA      24  /**< Last used memory page of the TTC 1 data. */
-#define OBDH_PARAM_ID_LAST_PAGE_ANT_DATA        25  /**< Last used memory page of the Antenna data. */
-#define OBDH_PARAM_ID_LAST_PAGE_EDC_DATA        26  /**< Last used memory page of the EDC data. */
-#define OBDH_PARAM_ID_LAST_PAGE_PX_DATA         27  /**< Last used memory page of the Payload-X data. */
-#define OBDH_PARAM_ID_LAST_PAGE_SBCD_PKTS       28  /**< Last used memory page of the SBCD packets. */
-#define OBDH_PARAM_ID_MANUAL_MODE_ON            29  /**< Manual operation mode selection flag. */
-#define OBDH_PARAM_ID_MAIN_EDC                  30  /**< Main EDC ID. */
-#define OBDH_PARAM_ID_GENERAL_TELEMETRY_ON      31  /**< General telemetry on flag. */
-#define OBDH_PARAM_ID_RESET_DEVICE              32  /**< Resets device (Only write param, writing "0x01" to it resets OBDH). */
-#define OBDH_PARAM_ID_TS_LAST_TLE_UPDATE        33  /**< Timestamp of the last TLE update. */
-#define OBDH_PARAM_ID_TS_READ_SENSORS           34  /**< Timestamp of the last sensor readings. */
-#define OBDH_PARAM_ID_MAIN_PAYLOAD_STATE        35  /**< Main payload state. (PL_ID for active and 0 for inactive.) */
-#define OBDH_PARAM_ID_SEC_PAYLOAD_STATE         36  /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
-#define OBDH_PARAM_ID_HIB_DURATION              37  /**< Remaining hibernation time in seconds. */
+#define OBDH_PARAM_ID_LATITUDE                  16  /**< Latitude in degrees. */
+#define OBDH_PARAM_ID_LONGITUDE                 17  /**< Longitude in degrees. */
+#define OBDH_PARAM_ID_ALTITUDE                  18  /**< Altitude in kilometers. */
+#define OBDH_PARAM_ID_LAST_PAGE_OBDH_DATA       19  /**< Last used memory page of the OBDH data. */
+#define OBDH_PARAM_ID_LAST_PAGE_EPS_DATA        20  /**< Last used memory page of the EPS data. */
+#define OBDH_PARAM_ID_LAST_PAGE_TTC_0_DATA      21  /**< Last used memory page of the TTC 0 data. */
+#define OBDH_PARAM_ID_LAST_PAGE_TTC_1_DATA      22  /**< Last used memory page of the TTC 1 data. */
+#define OBDH_PARAM_ID_LAST_PAGE_ANT_DATA        23  /**< Last used memory page of the Antenna data. */
+#define OBDH_PARAM_ID_LAST_PAGE_EDC_DATA        24  /**< Last used memory page of the EDC data. */
+#define OBDH_PARAM_ID_LAST_PAGE_PX_DATA         25  /**< Last used memory page of the Payload-X data. */
+#define OBDH_PARAM_ID_LAST_PAGE_SBCD_PKTS       26  /**< Last used memory page of the SBCD packets. */
+#define OBDH_PARAM_ID_MANUAL_MODE_ON            27  /**< Manual operation mode selection flag. */
+#define OBDH_PARAM_ID_MAIN_EDC                  28  /**< Main EDC ID. */
+#define OBDH_PARAM_ID_GENERAL_TELEMETRY_ON      29  /**< General telemetry on flag. */
+#define OBDH_PARAM_ID_RESET_DEVICE              30  /**< Resets device (Only write param, writing "0x01" to it resets OBDH). */
+#define OBDH_PARAM_ID_TS_LAST_TLE_UPDATE        31  /**< Timestamp of the last TLE update. */
+#define OBDH_PARAM_ID_TS_READ_SENSORS           32  /**< Timestamp of the last sensor readings. */
+#define OBDH_PARAM_ID_MAIN_PAYLOAD_STATE        33  /**< Main payload state. (PL_ID for active and 0 for inactive.) */
+#define OBDH_PARAM_ID_SEC_PAYLOAD_STATE         34  /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
+#define OBDH_PARAM_ID_HIB_DURATION              35  /**< Remaining hibernation time in seconds. */
+#define OBDH_PARAM_ID_BIN_TLE                   36  /**< Compact binary TLE line. More about the format on libpredict */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -109,8 +108,7 @@
 #define OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL      1U
 #define OBDH_PARAM_POSITION_TIMESTAMP_DEFAULT_VAL       0U
 #define OBDH_PARAM_POSITION_TS_LAST_TLE_UPT_DEFAULT_VAL 0U
-#define OBDH_PARAM_POSITION_TLE_LINE1_DEFAULT_VAL       "1 44885U 19093G   24055.47450690  .00005228  00000-0  56684-3 0  9991"
-#define OBDH_PARAM_POSITION_TLE_LINE2_DEFAULT_VAL       "2 44885  97.8473 139.0522 0012434 335.2519  24.8100 14.88559378226444"
+#define OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL         {0x00, 0x19, 0x40, 0x50, 0x14, 0x90, 0xFC, 0x7C, 0x92, 0xCE, 0x00, 0x00, 0x1C, 0xA3, 0x43, 0x4E, 0x4F, 0xCC, 0x43, 0x19, 0xCA, 0x37, 0x3A, 0x87, 0x80, 0x92, 0x40, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4C, 0x4F, 0x4B, 0xC6, 0xA7, 0xEF, 0x9E, 0x40, 0x2E, 0x9D, 0x69, 0xF3, 0xE4, 0x93, 0xBE} /* HORYU-4 TLE converted to libpredict compact format */
 #define OBDH_PARAM_POSITION_LATITUDE_DEFAULT_VAL        0U
 #define OBDH_PARAM_POSITION_LONGITUDE_DEFAULT_VAL       0U
 #define OBDH_PARAM_POSITION_ALTITUDE_DEFAULT_VAL        0U
@@ -135,8 +133,7 @@
  */
 typedef struct
 {
-    uint8_t tle_line1[70];          /**< TLE line 1 in ASCII. */
-    uint8_t tle_line2[70];          /**< TLE line 2 in ASCII. */
+    uint8_t bin_tle[50];            /**< Binary compact TLE lines. */
     sys_time_t timestamp;           /**< Timestamp of the position data. */
     sys_time_t ts_last_tle_update;  /**< Timestamp of the last TLE update. */
     int16_t latitude;               /**< Latitude in degrees. */
