@@ -76,16 +76,16 @@ static inline bool is_satellite_in_brazil(int16_t latitude, int16_t longitude)
 }
 
 /**
- * \brief Updates TLE line buffers.
+ * \brief Update TLE lines used for position determination.
  *
- * \param[in] line_number is the TLE line number, either 1 or 2.
+ * \param[in,out] obdh is a pointer to the OBDH telemetry struct to store the 
+ * updated TLEs.
  *
- * \param[in] tle_line is the raw bytes from the TLE line received through 
- * telecommands.
+ * \param[in] bin_tle is the TLE lines in compact binary format.
  *
- * \return True if both TLE lines were updated, False otherwise.
+ * \return The status/error code.
  */
-bool update_tle_line(uint8_t line_number, const uint8_t *tle_line);
+int update_tle_line(obdh_telemetry_t *obdh, const uint8_t *bin_tle);
 
 /**
  * \brief Position determination task.

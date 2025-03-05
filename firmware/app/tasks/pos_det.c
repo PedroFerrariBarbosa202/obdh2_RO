@@ -48,9 +48,6 @@
 #include "startup.h"
 #include "mission_manager.h"
 
-static char tle_line_1[70];
-static char tle_line_2[70];
-
 xTaskHandle xTaskPosDetHandle;
 
 void vTaskPosDet(void)
@@ -62,8 +59,14 @@ void vTaskPosDet(void)
     /* Flag used to control notification sending */
     bool sat_is_inside_brazil = false;
 
+    /* Pointer used to see if TLE parsing was sucessfull */
+    predict_orbital_elements_t *sat = NULL;
+
     /* Wait startup task to finish */
     xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_POS_DET_INIT_TIMEOUT_MS));
+
+    /* Parses binary TLE from FRAM (or default) */
+    sat = predict_parse_compact_tle(&satellite, &sgp4_model, &sdp4_model, sat_data_buf.obdh.data.position.bin_tle);
 
     TickType_t last_cycle = xTaskGetTickCount();
 
@@ -72,22 +75,10 @@ void vTaskPosDet(void)
         /* Reload TLE lines if an update occured */
         if (xTaskNotifyWait(0UL, UINT32_MAX, NULL, 0UL) == pdTRUE)
         {
-            (void)strncpy((char*)sat_data_buf.obdh.data.position.tle_line1, tle_line_1, 70U);
-            (void)strncpy((char*)sat_data_buf.obdh.data.position.tle_line2, tle_line_2, 70U);
-
-            /* Save new OBDH data to fram */
-            if (mem_mng_save_obdh_data_to_fram(&sat_data_buf.obdh) != 0)
-            {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to save OBDH data after TLE Update!");
-                sys_log_new_line();
-            }
-
-            /* Store timestamp of the update */
-            sat_data_buf.obdh.data.position.ts_last_tle_update = system_get_time();
+            sat = predict_parse_compact_tle(&satellite, &sgp4_model, &sdp4_model, sat_data_buf.obdh.data.position.bin_tle);
         }
 
-        /* Populate orbit elements */
-        if (predict_parse_tle(&satellite, &sgp4_model, &sdp4_model, (const char*)sat_data_buf.obdh.data.position.tle_line1, (const char*)sat_data_buf.obdh.data.position.tle_line2) != NULL)
+        if (sat != NULL)
         {
             /* Predict satellite position */
             struct predict_position my_orbit;
@@ -146,7 +137,7 @@ void vTaskPosDet(void)
         }
         else
         {
-            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to parse TLEs");
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to parse last available TLEs!");
             sys_log_new_line();
         }
 
@@ -154,34 +145,27 @@ void vTaskPosDet(void)
     }
 }
 
-bool update_tle_line(uint8_t line_number, const uint8_t *tle_line)
+int update_tle_line(obdh_telemetry_t *obdh, const uint8_t *bin_tle)
 {
-    static uint8_t update_status;
-    bool both_lines_updated = false;
+    int err = 0;
 
-    switch (line_number) 
+    (void)memcpy(obdh->data.position.bin_tle, bin_tle, 50U);
+
+    /* Store timestamp of the update */
+    obdh->data.position.ts_last_tle_update = system_get_time();
+
+    /* Save new OBDH data to fram */
+    if (mem_mng_save_obdh_data_to_fram(obdh) != 0)
     {
-        case 0x01:
-            (void)memcpy(tle_line_1, tle_line, 69U);
-            tle_line_1[69] = '\0';
-            update_status |= 0x01U;
-            break;
-        case 0x02:
-            (void)memcpy(tle_line_2, tle_line, 69U);
-            tle_line_2[69] = '\0';
-            update_status |= 0x02U;
-            break;
-        default:
-            break;
+        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to save OBDH data after TLE Update!");
+        sys_log_new_line();
+        err = -1;
     }
 
-    if (((update_status & 0x01U) != 0U) && ((update_status & 0x02U) != 0U))
-    {
-        both_lines_updated = true;
-        update_status = 0U;
-    }
+    /* Notify Position Determination Task of TLE update */
+    xTaskNotify(xTaskPosDetHandle, 0U, eNoAction);
 
-    return both_lines_updated;
+    return err;
 }
 
 /** \} End of pos_det group */
