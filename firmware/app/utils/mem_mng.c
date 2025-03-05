@@ -129,8 +129,9 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.main_payload_state            = OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL;
     tel->data.sec_payload_state             = OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL;
 
-    (void)strncpy((char*)tel->data.position.tle_line1, OBDH_PARAM_POSITION_TLE_LINE1_DEFAULT_VAL, 70U);
-    (void)strncpy((char*)tel->data.position.tle_line2, OBDH_PARAM_POSITION_TLE_LINE2_DEFAULT_VAL, 70U);
+    uint8_t buf[50] = 
+
+    (void)memcpy(tel->data.position.bin_tle, buf, 50U);
 
     tel->data.position.latitude             = OBDH_PARAM_POSITION_LATITUDE_DEFAULT_VAL;
     tel->data.position.longitude            = OBDH_PARAM_POSITION_LONGITUDE_DEFAULT_VAL;

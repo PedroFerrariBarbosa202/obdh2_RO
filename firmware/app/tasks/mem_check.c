@@ -380,11 +380,9 @@ static void prepare_obdh_s(obdh_telemetry_t *tel)
     tel->data.ant_deployment_counter        = 5U;
     tel->data.position.timestamp            = OBDH_PARAM_POSITION_TIMESTAMP_DEFAULT_VAL;
 
-    uint8_t tle_line1[70] = OBDH_PARAM_POSITION_TLE_LINE1_DEFAULT_VAL;
-    uint8_t tle_line2[70] = OBDH_PARAM_POSITION_TLE_LINE2_DEFAULT_VAL;
+    uint8_t buf[50] = OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL;
 
-    (void)memcpy(&tel->data.position.tle_line1, &tle_line1[0], 70U);
-    (void)memcpy(&tel->data.position.tle_line2, &tle_line2[0], 70U);
+    (void)memcpy(tel->data.position.bin_tle, &buf[0], 50U);
 
     tel->data.position.latitude             = OBDH_PARAM_POSITION_LATITUDE_DEFAULT_VAL;
     tel->data.position.longitude            = OBDH_PARAM_POSITION_LONGITUDE_DEFAULT_VAL;
