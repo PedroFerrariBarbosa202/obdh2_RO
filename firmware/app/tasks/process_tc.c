@@ -1306,6 +1306,9 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
             {
                 case MEMORY_ID_NOR:
                 {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Erasing NOR memory...");
+                    sys_log_new_line();
+
                     if (mem_mng_erase_flash(&sat_data_buf.obdh) < 0)
                     {
                         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing NOR memory!");
@@ -1317,6 +1320,9 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
                 }
                 case MEMORY_ID_FRAM:
                 {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Erasing FRAM memory...");
+                    sys_log_new_line();
+
                     if (mem_mng_reset_fram() < 0)
                     {
                         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error erasing FRAM memory!");
