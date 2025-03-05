@@ -254,9 +254,9 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_GENERAL_TELEMETRY_ON:     *buf = sat_data_buf.obdh.data.general_telemetry_on;                      break;
         case OBDH_PARAM_ID_TS_LAST_TLE_UPDATE:       *buf = sat_data_buf.obdh.data.position.ts_last_tle_update;               break;
         case OBDH_PARAM_ID_TS_READ_SENSORS:          *buf = sat_data_buf.obdh.data.ts_read_sensors;                           break;
-        case OBDH_PARAM_ID_MAIN_PAYLOAD_STATE:       *buf = sat_data_buf.obdh.data.main_payload_state;
-        case OBDH_PARAM_ID_SEC_PAYLOAD_STATE:        *buf = sat_data_buf.obdh.data.sec_payload_state;
-        case OBDH_PARAM_ID_HIB_DURATION:             *buf = sat_data_buf.obdh.data.hib_duration;
+        case OBDH_PARAM_ID_MAIN_PAYLOAD_STATE:       *buf = sat_data_buf.obdh.data.main_payload_state;                        break;
+        case OBDH_PARAM_ID_SEC_PAYLOAD_STATE:        *buf = sat_data_buf.obdh.data.sec_payload_state;                         break;
+        case OBDH_PARAM_ID_HIB_DURATION:             *buf = sat_data_buf.obdh.data.hib_duration;                              break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);
