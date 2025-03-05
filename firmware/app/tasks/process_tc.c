@@ -1676,29 +1676,18 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
 {
-    if (pkt_len >= (1U + 7U + 1U + 69U + 20U))
+    if (pkt_len >= (1U + 7U + 50U + 20U))
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_UPDATE_TLE;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 69U, &pkt[78], 20U, tc_key, sizeof(CONFIG_TC_KEY_UPDATE_TLE)-1U))
+        if (process_tc_validate_hmac(pkt, 1U + 7U + 50U, &pkt[58], 20U, tc_key, sizeof(CONFIG_TC_KEY_UPDATE_TLE)-1U))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
 
-            if ((pkt[8] == 0x01U) || (pkt[8] == 0x02U))
+            if (update_tle_line(&sat_data_buf.obdh, &pkt[8]) == 0) 
             {
-                if(update_tle_line(pkt[8], &pkt[9]))
-                {
-                    /* Notify Position Determination Task of TLE update */
-                    xTaskNotify(xTaskPosDetHandle, 0U, eNoAction);
-                }
-
                 (void)send_tc_feedback(pkt);
-            }
-            else 
-            {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Invalid TLE line number received!");
-                sys_log_new_line();
             }
         }
         else
