@@ -14,7 +14,6 @@ endif
 CC=gcc
 INC=../../
 FLAGS=-fpic -std=c99 -Wall -pedantic -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -I$(INC) -I../../tests/freertos_sim/ -Wl,--wrap=sys_log_init,--wrap=sys_log_print_event,--wrap=sys_log_print_event_from_module,--wrap=sys_log_print_msg,--wrap=sys_log_print_str,--wrap=sys_log_new_line,--wrap=sys_log_print_uint,--wrap=sys_log_print_int,--wrap=sys_log_print_hex,--wrap=sys_log_dump_hex,--wrap=sys_log_print_float,--wrap=sys_log_print_byte,--wrap=sys_log_print_system_time,--wrap=sys_log_print_license_msg,--wrap=sys_log_print_splash_screen,--wrap=sys_log_print_firmware_version
-
 CY15X102QN_TEST_FLAGS=$(FLAGS),--wrap=spi_init,--wrap=spi_select_slave,--wrap=spi_write,--wrap=spi_read,--wrap=spi_transfer,--wrap=gpio_init,--wrap=gpio_set_state,--wrap=gpio_get_state,--wrap=gpio_toggle,--wrap=spi_mutex_take,--wrap=spi_mutex_give
 
 TPS382X_TEST_FLAGS=$(FLAGS),--wrap=gpio_init,--wrap=gpio_set_state,--wrap=gpio_get_state,--wrap=gpio_toggle,--wrap=gpio_init_mr_pin
@@ -29,7 +28,7 @@ SL_EPS2_TEST_FLAGS=$(FLAGS),--wrap=tca4311a_init,--wrap=tca4311a_enable,--wrap=t
 
 MT25Q_TEST_FLAGS=$(FLAGS),--wrap=spi_init,--wrap=spi_select_slave,--wrap=spi_write,--wrap=spi_read,--wrap=spi_transfer,--wrap=gpio_init,--wrap=gpio_set_state,--wrap=gpio_get_state,--wrap=gpio_toggle,--wrap=spi_mutex_take,--wrap=spi_mutex_give
 
-SL_TTC2_TEST_FLAGS=$(FLAGS),--wrap=spi_init,--wrap=spi_select_slave,--wrap=spi_write,--wrap=spi_read,--wrap=spi_transfer,--wrap=gpio_init,--wrap=gpio_set_state,--wrap=gpio_get_state,--wrap=gpio_toggle,--wrap=spi_mutex_take,--wrap=spi_mutex_give,--wrap=sl_ttc2_spi_read
+SL_TTC2_TEST_FLAGS=$(FLAGS),--wrap=spi_init,--wrap=spi_select_slave,--wrap=spi_write,--wrap=spi_read,--wrap=spi_transfer,--wrap=gpio_init,--wrap=gpio_set_state,--wrap=gpio_get_state,--wrap=gpio_toggle,--wrap=spi_mutex_take,--wrap=spi_mutex_give,--wrap=sl_ttc2_spi_read,--wrap=crc8_get_val
 
 .PHONY: all
 .PHONY: all
