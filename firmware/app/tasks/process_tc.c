@@ -1712,7 +1712,7 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
 
         uint16_t msg_len = pkt_len - 1U - 7U - 20U;
 
-        if (process_tc_validate_hmac(pkt, pkt_len - 20U, &pkt[pkt_len - 21U], 20U, tc_key, 16U))
+        if (process_tc_validate_hmac(pkt, pkt_len - 20U, &pkt[pkt_len - 20U], 20U, tc_key, 16U))
         {
             if (msg_len > 0U)
             {
