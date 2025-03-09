@@ -26,7 +26,7 @@
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.19
+ * \version 1.0.0
  * 
  * \date 2020/07/16
  * 
@@ -93,7 +93,7 @@
 #define OBDH_PARAM_RESET_COUNTER_DEFAULT_VAL            0U
 #define OBDH_PARAM_LAST_VALID_TC_DEFAULT_VAL            0U
 #define OBDH_PARAM_HW_VERSION_DEFAULT_VAL               0U
-#define OBDH_PARAM_FW_VERSION_DEFAULT_VAL               0x00001020U
+#define OBDH_PARAM_FW_VERSION_DEFAULT_VAL               0x00010000U
 #define OBDH_PARAM_MODE_DEFAULT_VAL                     0U
 #define OBDH_PARAM_TS_LAST_MODE_CHANGE_DEFAULT_VAL      0U
 #define OBDH_PARAM_HIB_DURATION_DEFAULT_VAL             0U

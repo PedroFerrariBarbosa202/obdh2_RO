@@ -24,8 +24,9 @@
  * \brief FloripaSat packet definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.8.21
+ * \version 1.0.0
  * 
  * \date 2020/03/14
  * 

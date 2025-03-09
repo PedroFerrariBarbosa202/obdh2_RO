@@ -25,9 +25,9 @@
  *
  * \author Miguel Boing <miguelboing13@gmail.com>
  *
- * \version
+ * \version 1.0.0
  *
- * \date
+ * \date 2025/03/09
  *
  * \addtogroup crc
  * \{

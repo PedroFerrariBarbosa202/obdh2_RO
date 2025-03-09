@@ -26,7 +26,7 @@
  * \author Augusto Cezar Boldori Vassoler <augustovassoler@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.19
+ * \version 1.0.0
  *
  * \date 2023/08/28
  *

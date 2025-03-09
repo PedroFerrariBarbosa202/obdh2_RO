@@ -24,8 +24,9 @@
  * \brief Antenna deployment task definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.8.39
+ * \version 1.0.0
  * 
  * \date 2021/11/17
  * 

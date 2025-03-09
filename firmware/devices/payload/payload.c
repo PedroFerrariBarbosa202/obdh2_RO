@@ -27,7 +27,7 @@
  * \author João Cláudio Elsen Barcellos <joaoclaudiobarcellos@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.19
+ * \version 1.0.0
  * 
  * \date 2021/08/15
  * 
