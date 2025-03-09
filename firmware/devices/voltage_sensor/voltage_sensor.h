@@ -44,7 +44,7 @@
 #define VOLTAGE_SENSOR_MODULE_NAME     "Voltage Sensor"
 
 #define VOLTAGE_SENSOR_ADC_PORT         ADC_PORT_9      /**< Voltage sensor ADC port (channel). */
-#define VOLTAGE_SENSOR_DIV              2               /**< Voltage divisor factor. */
+#define VOLTAGE_SENSOR_DIV              2UL             /**< Voltage divisor factor. */
 
 /**
  * \brief Voltage sensor device initialization routine.

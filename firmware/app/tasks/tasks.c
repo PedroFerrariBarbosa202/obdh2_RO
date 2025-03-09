@@ -67,7 +67,7 @@ void create_tasks(void)
 {
     /* Startup task */
 #if defined(CONFIG_TASK_STARTUP_ENABLED) && (CONFIG_TASK_STARTUP_ENABLED == 1)
-    xTaskCreate(vTaskStartup, TASK_STARTUP_NAME, TASK_STARTUP_STACK_SIZE, NULL, TASK_STARTUP_PRIORITY, &xTaskStartupHandle);
+    (void)xTaskCreate(vTaskStartup, TASK_STARTUP_NAME, TASK_STARTUP_STACK_SIZE, NULL, TASK_STARTUP_PRIORITY, &xTaskStartupHandle);
 
     if (xTaskStartupHandle == NULL)
     {
@@ -77,7 +77,7 @@ void create_tasks(void)
 
     /* Watchdog reset task */
 #if defined(CONFIG_TASK_WATCHDOG_RESET_ENABLED) && (CONFIG_TASK_WATCHDOG_RESET_ENABLED == 1)
-    xTaskCreate(vTaskWatchdogReset, TASK_WATCHDOG_RESET_NAME, TASK_WATCHDOG_RESET_STACK_SIZE, NULL, TASK_WATCHDOG_RESET_PRIORITY, &xTaskWatchdogResetHandle);
+    (void)xTaskCreate(vTaskWatchdogReset, TASK_WATCHDOG_RESET_NAME, TASK_WATCHDOG_RESET_STACK_SIZE, NULL, TASK_WATCHDOG_RESET_PRIORITY, &xTaskWatchdogResetHandle);
 
     if (xTaskWatchdogResetHandle == NULL)
     {
@@ -87,7 +87,7 @@ void create_tasks(void)
 
     /* Heartbeat task */
 #if defined(CONFIG_TASK_HEARTBEAT_ENABLED) && (CONFIG_TASK_HEARTBEAT_ENABLED == 1)
-    xTaskCreate(vTaskHeartbeat, TASK_HEARTBEAT_NAME, TASK_HEARTBEAT_STACK_SIZE, NULL, TASK_HEARTBEAT_PRIORITY, &xTaskHeartbeatHandle);
+    (void)xTaskCreate(vTaskHeartbeat, TASK_HEARTBEAT_NAME, TASK_HEARTBEAT_STACK_SIZE, NULL, TASK_HEARTBEAT_PRIORITY, &xTaskHeartbeatHandle);
 
     if (xTaskHeartbeatHandle == NULL)
     {
@@ -96,7 +96,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_HEARTBEAT_ENABLED */
 
 #if defined(CONFIG_TASK_SYSTEM_RESET_ENABLED) && (CONFIG_TASK_SYSTEM_RESET_ENABLED == 1)
-    xTaskCreate(vTaskSystemReset, TASK_SYSTEM_RESET_NAME, TASK_SYSTEM_RESET_STACK_SIZE, NULL, TASK_SYSTEM_RESET_PRIORITY, &xTaskSystemResetHandle);
+    (void)xTaskCreate(vTaskSystemReset, TASK_SYSTEM_RESET_NAME, TASK_SYSTEM_RESET_STACK_SIZE, NULL, TASK_SYSTEM_RESET_PRIORITY, &xTaskSystemResetHandle);
 
     if (xTaskSystemResetHandle == NULL)
     {
@@ -105,7 +105,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_SYSTEM_RESET_ENABLED */
 
 #if defined(CONFIG_TASK_READ_SENSORS_ENABLED) && (CONFIG_TASK_READ_SENSORS_ENABLED == 1)
-    xTaskCreate(vTaskReadSensors, TASK_READ_SENSORS_NAME, TASK_READ_SENSORS_STACK_SIZE, NULL, TASK_READ_SENSORS_PRIORITY, &xTaskReadSensorsHandle);
+    (void)xTaskCreate(vTaskReadSensors, TASK_READ_SENSORS_NAME, TASK_READ_SENSORS_STACK_SIZE, NULL, TASK_READ_SENSORS_PRIORITY, &xTaskReadSensorsHandle);
 
     if (xTaskReadSensorsHandle == NULL)
     {
@@ -114,7 +114,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_READ_TEMP_ENABLED */
 
 #if defined(CONFIG_TASK_GENERAL_TELEMETRY_ENABLED) && (CONFIG_TASK_GENERAL_TELEMETRY_ENABLED == 1)
-    xTaskCreate(vTaskGeneralTelemetry, TASK_GENERAL_TELEMETRY_NAME, TASK_GENERAL_TELEMETRY_STACK_SIZE, NULL, TASK_GENERAL_TELEMETRY_PRIORITY, &xTaskGeneralTelemetryHandle);
+    (void)xTaskCreate(vTaskGeneralTelemetry, TASK_GENERAL_TELEMETRY_NAME, TASK_GENERAL_TELEMETRY_STACK_SIZE, NULL, TASK_GENERAL_TELEMETRY_PRIORITY, &xTaskGeneralTelemetryHandle);
 
     if (xTaskGeneralTelemetryHandle == NULL)
     {
@@ -123,7 +123,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_GENERAL_TELEMETRY_ENABLED */
 
 #if defined(CONFIG_TASK_TIME_CONTROL_ENABLED) && (CONFIG_TASK_TIME_CONTROL_ENABLED == 1)
-    xTaskCreate(vTaskTimeControl, TASK_TIME_CONTROL_NAME, TASK_TIME_CONTROL_STACK_SIZE, NULL, TASK_TIME_CONTROL_PRIORITY, &xTaskTimeControlHandle);
+    (void)xTaskCreate(vTaskTimeControl, TASK_TIME_CONTROL_NAME, TASK_TIME_CONTROL_STACK_SIZE, NULL, TASK_TIME_CONTROL_PRIORITY, &xTaskTimeControlHandle);
 
     if (xTaskTimeControlHandle == NULL)
     {
@@ -132,7 +132,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_BEACON_ENABLED */
 
 #if defined(CONFIG_TASK_READ_EDC_ENABLED) && (CONFIG_TASK_READ_EDC_ENABLED == 1)
-    xTaskCreate(vTaskReadEDC, TASK_READ_EDC_NAME, TASK_READ_EDC_STACK_SIZE, NULL, TASK_READ_EDC_PRIORITY, &xTaskReadEDCHandle);
+    (void)xTaskCreate(vTaskReadEDC, TASK_READ_EDC_NAME, TASK_READ_EDC_STACK_SIZE, NULL, TASK_READ_EDC_PRIORITY, &xTaskReadEDCHandle);
 
     if (xTaskReadEDCHandle == NULL)
     {
@@ -141,7 +141,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_READ_EDC_ENABLED */
 
 #if defined(CONFIG_TASK_READ_EPS_ENABLED) && (CONFIG_TASK_READ_EPS_ENABLED == 1)
-    xTaskCreate(vTaskReadEPS, TASK_READ_EPS_NAME, TASK_READ_EPS_STACK_SIZE, NULL, TASK_READ_EPS_PRIORITY, &xTaskReadEPSHandle);
+    (void)xTaskCreate(vTaskReadEPS, TASK_READ_EPS_NAME, TASK_READ_EPS_STACK_SIZE, NULL, TASK_READ_EPS_PRIORITY, &xTaskReadEPSHandle);
 
     if (xTaskReadEPSHandle == NULL)
     {
@@ -150,7 +150,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_READ_EPS_ENABLED */
 
 #if defined(CONFIG_TASK_READ_TTC_ENABLED) && (CONFIG_TASK_READ_TTC_ENABLED == 1)
-    xTaskCreate(vTaskReadTTC, TASK_READ_TTC_NAME, TASK_READ_TTC_STACK_SIZE, NULL, TASK_READ_TTC_PRIORITY, &xTaskReadTTCHandle);
+    (void)xTaskCreate(vTaskReadTTC, TASK_READ_TTC_NAME, TASK_READ_TTC_STACK_SIZE, NULL, TASK_READ_TTC_PRIORITY, &xTaskReadTTCHandle);
 
     if (xTaskReadTTCHandle == NULL)
     {
@@ -159,7 +159,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_READ_TTC_ENABLED */
 
 #if defined(CONFIG_TASK_READ_ANTENNA_ENABLED) && (CONFIG_TASK_READ_ANTENNA_ENABLED == 1)
-    xTaskCreate(vTaskReadAntenna, TASK_READ_ANTENNA_NAME, TASK_READ_ANTENNA_STACK_SIZE, NULL, TASK_READ_ANTENNA_PRIORITY, &xTaskReadAntennaHandle);
+    (void)xTaskCreate(vTaskReadAntenna, TASK_READ_ANTENNA_NAME, TASK_READ_ANTENNA_STACK_SIZE, NULL, TASK_READ_ANTENNA_PRIORITY, &xTaskReadAntennaHandle);
 
     if (xTaskReadAntennaHandle == NULL)
     {
@@ -168,7 +168,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_READ_ANTENNA_ENABLED */
 
 #if defined(CONFIG_TASK_DATA_LOG_ENABLED) && (CONFIG_TASK_DATA_LOG_ENABLED == 1)
-    xTaskCreate(vTaskDataLog, TASK_DATA_LOG_NAME, TASK_DATA_LOG_STACK_SIZE, NULL, TASK_DATA_LOG_PRIORITY, &xTaskDataLogHandle);
+    (void)xTaskCreate(vTaskDataLog, TASK_DATA_LOG_NAME, TASK_DATA_LOG_STACK_SIZE, NULL, TASK_DATA_LOG_PRIORITY, &xTaskDataLogHandle);
 
     if (xTaskDataLogHandle == NULL)
     {
@@ -177,7 +177,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_DATA_LOG_ENABLED */
 
 #if defined(CONFIG_TASK_PROCESS_TC_ENABLED) && (CONFIG_TASK_PROCESS_TC_ENABLED == 1)
-    xTaskCreate(vTaskProcessTC, TASK_PROCESS_TC_NAME, TASK_PROCESS_TC_STACK_SIZE, NULL, TASK_PROCESS_TC_PRIORITY, &xTaskProcessTCHandle);
+    (void)xTaskCreate(vTaskProcessTC, TASK_PROCESS_TC_NAME, TASK_PROCESS_TC_STACK_SIZE, NULL, TASK_PROCESS_TC_PRIORITY, &xTaskProcessTCHandle);
 
     if (xTaskProcessTCHandle == NULL)
     {
@@ -186,7 +186,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_PROCESS_TC_ENABLED */
 
 #if defined(CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED) && (CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED == 1)
-    xTaskCreate(vTaskAntennaDeployment, TASK_ANTENNA_DEPLOYMENT_NAME, TASK_ANTENNA_DEPLOYMENT_STACK_SIZE, NULL, TASK_ANTENNA_DEPLOYMENT_PRIORITY, &xTaskAntennaDeploymentHandle);
+    (void)xTaskCreate(vTaskAntennaDeployment, TASK_ANTENNA_DEPLOYMENT_NAME, TASK_ANTENNA_DEPLOYMENT_STACK_SIZE, NULL, TASK_ANTENNA_DEPLOYMENT_PRIORITY, &xTaskAntennaDeploymentHandle);
 
     if (xTaskAntennaDeploymentHandle == NULL)
     {
@@ -195,7 +195,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED */
 
 #if defined(CONFIG_TASK_POSITION_DETERMINATION_ENABLED) && (CONFIG_TASK_POSITION_DETERMINATION_ENABLED == 1)
-    xTaskCreate(vTaskPosDet, TASK_POS_DET_NAME, TASK_POS_DET_STACK_SIZE, NULL, TASK_POS_DET_PRIORITY, &xTaskPosDetHandle);
+    (void)xTaskCreate(vTaskPosDet, TASK_POS_DET_NAME, TASK_POS_DET_STACK_SIZE, NULL, TASK_POS_DET_PRIORITY, &xTaskPosDetHandle);
 
     if (xTaskPosDetHandle == NULL)
     {
@@ -204,7 +204,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_POSITION_DETERMINATION_ENABLED */
 
 #if defined(CONFIG_TASK_PAYLOAD_X_ENABLED) && (CONFIG_TASK_PAYLOAD_X_ENABLED == 1)
-    xTaskCreate(vTaskReadPX, TASK_READ_PX_NAME, TASK_READ_PX_STACK_SIZE, NULL, TASK_READ_PX_PRIORITY, &xTaskReadPXHandle);
+    (void)xTaskCreate(vTaskReadPX, TASK_READ_PX_NAME, TASK_READ_PX_STACK_SIZE, NULL, TASK_READ_PX_PRIORITY, &xTaskReadPXHandle);
 
     if (xTaskReadPXHandle == NULL)
     {
@@ -213,7 +213,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_PAYLOAD_X_ENABLED */
 
 #if defined(CONFIG_TASK_HOUSEKEEPING_ENABLED) && (CONFIG_TASK_HOUSEKEEPING_ENABLED == 1)
-    xTaskCreate(vTaskHousekeeping, TASK_HOUSEKEEPING_NAME, TASK_HOUSEKEEPING_STACK_SIZE, NULL, TASK_HOUSEKEEPING_PRIORITY, &xTaskHousekeepingHandle);
+    (void)xTaskCreate(vTaskHousekeeping, TASK_HOUSEKEEPING_NAME, TASK_HOUSEKEEPING_STACK_SIZE, NULL, TASK_HOUSEKEEPING_PRIORITY, &xTaskHousekeepingHandle);
 
     if (xTaskHousekeepingHandle == NULL)
     {
@@ -222,7 +222,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_HOUSEKEEPING_ENABLED */
 
 #if defined(CONFIG_TASK_HEALTH_CHECK_MEM_ENABLED) && (CONFIG_TASK_HEALTH_CHECK_MEM_ENABLED == 1)
-    xTaskCreate(vTaskHealthCheckMem, TASK_HEALTH_CHECK_MEM_NAME, TASK_HEALTH_CHECK_MEM_STACK_SIZE, NULL, TASK_HEALTH_CHECK_MEM_PRIORITY, &xTaskHealthCheckMemHandle);
+    (void)xTaskCreate(vTaskHealthCheckMem, TASK_HEALTH_CHECK_MEM_NAME, TASK_HEALTH_CHECK_MEM_STACK_SIZE, NULL, TASK_HEALTH_CHECK_MEM_PRIORITY, &xTaskHealthCheckMemHandle);
 
     if (xTaskHealthCheckMemHandle == NULL)
     {
@@ -231,7 +231,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_HEALTH_CHECK_MEM_ENABLED */
 
 #if defined(CONFIG_TASK_MISSION_MANAGER_ENABLED) && (CONFIG_TASK_MISSION_MANAGER_ENABLED == 1)
-    xTaskCreate(vTaskMissionManager, TASK_MISSION_MANAGER_NAME, TASK_MISSION_MANAGER_STACK_SIZE, NULL, TASK_MISSION_MANAGER_PRIORITY, &xTaskMissionManagerHandle);
+    (void)xTaskCreate(vTaskMissionManager, TASK_MISSION_MANAGER_NAME, TASK_MISSION_MANAGER_STACK_SIZE, NULL, TASK_MISSION_MANAGER_PRIORITY, &xTaskMissionManagerHandle);
 
     if (xTaskMissionManagerHandle == NULL)
     {
@@ -240,7 +240,7 @@ void create_tasks(void)
 #endif /* CONFIG_TASK_MISSION_MANAGER_ENABLED */
 
 #if defined(CONFIG_TASK_HEALTH_CHECK_MODE_ENABLED) && (CONFIG_TASK_HEALTH_CHECK_MODE_ENABLED == 1)
-    xTaskCreate(vTaskHealthCheckMode, TASK_HEALTH_CHECK_MODE_NAME, TASK_HEALTH_CHECK_MODE_STACK_SIZE, NULL, TASK_HEALTH_CHECK_MODE_PRIORITY, &xTaskHealthCheckModeHandle);
+    (void)xTaskCreate(vTaskHealthCheckMode, TASK_HEALTH_CHECK_MODE_NAME, TASK_HEALTH_CHECK_MODE_STACK_SIZE, NULL, TASK_HEALTH_CHECK_MODE_PRIORITY, &xTaskHealthCheckModeHandle);
 
     if (xTaskHealthCheckModeHandle == NULL)
     {

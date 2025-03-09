@@ -40,7 +40,7 @@
 
 void sl_antenna_delay_s(uint8_t s)
 {
-    vTaskDelay(pdMS_TO_TICKS(1000U*s));
+    vTaskDelay(pdMS_TO_TICKS(1000U*(uint32_t)s));
 }
 
 void sl_antenna_delay_ms(uint16_t ms)

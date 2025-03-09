@@ -153,7 +153,7 @@ int mem_mng_save_obdh_data_to_fram(obdh_telemetry_t *tel)
 
     uint8_t buf[sizeof(obdh_telemetry_t) + 1U];
 
-    (void)memcpy(buf, tel, sizeof(obdh_telemetry_t));
+    (void)memcpy(buf, (void*)tel, sizeof(obdh_telemetry_t));
 
     buf[sizeof(obdh_telemetry_t)] = crc8(buf, sizeof(obdh_telemetry_t));
 
@@ -175,7 +175,7 @@ int mem_mng_load_obdh_data_from_fram(obdh_telemetry_t *tel)
     {
         if (crc_is_valid(sys_par, sizeof(obdh_telemetry_t), sys_par[sizeof(obdh_telemetry_t)]))
         {
-            (void)memcpy(tel, sys_par, sizeof(obdh_telemetry_t));
+            (void)memcpy((void*)tel, sys_par, sizeof(obdh_telemetry_t));
             err = 0;
         }
         else
@@ -218,7 +218,7 @@ void mem_mng_save_obdh_data_bak(obdh_telemetry_t *tel)
 
     flash_erase(base_addr);
 
-    (void)memcpy(buf, tel, BAK_DATA_SIZE);
+    (void)memcpy(buf, (void*)tel, BAK_DATA_SIZE);
 
     buf[BAK_DATA_SIZE] = crc8(buf, BAK_DATA_SIZE);
     buf[BAK_DATA_SIZE + 1U] = BAK_INIT_VAL;
@@ -245,7 +245,7 @@ int mem_mng_load_obdh_data_bak(obdh_telemetry_t *tel)
 
     if ((buf[BAK_DATA_SIZE] == crc8(buf, BAK_DATA_SIZE)) && (buf[BAK_DATA_SIZE + 1U] == BAK_INIT_VAL))
     {
-        (void)memcpy(tel, buf, BAK_DATA_SIZE);
+        (void)memcpy((void*)tel, buf, BAK_DATA_SIZE);
         err = 0;
     }
 

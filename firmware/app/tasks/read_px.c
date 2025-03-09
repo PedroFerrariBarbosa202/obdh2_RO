@@ -50,15 +50,17 @@
 
 xTaskHandle xTaskReadPXHandle;
 
-void vTaskReadPX(void)
+void vTaskReadPX(void *p)
 {
+    (void)p;
+
     payload_telemetry_t *const px = &sat_data_buf.payload_x;
 
     pl_px_buf_t px_buf = {0};
     px_buf.length = PX_PONG_BUF_SIZE;
 
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_PX_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_PX_INIT_TIMEOUT_MS));
 
     vTaskDelay(pdMS_TO_TICKS(TASK_READ_PX_INITIAL_DELAY_MS));
 

@@ -43,7 +43,7 @@
 #include "startup.h"
 
 #define TIME_CONTROL_MEDIA              MEDIA_FRAM
-#define TIME_CONTROL_SAVE_PERIOD_SEC    60
+#define TIME_CONTROL_SAVE_PERIOD_SEC    60UL
 #define TIME_CONTROL_MEM_ID             0x12U
 #define TIME_CONTROL_CRC8_INITIAL_VAL   0x00U       /* CRC8-CCITT initial value. */
 #define TIME_CONTROL_CRC8_POLYNOMIAL    0x07U       /* CRC8-CCITT polynomial. */
@@ -79,10 +79,12 @@ static int time_control_save_sys_time(sys_time_t tm);
  */
 static uint8_t time_control_crc8(uint8_t *data, uint8_t len);
 
-void vTaskTimeControl(void)
+void vTaskTimeControl(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_TIME_CONTROL_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_TIME_CONTROL_INIT_TIMEOUT_MS));
 
     /* Load the last saved system time */
     sys_time_t last_sys_time = 0;
@@ -113,7 +115,7 @@ void vTaskTimeControl(void)
         /* Read the current system time */
         sys_time_t sys_tm = system_get_time();
 
-        if ((sys_tm % TIME_CONTROL_SAVE_PERIOD_SEC) == 0)
+        if ((sys_tm % TIME_CONTROL_SAVE_PERIOD_SEC) == 0UL)
         {
             /* Save the current system time */
             if (time_control_save_sys_time(sys_tm) != 0)

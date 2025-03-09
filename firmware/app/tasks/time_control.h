@@ -56,7 +56,7 @@ extern xTaskHandle xTaskTimeControlHandle;
  *
  * \return None.
  */
-void vTaskTimeControl(void);
+void vTaskTimeControl(void *p);
 
 #endif /* TIME_CONTROL_H_ */
 

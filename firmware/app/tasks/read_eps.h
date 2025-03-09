@@ -56,7 +56,7 @@ extern xTaskHandle xTaskReadEPSHandle;
  *
  * \return None.
  */
-void vTaskReadEPS(void);
+void vTaskReadEPS(void *p);
 
 #endif /* READ_EPS_H_ */
 

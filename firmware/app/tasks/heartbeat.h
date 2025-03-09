@@ -56,7 +56,7 @@ extern xTaskHandle xTaskHeartbeatHandle;
  *
  * \return None.
  */
-void vTaskHeartbeat(void);
+void vTaskHeartbeat(void* p);
 
 #endif /* HEARTBEAT_H_ */
 

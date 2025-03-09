@@ -63,7 +63,7 @@ int sl_ttc2_spi_read(sl_ttc2_config_t *config, uint8_t *data, uint16_t len)
     wbuf[0] = 0x7EU;
 
     /* Adding CRC */ 
-    wbuf[len - 1] = crc8_get_val(wbuf, len - 1);
+    wbuf[len - 1U] = crc8_get_val(wbuf, len - 1U);
     
     return spi_transfer(config->port, config->cs_pin, wbuf, data, len);
 }

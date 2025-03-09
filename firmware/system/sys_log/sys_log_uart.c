@@ -40,7 +40,7 @@
 
 int sys_log_uart_init(void)
 {
-    uart_config_t config;
+    uart_config_t config = {0};
 
     config.baudrate     = 115200;
     config.data_bits    = 8;
@@ -52,7 +52,7 @@ int sys_log_uart_init(void)
 
 void sys_log_uart_write_byte(uint8_t byte)
 {
-    uart_write(UART_PORT_2, &byte, 1);
+    (void)uart_write(UART_PORT_2, &byte, 1);
 }
 
 /** \} End of sys_log_uart group */

@@ -41,8 +41,10 @@
 
 xTaskHandle xTaskSystemResetHandle;
 
-void vTaskSystemReset(void)
+void vTaskSystemReset(void *p)
 {
+    (void)p;
+
     TickType_t reset_period_ticks = pdMS_TO_TICKS_64((TickType_t) TASK_SYSTEM_RESET_PERIOD_MS);
 
     while(1)

@@ -69,11 +69,13 @@ QueueHandle_t event_queue;
 
 TaskHandle_t xTaskMissionManagerHandle;
 
-void vTaskMissionManager(void)
+void vTaskMissionManager(void *p)
 {
+    (void)p;
+
     event_t ev;
 
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_MISSION_MANAGER_STARTUP_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_MISSION_MANAGER_STARTUP_TIMEOUT_MS));
 
     if (satellite_persist_state(&sat_data_buf) != 0) 
     {
@@ -127,7 +129,7 @@ static int8_t satellite_persist_state(sat_data_t *sat)
     uint8_t main_pl = sat->obdh.data.main_payload_state;
     uint8_t sec_pl = sat->obdh.data.sec_payload_state;
 
-    if (main_pl != PAYLOAD_NONE) 
+    if (main_pl != (uint8_t)PAYLOAD_NONE) 
     {
         args[0] = main_pl;
 
@@ -144,7 +146,7 @@ static int8_t satellite_persist_state(sat_data_t *sat)
         }
     } 
 
-    if (sec_pl != PAYLOAD_NONE) 
+    if (sec_pl != (uint8_t)PAYLOAD_NONE) 
     {
         args[0] = sec_pl;
 
@@ -222,7 +224,7 @@ static void handle_event(const event_t *ev)
                         (void)payload_enable(PAYLOAD_X);
 
                         /* Send notifcation to read_px task to initialize experiment */
-                        xTaskNotify(xTaskReadPXHandle, px_active_time_ms, eSetValueWithOverwrite);
+                        (void)xTaskNotify(xTaskReadPXHandle, px_active_time_ms, eSetValueWithOverwrite);
 
                         if (!in_hibernation)
                         {
@@ -388,13 +390,13 @@ static int8_t handle_mode_change_rq(const uint8_t *args)
         }
         case OBDH_MODE_STAND_BY:
         {
-            if (sat_data_buf.obdh.data.main_payload_state != PAYLOAD_NONE)
+            if (sat_data_buf.obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
             {
                 (void)payload_disable((payload_t)sat_data_buf.obdh.data.main_payload_state);
                 sat_data_buf.obdh.data.main_payload_state = PAYLOAD_NONE;
             }
 
-            if (sat_data_buf.obdh.data.sec_payload_state != PAYLOAD_NONE)
+            if (sat_data_buf.obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
             {
                 (void)payload_disable((payload_t)sat_data_buf.obdh.data.sec_payload_state);
                 sat_data_buf.obdh.data.sec_payload_state = PAYLOAD_NONE;
@@ -411,7 +413,7 @@ static int8_t handle_mode_change_rq(const uint8_t *args)
         {
             in_hibernation = false;
 
-            if (in_brazil || (sat_data_buf.obdh.data.main_payload_state != PAYLOAD_NONE) || (sat_data_buf.obdh.data.sec_payload_state != PAYLOAD_NONE))
+            if (in_brazil || (sat_data_buf.obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE) || (sat_data_buf.obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE))
             {
                 satellite_change_mode(OBDH_MODE_NORMAL);
             }
@@ -448,7 +450,7 @@ static int8_t activate_payload_rq(const uint8_t *args)
     {
         case PL_ID_EDC_1: 
         {
-            if (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_1)
+            if (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1)
             {
                 (void)payload_disable(PAYLOAD_EDC_1);
             }
@@ -468,7 +470,7 @@ static int8_t activate_payload_rq(const uint8_t *args)
         }
         case PL_ID_EDC_2: 
         {
-            if (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_0)
+            if (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0)
             {
                 (void)payload_disable(PAYLOAD_EDC_0);
             }
@@ -497,7 +499,7 @@ static int8_t activate_payload_rq(const uint8_t *args)
                     (void)payload_enable(PAYLOAD_X);
 
                     /* Send notifcation to read_px task to initialize experiment */
-                    xTaskNotify(xTaskReadPXHandle, px_active_time_ms, eSetValueWithOverwrite);
+                    (void)xTaskNotify(xTaskReadPXHandle, px_active_time_ms, eSetValueWithOverwrite);
 
                     if (!in_hibernation)
                     {
@@ -533,7 +535,7 @@ static int8_t deactivate_payload_rq(const uint8_t *args)
 
                 (void)payload_disable(PAYLOAD_EDC_0);
 
-                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == PAYLOAD_NONE))
+                if ((sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE))
                 {
                     satellite_change_mode(OBDH_MODE_STAND_BY);
                 }
@@ -565,7 +567,7 @@ static int8_t deactivate_payload_rq(const uint8_t *args)
                     sat_data_buf.obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE; 
 
                     /* Sends notification to read_px task to stop experiment */
-                    xTaskNotify(xTaskReadPXHandle, PAYLOAD_X_CANCEL_EXPERIMENT_FLAG, eSetValueWithOverwrite);
+                    (void)xTaskNotify(xTaskReadPXHandle, PAYLOAD_X_CANCEL_EXPERIMENT_FLAG, eSetValueWithOverwrite);
 
                     (void)payload_disable(PAYLOAD_X);
 

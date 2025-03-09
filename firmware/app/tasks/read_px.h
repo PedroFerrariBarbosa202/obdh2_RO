@@ -73,6 +73,6 @@ extern xTaskHandle xTaskReadPXHandle;
  *
  * \return None.
  */
-void vTaskReadPX(void);
+void vTaskReadPX(void *p);
 
 #endif /* READ_PX_H_ */

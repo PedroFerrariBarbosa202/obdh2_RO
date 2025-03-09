@@ -57,7 +57,7 @@ extern xTaskHandle xTaskHousekeepingHandle;
  *
  * \return None.
  */
-void vTaskHousekeeping(void);
+void vTaskHousekeeping(void* p);
 
 #endif /* HOUSEKEEPING_H_ */
 

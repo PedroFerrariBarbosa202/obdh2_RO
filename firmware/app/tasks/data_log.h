@@ -52,7 +52,7 @@
  */
 typedef enum
 {
-    DATA_LOG_HK_DATA_ID=1,
+    DATA_LOG_HK_DATA_ID = 1,
 } data_log_id_t;
 
 /**
@@ -65,7 +65,7 @@ extern xTaskHandle xTaskDataLogHandle;
  *
  * \return None.
  */
-void vTaskDataLog(void);
+void vTaskDataLog(void* p);
 
 #endif /* DATA_LOG_H_ */
 

@@ -54,7 +54,7 @@ extern xTaskHandle xTaskAntennaDeploymentHandle;
  *
  * \return None.
  */
-void vTaskAntennaDeployment(void);
+void vTaskAntennaDeployment(void* p);
 
 #endif /* ANTENNA_DEPLOYMENT_H_ */
 

@@ -92,7 +92,7 @@ int update_tle_line(obdh_telemetry_t *obdh, const uint8_t *bin_tle);
  *
  * \return None.
  */
-void vTaskPosDet(void);
+void vTaskPosDet(void* p);
 
 #endif /* POS_DET_H_ */
 

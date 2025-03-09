@@ -46,7 +46,7 @@
 
 #include "payload.h"
 
-#define PAYLOAD_UNIX_TO_J2000_EPOCH(x)      ((x) - 946684800)   /* Unix to J2000 epoch conversion */
+#define PAYLOAD_UNIX_TO_J2000_EPOCH(x)      ((x) - 946684800UL)   /* Unix to J2000 epoch conversion */
 
 static edc_config_t edc_0_conf;
 static edc_config_t edc_1_conf;
@@ -394,12 +394,12 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd)
             }
 
             break;
+        }
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to write command!");
             sys_log_new_line();
 
             break;
-        }
     }
 
     return err;
@@ -806,6 +806,7 @@ int payload_set_clock(const payload_t pl, const uint32_t time)
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "PX: set_clock() routine not implemented yet!");
             sys_log_new_line();
             err = -1;
+            break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to set clock!");
             sys_log_new_line();

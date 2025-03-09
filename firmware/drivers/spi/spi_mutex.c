@@ -87,7 +87,7 @@ int spi_mutex_give(void)
 
     if (spi_port0_mutex != NULL)
     {
-        xSemaphoreGiveRecursive(spi_port0_mutex);
+        (void)xSemaphoreGiveRecursive(spi_port0_mutex);
 
         err = 0;
     }

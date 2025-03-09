@@ -59,7 +59,7 @@ extern xTaskHandle xTaskSystemResetHandle;
  *
  * \return None.
  */
-void vTaskSystemReset(void);
+void vTaskSystemReset(void *p);
 
 #endif /* SYSTEM_RESET_H_ */
 

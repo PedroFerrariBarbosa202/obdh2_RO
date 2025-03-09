@@ -48,7 +48,7 @@
 #include <devices/payload/payload.h>
 #include <drivers/edc/edc.h>
 #include <utils/mem_mng.h>
-#include <hmac/sha.h>
+#include <hmac/sha.h> // cppcheck-suppress misra-c2012-19.2
 
 #include <structs/satellite.h>
 
@@ -280,10 +280,12 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len);
  */
 static bool process_tc_validate_hmac(uint8_t *msg, uint16_t msg_len, uint8_t *msg_hash, uint16_t msg_hash_len, uint8_t *key, uint16_t key_len);
 
-void vTaskProcessTC(void)
+void vTaskProcessTC(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_INIT_TIMEOUT_MS));
 
     /* Delay before the first cycle */
     vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_INITIAL_DELAY_MS));
@@ -445,7 +447,7 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
         fsat_pkt_add_id(&pong_pl, PKT_ID_DOWNLINK_PING_ANS);
 
         /* Source callsign */
-        fsat_pkt_add_callsign(&pong_pl, CONFIG_SATELLITE_CALLSIGN);
+        (void)fsat_pkt_add_callsign(&pong_pl, CONFIG_SATELLITE_CALLSIGN);
 
         (void)memcpy(&pong_pl.payload[0], &pkt[1], 7);
 
@@ -480,9 +482,9 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
         fsat_pkt_add_id(&data_req_ans_pkt, PKT_ID_DOWNLINK_DATA_REQUEST_ANS);
 
         /* Source callsign */
-        fsat_pkt_add_callsign(&data_req_ans_pkt, CONFIG_SATELLITE_CALLSIGN);
+        (void)fsat_pkt_add_callsign(&data_req_ans_pkt, CONFIG_SATELLITE_CALLSIGN);
 
-        uint8_t tc_key[16] = CONFIG_TC_KEY_DATA_REQUEST;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_DATA_REQUEST; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 4U + 4U, &pkt[17], 20U, tc_key, sizeof(CONFIG_TC_KEY_DATA_REQUEST)-1U))
         {
@@ -832,7 +834,7 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
         fsat_pkt_add_id(&broadcast_pl, PKT_ID_DOWNLINK_MESSAGE_BROADCAST);
 
         /* Source callsign */
-        fsat_pkt_add_callsign(&broadcast_pl, CONFIG_SATELLITE_CALLSIGN);
+        (void)fsat_pkt_add_callsign(&broadcast_pl, CONFIG_SATELLITE_CALLSIGN);
 
         uint16_t msg_len = pkt_len - 7U - 7U - 1U;
 
@@ -860,7 +862,7 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= 30U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ENTER_HIBERNATION;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_ENTER_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 2U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_ENTER_HIBERNATION)-1U))
         {
@@ -892,7 +894,7 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= 28U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_LEAVE_HIBERNATION;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_LEAVE_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_LEAVE_HIBERNATION)-1U))
         {
@@ -926,7 +928,7 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
 
     if (pkt_len >= 29U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_MODULE;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_MODULE)-1U))
         {
@@ -1008,7 +1010,7 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
 
     if (pkt_len >= 29U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_MODULE;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_MODULE)-1U))
         {
@@ -1097,7 +1099,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 1 payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
                 {
@@ -1121,7 +1123,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 2 payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
                 {
@@ -1145,7 +1147,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the Payload-X payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
                 {
@@ -1200,7 +1202,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 1 payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
                 {
@@ -1224,7 +1226,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 2 payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
                 {
@@ -1248,7 +1250,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the Payload-X payload...");
                 sys_log_new_line();
 
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X;
+                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
 
                 if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
                 {
@@ -1295,7 +1297,7 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
     
     if (pkt_len >= 29U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ERASE_MEMORY;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_ERASE_MEMORY; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 1U + 7U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ERASE_MEMORY)-1U))
         {
@@ -1356,7 +1358,7 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= 28U)
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_FORCE_RESET;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_FORCE_RESET; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_FORCE_RESET)-1U))
         {
@@ -1377,7 +1379,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= (1U + 7U + 1U + 12U + 20U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PAYLOAD_DATA;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PAYLOAD_DATA; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 12U, &pkt[21], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_PAYLOAD_DATA) - 1U))
         {
@@ -1401,7 +1403,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[9]; /* Payload Arg */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_PAYLOAD_DATA);
-                        fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
                         if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
@@ -1432,7 +1434,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[9]; /* Payload Arg */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_PAYLOAD_DATA);
-                        fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
                         if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
@@ -1467,7 +1469,7 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
 
     if (pkt_len >= (1U + 7U + 1U + 1U + 4U + 20U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_SET_PARAMETER;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_SET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U + 4U, &pkt[14], 20U, tc_key, sizeof(CONFIG_TC_KEY_SET_PARAMETER)-1U))
         {
@@ -1578,7 +1580,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= (1U + 7U + 1U + 1U + 20U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PARAMETER;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_PARAMETER)-1U))
         {
@@ -1639,7 +1641,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
                 fsat_pkt_add_id(&param_pl, PKT_ID_DOWNLINK_PARAM_VALUE);
 
                 /* Source callsign */
-                fsat_pkt_add_callsign(&param_pl, CONFIG_SATELLITE_CALLSIGN);
+                (void)fsat_pkt_add_callsign(&param_pl, CONFIG_SATELLITE_CALLSIGN);
 
                 (void)memcpy(&param_pl.payload[0], &pkt[1], 7);
 
@@ -1684,7 +1686,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= (1U + 7U + 50U + 20U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_UPDATE_TLE;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_UPDATE_TLE; // cppcheck-suppress misra-c2012-7.4
 
         if (process_tc_validate_hmac(pkt, 1U + 7U + 50U, &pkt[58], 20U, tc_key, sizeof(CONFIG_TC_KEY_UPDATE_TLE)-1U))
         {
@@ -1708,7 +1710,7 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
 {
     if ((pkt_len >= (1U + 7U + 20U)) && (pkt_len <= 73U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_TRANSMIT_PACKET;
+        uint8_t tc_key[16] = CONFIG_TC_KEY_TRANSMIT_PACKET; // cppcheck-suppress misra-c2012-7.4
 
         uint16_t msg_len = pkt_len - 1U - 7U - 20U;
 
@@ -1721,7 +1723,7 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
                 uint16_t raw_pkt_len;
 
                 fsat_pkt_add_id(&pkt_broacast, PKT_ID_DOWNLINK_PACKET_BROADCAST);
-                fsat_pkt_add_callsign(&pkt_broacast, CONFIG_SATELLITE_CALLSIGN);
+                (void)fsat_pkt_add_callsign(&pkt_broacast, CONFIG_SATELLITE_CALLSIGN);
 
                 (void)memcpy(pkt_broacast.payload, &pkt[1U + 7U], msg_len);
                 pkt_broacast.length = msg_len;
@@ -1776,7 +1778,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 	{
 		case DATA_ID_OBDH:
 		{
-			obdh_telemetry_t *tel = (obdh_telemetry_t *)data;
+			obdh_telemetry_t *tel = (obdh_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 			sys_time_t mode_duration = tel->timestamp - tel->data.ts_last_mode_change;
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
@@ -1878,7 +1880,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_EPS:
 		{
-			eps_telemetry_t *tel = (eps_telemetry_t *)data;
+			eps_telemetry_t *tel = (eps_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -1972,7 +1974,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_TTC_0:
 		{
-			ttc_telemetry_t *tel = (ttc_telemetry_t *)data;
+			ttc_telemetry_t *tel = (ttc_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2022,7 +2024,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_TTC_1:
 		{
-			ttc_telemetry_t *tel = (ttc_telemetry_t *)data;
+			ttc_telemetry_t *tel = (ttc_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2072,7 +2074,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_ANT:
 		{
-			antenna_telemetry_t *tel = (antenna_telemetry_t *)data;
+			antenna_telemetry_t *tel = (antenna_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2105,7 +2107,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_SBCD_PKTS:
 		{
-			edc_ptt_t *tel = (edc_ptt_t *)data;
+			edc_ptt_t *tel = (edc_ptt_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->time_tag >> 24U) & 0xFFU;
 			pl[1] = (tel->time_tag >> 16U) & 0xFFU;
@@ -2130,13 +2132,15 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_PAYLOAD_INFO:
 		{
-			payload_telemetry_t *tel = (payload_telemetry_t *)data;
-			edc_hk_t *hk = (edc_hk_t*)&tel->data[0];
+			payload_telemetry_t *tel = (payload_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
+
+            /* Cast is safe since the buffer is internally copied from a edc_ptt_t */
+			edc_hk_t *hk = (edc_hk_t*)&tel->data[0]; // cppcheck-suppress misra-c2012-11.3
 
             /* The state data is stored right after the housekeeping data 
              * on payload_telemetry_t's data field. The offset of 26 is 
              * precisely the housekeeping data length*/
-			edc_state_t *st = (edc_state_t*)&tel->data[26];
+			edc_state_t *st = (edc_state_t*)&tel->data[26]; // cppcheck-suppress misra-c2012-11.3
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -2158,8 +2162,8 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[17] = hk->voltage_supply & 0xFFU;
 			pl[18] = (uint8_t) hk->temp;
 			pl[19] = hk->pll_sync_bit;
-			pl[20] = (hk->adc_rms >> 8U) & 0xFFU;
-			pl[21] = hk->adc_rms & 0xFFU;
+			pl[20] = ((uint16_t)hk->adc_rms >> 8U) & 0xFFU;
+			pl[21] = hk->adc_rms & 0xFF;
 			pl[22] = (hk->num_rx_ptt >> 24U) & 0xFFU;
 			pl[23] = (hk->num_rx_ptt >> 16U) & 0xFFU;
 			pl[24] = (hk->num_rx_ptt >> 8U) & 0xFFU;
@@ -2200,7 +2204,7 @@ static int8_t send_tc_feedback(uint8_t *pkt)
     fsat_pkt_add_id(&feedback, PKT_ID_DOWNLINK_TC_FEEDBACK);
 
     /* Source callsign */
-    fsat_pkt_add_callsign(&feedback, CONFIG_SATELLITE_CALLSIGN);
+    (void)fsat_pkt_add_callsign(&feedback, CONFIG_SATELLITE_CALLSIGN);
 
     /* Requester callsign */
     (void)memcpy(feedback.payload, &pkt[1], 7U);

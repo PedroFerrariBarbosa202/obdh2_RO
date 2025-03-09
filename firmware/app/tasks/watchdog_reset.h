@@ -56,7 +56,7 @@ extern xTaskHandle xTaskWatchdogResetHandle;
  *
  * \return None.
  */
-void vTaskWatchdogReset(void);
+void vTaskWatchdogReset(void *p);
 
 #endif /* WATCHDOG_RESET_H_ */
 

@@ -58,7 +58,7 @@ extern xTaskHandle xTaskReadTTCHandle;
  *
  * \return None.
  */
-void vTaskReadTTC(void);
+void vTaskReadTTC(void *p);
 
 #endif /* READ_TTC_H_ */
 

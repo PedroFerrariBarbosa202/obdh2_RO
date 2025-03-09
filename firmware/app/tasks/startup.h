@@ -65,7 +65,7 @@ extern EventGroupHandle_t task_startup_status;
  *
  * \return None.
  */
-void vTaskStartup(void);
+void vTaskStartup(void *p);
 
 #endif /* STARTUP_H_ */
 

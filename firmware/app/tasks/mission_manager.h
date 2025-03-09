@@ -99,7 +99,7 @@ extern QueueHandle_t event_queue;
  *
  * \return None.
  */
-void vTaskMissionManager(void);
+void vTaskMissionManager(void* p);
 
 /**
  * \brief Sends a event notification to the Mission Manager Task.

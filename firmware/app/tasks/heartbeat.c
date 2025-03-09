@@ -40,16 +40,18 @@
 
 xTaskHandle xTaskHeartbeatHandle;
 
-void vTaskHeartbeat(void)
+void vTaskHeartbeat(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HEARTBEAT_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HEARTBEAT_INIT_TIMEOUT_MS));
 
     TickType_t last_cycle = xTaskGetTickCount();
 
     while(1)
     {
-        led_toggle(LED_SYSTEM);
+        (void)led_toggle(LED_SYSTEM);
 
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_HEARTBEAT_PERIOD_MS));
     }

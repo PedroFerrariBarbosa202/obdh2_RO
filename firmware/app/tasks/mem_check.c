@@ -65,10 +65,12 @@ static void int_flash_sector_check(const char *msg, const uint8_t *data, uint32_
 static bool mem_check_pages(media_t media, const uint8_t *page_data, uint32_t first_page, uint32_t last_page, uint32_t *pages_left);
 static int32_t mem_full_clean(void);
 
-void vTaskHealthCheckMem(void) 
+void vTaskHealthCheckMem(void *p) 
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HEALTH_CHECK_MEM_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HEALTH_CHECK_MEM_INIT_TIMEOUT_MS));
 
     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MEM_NAME,  "Preparing Health Check on memories...");
     sys_log_new_line();
@@ -158,7 +160,7 @@ void vTaskHealthCheckMem(void)
             sys_log_new_line();
         }
 
-        bool param_test_result = (memcmp(&test_params, &loaded_params, sizeof(obdh_telemetry_t)) == 0);
+        bool param_test_result = (memcmp(&test_params, &loaded_params, sizeof(obdh_telemetry_t)) == 0); // cppcheck-suppress misra-c2012-21.16
 
         sys_log_print_test_result(param_test_result, "System param loading from FRAM Test");
         sys_log_new_line();
@@ -178,7 +180,7 @@ void vTaskHealthCheckMem(void)
         sys_log_new_line();
 
         /* Notify Next Health Check */
-        xTaskNotify(xTaskHealthCheckModeHandle, 0U, eNoAction);
+        (void)xTaskNotify(xTaskHealthCheckModeHandle, 0U, eNoAction);
 
         vTaskSuspend(NULL);
     }
@@ -362,18 +364,18 @@ static int32_t mem_full_clean(void)
 
 static void prepare_obdh_s(obdh_telemetry_t *tel) 
 {
-    tel->timestamp                          = 0xaaaaaaaa;
+    tel->timestamp                          = 0xaaaaaaaaU;
     tel->data.temperature                   = 300U;
     tel->data.current                       = 40U;
     tel->data.voltage                       = 3300U;
-    tel->data.last_reset_cause              = 0x01;
-    tel->data.reset_counter                 = 0xa0;
-    tel->data.last_valid_tc                 = 0x10;
-    tel->data.hw_version                    = 0x02;
-    tel->data.fw_version                    = 0x1018;
-    tel->data.mode                          = 0x01;
-    tel->data.ts_last_mode_change           = 0xbbbbbbbb;
-    tel->data.hib_duration                  = 0xcccccccc;
+    tel->data.last_reset_cause              = 0x01U;
+    tel->data.reset_counter                 = 0xa0U;
+    tel->data.last_valid_tc                 = 0x10U;
+    tel->data.hw_version                    = 0x02U;
+    tel->data.fw_version                    = 0x1018U;
+    tel->data.mode                          = 0x01U;
+    tel->data.ts_last_mode_change           = 0xbbbbbbbbU;
+    tel->data.hib_duration                  = 0xccccccccU;
     tel->data.initial_hib_executed          = true;
     tel->data.initial_hib_time_count        = 40U;
     tel->data.ant_deployment_executed       = true;

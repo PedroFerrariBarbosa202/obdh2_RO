@@ -45,8 +45,9 @@
 
 xTaskHandle xTaskAntennaDeploymentHandle;
 
-void vTaskAntennaDeployment(void)
+void vTaskAntennaDeployment(void *p)
 {
+    (void)p;
     /* Initial hibernation */
     if (!sat_data_buf.obdh.data.initial_hib_executed)
     {
@@ -73,7 +74,7 @@ void vTaskAntennaDeployment(void)
     if (sat_data_buf.obdh.data.ant_deployment_counter < CONFIG_ANTENNA_DEPLOYMENT_ATTEMPTS)
     {
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_ANTENNA_DEPLOYMENT_NAME, "Antenna deployment attempt number ");
-        sys_log_print_uint(sat_data_buf.obdh.data.ant_deployment_counter + 1);
+        sys_log_print_uint(sat_data_buf.obdh.data.ant_deployment_counter + 1U);
         sys_log_print_msg(" of ");
         sys_log_print_uint(CONFIG_ANTENNA_DEPLOYMENT_ATTEMPTS);
         sys_log_print_msg("...");
@@ -92,7 +93,7 @@ void vTaskAntennaDeployment(void)
     else
     {
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_ANTENNA_DEPLOYMENT_NAME, "All antenna deployments attempts executed! (");
-        sys_log_print_uint(sat_data_buf.obdh.data.ant_deployment_counter + 1);
+        sys_log_print_uint(sat_data_buf.obdh.data.ant_deployment_counter + 1U);
         sys_log_print_msg(")");
         sys_log_new_line();
     }

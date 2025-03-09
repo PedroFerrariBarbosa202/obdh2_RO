@@ -44,10 +44,12 @@
 
 xTaskHandle xTaskReadTTCHandle;
 
-void vTaskReadTTC(void)
+void vTaskReadTTC(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_TTC_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_TTC_INIT_TIMEOUT_MS));
 
     /* Delay before the first cycle */
     vTaskDelay(pdMS_TO_TICKS(TASK_READ_TTC_INITIAL_DELAY_MS));

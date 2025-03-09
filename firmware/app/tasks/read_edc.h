@@ -71,7 +71,7 @@ extern xTaskHandle xTaskReadEDCHandle;
  *
  * \return None.
  */
-void vTaskReadEDC(void);
+void vTaskReadEDC(void *p);
 
 #endif /* READ_EDC_H_ */
 

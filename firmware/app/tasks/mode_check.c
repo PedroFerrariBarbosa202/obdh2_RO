@@ -58,10 +58,12 @@ static void vTimeControlMockup(TimerHandle_t timer)
     system_increment_time();
 }
 
-void vTaskHealthCheckMode(void)
+void vTaskHealthCheckMode(void *p)
 {
+    (void)p;
+
     TimerHandle_t sys_timer = xTimerCreate("System Timer", pdMS_TO_TICKS(1000U), pdTRUE, NULL, vTimeControlMockup);
-    xTimerStart(sys_timer, pdMS_TO_TICKS(10U));
+    (void)xTimerStart(sys_timer, pdMS_TO_TICKS(10U));
 
     while(1)
     {
@@ -82,7 +84,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1));
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1));
 
             sys_log_print_test_result(test_result, "In Brazil Notify Test");
             sys_log_new_line();
@@ -97,7 +99,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == PAYLOAD_X) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE); 
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_X) && (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE); 
 
             sys_log_print_test_result(test_result, "Out of Brazil Notify Test");
             sys_log_new_line();
@@ -207,7 +209,7 @@ void vTaskHealthCheckMode(void)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == PAYLOAD_EDC_1));
+            test_result = (sat_data_buf.obdh.data.mode == OBDH_MODE_NORMAL) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_0) || (sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_EDC_1));
 
             sys_log_print_test_result(test_result, "TC change mode to NORMAL Test");
             sys_log_new_line();

@@ -111,7 +111,7 @@ int sl_eps2_write_reg(sl_eps2_config_t config, uint8_t adr, uint32_t val)
     buf[4] = (val >> 0)  & 0xFFU;
     buf[5] = sl_eps2_crc8(buf, 5);
 
-    if (sl_eps2_i2c_write(config, buf, 6U) != TCA4311A_READY)
+    if (sl_eps2_i2c_write(config, buf, 6U) != (int)TCA4311A_READY)
     {
         err = -1;
     }
@@ -129,14 +129,14 @@ int sl_eps2_read_reg(sl_eps2_config_t config, uint8_t adr, uint32_t *val)
     buf[0] = adr;
     buf[1] = sl_eps2_crc8(buf, 1);
 
-    if (sl_eps2_i2c_write(config, buf, 2U) != TCA4311A_READY)
+    if (sl_eps2_i2c_write(config, buf, 2U) != (int)TCA4311A_READY)
     {
         err = -1;
     }
 
     sl_eps2_delay_ms(50);
 
-    if (sl_eps2_i2c_read(config, buf, 6U) != TCA4311A_READY)
+    if (sl_eps2_i2c_read(config, buf, 6U) != (int)TCA4311A_READY)
     {
         err = -1;
     }

@@ -83,7 +83,7 @@ int sys_log_mutex_give(void)
 
     if (xSysLogSemaphore != NULL)
     {
-        xSemaphoreGive(xSysLogSemaphore);
+        (void)xSemaphoreGive(xSysLogSemaphore);
 
         err = 0;
     }

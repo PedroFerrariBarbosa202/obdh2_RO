@@ -56,7 +56,7 @@ extern xTaskHandle xTaskReadAntennaHandle;
  *
  * \return None.
  */
-void vTaskReadAntenna(void);
+void vTaskReadAntenna(void* p);
 
 #endif /* READ_ANTENNA_H_ */
 

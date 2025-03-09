@@ -46,7 +46,7 @@
 #define TASK_PROCESS_TC_PRIORITY            4                   /**< Task priority. */
 #define TASK_PROCESS_TC_PERIOD_MS           1000                /**< Task period in milliseconds. */
 #define TASK_PROCESS_TC_INITIAL_DELAY_MS    6500                /**< Delay, in milliseconds, before the first execution. */
-#define TASK_PROCESS_TC_INIT_TIMEOUT_MS     (10*1000)           /**< Wait time to initialize the task in milliseconds. */
+#define TASK_PROCESS_TC_INIT_TIMEOUT_MS     10000               /**< Wait time to initialize the task in milliseconds. */
 #define TASK_PROCESS_TC_MAX_WAIT_TIME_MS    (350)               /**< Max wait time to received a confirmation notification from mission manager in milliseconds. */
 
 /**
@@ -59,7 +59,7 @@ extern xTaskHandle xTaskProcessTCHandle;
  *
  * \return None.
  */
-void vTaskProcessTC(void);
+void vTaskProcessTC(void* p);
 
 #endif /* PROCESS_TC_H_ */
 

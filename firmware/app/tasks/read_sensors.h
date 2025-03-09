@@ -56,7 +56,7 @@ extern xTaskHandle xTaskReadSensorsHandle;
  *
  * \return None.
  */
-void vTaskReadSensors(void);
+void vTaskReadSensors(void *p);
 
 #endif /* READ_SENSORS_H_ */
 

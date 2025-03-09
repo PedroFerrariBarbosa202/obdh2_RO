@@ -54,7 +54,7 @@ extern TaskHandle_t xTaskHealthCheckModeHandle;
  *
  * \return None.
  */
-void vTaskHealthCheckMode(void);
+void vTaskHealthCheckMode(void* p);
 
 #endif
 

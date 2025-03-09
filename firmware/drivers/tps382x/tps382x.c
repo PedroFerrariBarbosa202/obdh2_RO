@@ -51,8 +51,8 @@ int tps382x_init(tps382x_config_t config)
         }
     }
 
-    gpio_set_state(config.mr_pin, true);
-    gpio_set_state(config.wdi_pin, true);
+    (void)gpio_set_state(config.mr_pin, true);
+    (void)gpio_set_state(config.wdi_pin, true);
 
     return err;
 }

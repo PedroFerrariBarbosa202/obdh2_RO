@@ -49,10 +49,12 @@
 
 xTaskHandle xTaskHousekeepingHandle;
 
-void vTaskHousekeeping(void)
+void vTaskHousekeeping(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HOUSEKEEPING_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_HOUSEKEEPING_INIT_TIMEOUT_MS));
 
     TickType_t last_cycle = xTaskGetTickCount();
 

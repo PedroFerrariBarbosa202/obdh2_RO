@@ -63,13 +63,15 @@ EventGroupHandle_t task_startup_status;
 
 static int media_nor_clean(void);
 
-void vTaskStartup(void)
+void vTaskStartup(void *p)
 {
+    (void)p;
+
     unsigned int error_counter = 0;
     int err = -1;
 
     /* Logger device initialization */
-    sys_log_init();
+    (void)sys_log_init();
 
     /* Print the FreeRTOS version */
     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "FreeRTOS ");
@@ -128,7 +130,7 @@ void vTaskStartup(void)
 
 #if defined(CONFIG_DEV_MEDIA_FRAM_ENABLED) && (CONFIG_DEV_MEDIA_FRAM_ENABLED == 1)
     /* FRAM memory initialization */
-    if (system_get_hw_version() >= HW_VERSION_1)
+    if (system_get_hw_version() >= (uint8_t)HW_VERSION_1)
     {
         for (int i = 0; i < MEDIA_INIT_MAX_RETRY; ++i)
         { // cppcheck-suppress misra-c2012-15.4
@@ -315,14 +317,14 @@ void vTaskStartup(void)
         sys_log_print_msg(" ERROR(S)!");
         sys_log_new_line();
 
-        led_set(LED_FAULT);
+        (void)led_set(LED_FAULT);
     }
     else
     {
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Boot completed with SUCCESS!");
         sys_log_new_line();
 
-        led_clear(LED_FAULT);
+        (void)led_clear(LED_FAULT);
     }
 
     sat_data_buf.obdh.data.hw_version = system_get_hw_version();
@@ -339,7 +341,7 @@ void vTaskStartup(void)
 #endif
 
     /* Startup task status = Done */
-    xEventGroupSetBits(task_startup_status, TASK_STARTUP_DONE);
+    (void)xEventGroupSetBits(task_startup_status, TASK_STARTUP_DONE);
 
     vTaskSuspend(xTaskStartupHandle);
 }

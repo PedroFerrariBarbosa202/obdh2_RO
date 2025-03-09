@@ -50,8 +50,10 @@
 
 xTaskHandle xTaskPosDetHandle;
 
-void vTaskPosDet(void)
+void vTaskPosDet(void *p)
 {
+    (void)p;
+
     static predict_orbital_elements_t satellite;
     static struct predict_sgp4 sgp4_model;
     static struct predict_sdp4 sdp4_model;
@@ -63,7 +65,7 @@ void vTaskPosDet(void)
     predict_orbital_elements_t *sat = NULL;
 
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_POS_DET_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_POS_DET_INIT_TIMEOUT_MS));
 
     /* Parses binary TLE from FRAM (or default) */
     sat = predict_parse_compact_tle(&satellite, &sgp4_model, &sdp4_model, sat_data_buf.obdh.data.position.bin_tle);
@@ -163,7 +165,7 @@ int update_tle_line(obdh_telemetry_t *obdh, const uint8_t *bin_tle)
     }
 
     /* Notify Position Determination Task of TLE update */
-    xTaskNotify(xTaskPosDetHandle, 0U, eNoAction);
+    (void)xTaskNotify(xTaskPosDetHandle, 0U, eNoAction);
 
     return err;
 }

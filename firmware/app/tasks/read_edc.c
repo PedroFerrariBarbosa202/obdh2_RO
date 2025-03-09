@@ -55,10 +55,12 @@ pl_edc_hk_raw_t edc_hk_buf = {0};
 
 static void print_edc_hk(uint8_t *hk);
 
-void vTaskReadEDC(void)
+void vTaskReadEDC(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_EDC_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_EDC_INIT_TIMEOUT_MS));
 
     vTaskDelay(pdMS_TO_TICKS(TASK_READ_EDC_INITIAL_DELAY_MS));
 
@@ -121,9 +123,10 @@ void vTaskReadEDC(void)
 
                     edc->timestamp = system_get_time();
 
-                    edc_state_t *state = (edc_state_t*)&state_arr[0];
+                    /* Cast is safe since the buffer is internally copied from a edc_state_t */
+                    edc_state_t *state = (edc_state_t*)&state_arr[0]; // cppcheck-suppress misra-c2012-11.3
 
-                    if (state->ptt_available > 0)
+                    if (state->ptt_available > 0U)
                     {
                         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "");
                         sys_log_print_uint(state->ptt_available);
@@ -146,7 +149,8 @@ void vTaskReadEDC(void)
                                     sys_log_new_line();
                                 }
 
-                                edc_ptt_t *ptt = (edc_ptt_t*)&ptt_arr[0];
+                                /* Cast is safe since the buffer is internally copied from a edc_ptt_t */
+                                edc_ptt_t *ptt = (edc_ptt_t*)&ptt_arr[0]; // cppcheck-suppress misra-c2012-11.3
 
                                 int32_t ptt_power = -67 + (20 * log10(ptt->carrier_abs/32768.0));
 

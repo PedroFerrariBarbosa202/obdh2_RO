@@ -431,7 +431,7 @@ int gpio_get_state(gpio_pin_t pin)
             break;
     }
 
-    if (GPIO_getInputPinValue(msp_port, msp_pin) == GPIO_INPUT_PIN_HIGH)
+    if (GPIO_getInputPinValue(msp_port, msp_pin) == (uint8_t)GPIO_INPUT_PIN_HIGH)
     {
         res = 1;
     }
