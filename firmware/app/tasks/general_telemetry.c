@@ -172,10 +172,14 @@ void vTaskGeneralTelemetry(void *p)
             gen_tel_pl.payload[90] = (sat_data_buf.obdh.data.position.ts_last_tle_update >> 16U) & 0xFFU;
             gen_tel_pl.payload[91] = (sat_data_buf.obdh.data.position.ts_last_tle_update >> 8U) & 0xFFU;
             gen_tel_pl.payload[92] = sat_data_buf.obdh.data.position.ts_last_tle_update & 0xFFU;
+            gen_tel_pl.payload[93] = (sat_data_buf.obdh.data.ts_last_contact >> 24U) & 0xFFU;
+            gen_tel_pl.payload[94] = (sat_data_buf.obdh.data.ts_last_contact >> 16U) & 0xFFU;
+            gen_tel_pl.payload[95] = (sat_data_buf.obdh.data.ts_last_contact >> 8U) & 0xFFU;
+            gen_tel_pl.payload[96] = sat_data_buf.obdh.data.ts_last_contact & 0xFFU;
 
-            gen_tel_pl.length = 93U;
+            gen_tel_pl.length = 97U;
 
-            uint8_t gen_tel_pl_raw[110] = {0};
+            uint8_t gen_tel_pl_raw[120] = {0};
             uint16_t gen_tel_pl_raw_len = 0;
 
             fsat_pkt_encode(&gen_tel_pl, gen_tel_pl_raw, &gen_tel_pl_raw_len);
