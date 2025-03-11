@@ -438,8 +438,9 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
 {
     if (pkt_len >= 8U)
     {
-        /* Update last valid tc parameter */
+        /* Update last valid tc parameters */
         sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+        sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
         fsat_pkt_pl_t pong_pl = {0};
 
@@ -490,6 +491,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             uint32_t start_idx = ((uint32_t)pkt[9] << 24) | ((uint32_t)pkt[10] << 16) | ((uint32_t)pkt[11] << 8) | (uint32_t)pkt[12];
             uint32_t end_idx = ((uint32_t)pkt[13] << 24) | ((uint32_t)pkt[14] << 16) | ((uint32_t)pkt[15] << 8) | (uint32_t)pkt[16];
@@ -827,6 +829,7 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
     {
         /* Update last valid tc parameter */
         sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+        sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
         fsat_pkt_pl_t broadcast_pl = {0};
 
@@ -868,6 +871,7 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             const event_t enter_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_MODE_HIBERNATION,  .args[1] = pkt[8], .args[2] = pkt[9] };
             (void)notify_event_to_mission_manager(&enter_hib);
@@ -900,6 +904,7 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             const event_t leave_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_WAKE_UP,  .args[1] = 0U, .args[2] = 0U };
             (void)notify_event_to_mission_manager(&leave_hib);
@@ -934,6 +939,7 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             switch(pkt[8])
             {
@@ -1016,6 +1022,7 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             switch(pkt[8])
             {
@@ -1105,6 +1112,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_EDC_1;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1129,6 +1137,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_EDC_2;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1153,6 +1162,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_PAYLOAD_X;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1208,6 +1218,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_EDC_1;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1232,6 +1243,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_EDC_2;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1256,6 +1268,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                 {
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+                    sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
                     pl_event.args[0] = PL_ID_PAYLOAD_X;
                     (void)notify_event_to_mission_manager(&pl_event);
@@ -1303,6 +1316,7 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             switch (pkt[8]) 
             {
@@ -1385,6 +1399,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             switch (pkt[8]) 
             {
@@ -1475,6 +1490,7 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             uint32_t buf = ((uint32_t)pkt[10] << 24) |
                            ((uint32_t)pkt[11] << 16) |
@@ -1672,6 +1688,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
             /* Update last valid tc parameter, this is made after transmission 
              * because the requested parameter could be last_valid_tc aswell */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
         }
         else
@@ -1692,6 +1709,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
             if (update_tle_line(&sat_data_buf.obdh, &pkt[8]) == 0) 
             {
@@ -1872,8 +1890,12 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[88] = (tel->data.hib_duration >> 16U) & 0xFFU;
 			pl[89] = (tel->data.hib_duration >> 8U) & 0xFFU;
 			pl[90] = tel->data.hib_duration & 0xFFU;
+			pl[91] = (tel->data.ts_last_contact >> 24U) & 0xFFU;
+			pl[92] = (tel->data.ts_last_contact >> 16U) & 0xFFU;
+			pl[93] = (tel->data.ts_last_contact >> 8U) & 0xFFU;
+			pl[94] = tel->data.ts_last_contact & 0xFFU;
 
-			*pkt_pl_len = (uint16_t) 99U; /* 7b RQ CALLSIGN + 1b TC ID + 91b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 103U; /* 7b RQ CALLSIGN + 1b TC ID + 95b OBDH DATA */
 
 			break;
 		}

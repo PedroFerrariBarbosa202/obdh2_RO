@@ -83,6 +83,8 @@
 #define OBDH_PARAM_ID_SEC_PAYLOAD_STATE         34U /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
 #define OBDH_PARAM_ID_HIB_DURATION              35U /**< Remaining hibernation time in seconds. */
 #define OBDH_PARAM_ID_BIN_TLE                   36U /**< Compact binary TLE line. More about the format on libpredict */
+#define OBDH_PARAM_ID_TS_POSITION               37U /**< Timestamp of the last position determination. */
+#define OBDH_PARAM_ID_TS_LAST_CONTACT           38U /**< Timestamp of the last received TC by ground station. */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -121,6 +123,7 @@
 #define OBDH_PARAM_MEDIA_LAST_PX_DATA_DEFAULT_VAL       CONFIG_MEM_PX_DATA_START_PAGE
 #define OBDH_PARAM_MEDIA_LAST_SBCD_PKTS_DEFAULT_VAL     CONFIG_MEM_SBCD_PKTS_START_PAGE
 #define OBDH_PARAM_TS_READ_SENSORS_DEFAULT_VAL          0U
+#define OBDH_PARAM_TS_LAST_CONTACT_TIME_DEFAULT_VAL     0U
 
 /* Operation modes */
 #define OBDH_MODE_NORMAL            0U
@@ -164,6 +167,7 @@ typedef struct
     media_data_t media;             /**< Memories data. */
     sys_time_t ts_last_mode_change; /**< Timestamp of the last change in the operation mode. */
     sys_time_t ts_read_sensors;     /**< Timestamp of the last sensor readings. */
+    sys_time_t ts_last_contact;     /**< Timestamp of the last TC reception. */
     sys_time_t hib_duration;        /**< Hibernation duration in seconds. */
     uint32_t fw_version;            /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
     uint16_t temperature;           /**< Temperature of the uC in Kelvin. */
