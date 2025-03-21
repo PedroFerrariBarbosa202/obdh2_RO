@@ -329,16 +329,7 @@ void vTaskStartup(void *p)
 
     sat_data_buf.obdh.data.hw_version = system_get_hw_version();
 
-#if defined (CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED) && (CONFIG_TASK_ANTENNA_DEPLOYMENT_ENABLED == 1)
-    if (!sat_data_buf.obdh.data.initial_hib_executed)
-    {
-        const event_t initial_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_MODE_HIBERNATION,  .args[1] = 0U, .args[2] = 1U };
-        notify_event_to_mission_manager(&initial_hib);
-
-        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Sent initial hibernation event to Mission Manager!");
-        sys_log_new_line();
-    }
-#endif
+    sat_data_buf.obdh.data.last_reset_cause = system_get_reset_cause();
 
     /* Startup task status = Done */
     (void)xEventGroupSetBits(task_startup_status, TASK_STARTUP_DONE);
