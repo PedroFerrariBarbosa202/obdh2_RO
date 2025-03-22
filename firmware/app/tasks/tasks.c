@@ -39,6 +39,7 @@
 #include <queue.h>
 
 #include <config/config.h>
+#include <conops/conops.h>
 
 #include "tasks.h"
 #include "startup.h"
@@ -264,7 +265,7 @@ void create_event_groups(void)
 
 static void create_queues(void)
 {
-    event_queue = xQueueCreate(10U, sizeof(event_t));
+    event_queue = xQueueCreate(10U, sizeof(struct conops_event));
 
     if (event_queue == NULL)
     {
