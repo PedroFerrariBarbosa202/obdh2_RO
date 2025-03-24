@@ -34,6 +34,9 @@
  * \{
  */
 
+#include "system/system.h"
+#include <conops/conops.h>
+#include <devices/eps/eps.h>
 #include <system/sys_log/sys_log.h>
 
 #include <devices/current_sensor/current_sensor.h>
@@ -61,7 +64,7 @@ void vTaskHousekeeping(void *p)
     while(1)
     {
         /* Hibernation mode check */
-        if (sat_data_buf.obdh.data.mode == OBDH_MODE_HIBERNATION)
+        if (sat_data_buf.obdh.data.hibernation_on)
         {
             uint32_t hib = sat_data_buf.obdh.data.hib_duration;
 
@@ -81,13 +84,37 @@ void vTaskHousekeeping(void *p)
 
             if (sat_data_buf.obdh.data.hib_duration == 0U)
             {
-                const event_t leave_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_WAKE_UP,  .args[1] = HOUSEKEEPING_WAKE_UP_RQ, .args[2] = 0U };
+                const struct conops_event leave_hib = {
+                    .callback = NULL,
+                    .ev_name = "WAKE-UP",
+                    .src = 0U,
+                    .ev_id = EV_HIBERNATION_TIMEOUT,
+                };
 
                 if (notify_event_to_mission_manager(&leave_hib) != 0)
                 {
                     sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Failed to notify WAKE UP event");
                     sys_log_new_line();
                 }
+            }
+        }
+
+        if (system_get_time() >= sat_data_buf.obdh.data.ts_commission_timeout)
+        {
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HOUSEKEEPING_NAME, "Commission Mode timedout! Notifying Mission Manager...");
+            sys_log_new_line();
+
+            const struct conops_event commission_timeout = {
+                .callback = NULL,
+                .ev_name = "COMM-TIME",
+                .src = 0U,
+                .ev_id = EV_COMISSION_TIMEOUT,
+            };
+
+            if (notify_event_to_mission_manager(&commission_timeout) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Failed to notify Commission Timeout event");
+                sys_log_new_line();
             }
         }
 
@@ -101,6 +128,30 @@ void vTaskHousekeeping(void *p)
         {
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HOUSEKEEPING_NAME, "Saving obdh data to fram...");
             sys_log_new_line();
+        }
+
+        uint32_t eps_beacon_state = UINT32_MAX;
+
+        if (eps_get_param(SL_EPS2_REG_BEACON_ENABLE, &eps_beacon_state) == 0)
+        {
+            if (eps_beacon_state != (uint32_t)sat_data_buf.obdh.data.eps_beacon_on)
+            {
+                int err = 0;
+                uint8_t retry_count = 5U;
+
+                do 
+                {
+                    err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 1U);
+                    vTaskDelay(100U);
+                    --retry_count;
+                } while ((err < 0) && (retry_count > 0U));
+
+                if (retry_count == 0U)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Failed to update EPS beacon state!");
+                    sys_log_new_line();
+                }
+            }
         }
         
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_HOUSEKEEPING_PERIOD_MS));

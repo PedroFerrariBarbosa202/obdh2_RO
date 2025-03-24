@@ -121,13 +121,17 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.initial_hib_time_count        = OBDH_PARAM_INITIAL_HIB_TIME_COUNT_DEFAULT_VAL;
     tel->data.ant_deployment_executed       = OBDH_PARAM_ANT_DEPLOYMENT_EXECUTED_DEFAULT_VAL;
     tel->data.ant_deployment_counter        = OBDH_PARAM_ANT_DEPLOYMENT_COUNTER_DEFAULT_VAL;
-    tel->data.manual_mode_on                = OBDH_PARAM_MANUAL_MODE_ON_DEFAULT_VAL;
+    tel->data.hibernation_on                = OBDH_PARAM_HIBERNATION_ON_DEFAULT_VAL;
     tel->data.main_edc                      = OBDH_PARAM_MAIN_EDC_DEFAULT_VAL;
     tel->data.general_telemetry_on          = OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL;
     tel->data.ts_read_sensors               = OBDH_PARAM_TS_READ_SENSORS_DEFAULT_VAL;
     tel->data.main_payload_state            = OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL;
     tel->data.sec_payload_state             = OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL;
     tel->data.ts_last_contact               = OBDH_PARAM_TS_LAST_CONTACT_TIME_DEFAULT_VAL;
+    tel->data.last_tran_ev_id               = OBDH_PARAM_LAST_TRAN_EV_ID_DEFAULT_VAL;
+    tel->data.ts_commission_timeout         = OBDH_PARAM_TS_COMMISSION_TIMEOUT_DEFAULT_VAL;
+    tel->data.eps_beacon_on                 = OBDH_PARAM_EPS_BEACON_ON_DEFAULT_VAL;
+    tel->data.batt_crit_level_mv            = OBDH_PARAM_BATT_CRITICAL_LEVEL_MV_DEFAULT_VAL;
 
     uint8_t buf[50] = OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL;
 
@@ -235,7 +239,7 @@ int mem_mng_load_obdh_data_bak(obdh_telemetry_t *tel)
 {
     int err = -1;
 
-    uintptr_t base_addr = CONFIG_MEM_ADR_SYS_PARAM_BAK;
+    const uintptr_t base_addr = CONFIG_MEM_ADR_SYS_PARAM_BAK;
     uint8_t buf[BAK_DATA_SIZE + 2U];
 
     for (uint8_t i = 0U; i < BAK_DATA_SIZE + 2U; ++i)

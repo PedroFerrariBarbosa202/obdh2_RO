@@ -61,6 +61,7 @@
 #include "mem_check.h"
 #include "mission_manager.h"
 #include "mode_check.h"
+#include "antenna_deployment.h"
 
 static void create_queues(void);
 
@@ -265,7 +266,7 @@ void create_event_groups(void)
 
 static void create_queues(void)
 {
-    event_queue = xQueueCreate(10U, sizeof(struct conops_event));
+    event_queue = xQueueCreate(20U, sizeof(struct conops_event));
 
     if (event_queue == NULL)
     {

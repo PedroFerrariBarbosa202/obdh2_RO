@@ -68,6 +68,7 @@ void vTaskHealthCheckMode(void *p)
     while(1)
     {
         bool test_result;
+#if 0
 
         if (xTaskNotifyWait(0UL, UINT32_MAX, NULL, portMAX_DELAY) == pdTRUE)
         {
@@ -245,6 +246,7 @@ void vTaskHealthCheckMode(void *p)
             sys_log_new_line();
 
         }
+#endif
 
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MODE_NAME, "Operation Mode Health Check Finished!!!");
         sys_log_new_line();

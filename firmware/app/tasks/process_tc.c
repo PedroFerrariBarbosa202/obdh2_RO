@@ -39,6 +39,7 @@
 
 #include <config/config.h>
 #include <config/keys.h>
+#include <conops/conops.h>
 
 #include <system/sys_log/sys_log.h>
 #include <system/system.h>
@@ -459,7 +460,7 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
 
         fsat_pkt_encode(&pong_pl, pong_pl_raw, &pong_pl_raw_len);
 
-        if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+        if (!sat_data_buf.obdh.data.hibernation_on)
         {
             if (ttc_send(TTC_1, pong_pl_raw, pong_pl_raw_len) != 0)
             {
@@ -473,7 +474,7 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
 static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 {
     /* If the satellite is in hibernation mode there is no point in processing this telecommand */
-    if ((pkt_len >= (1U + 7U + 1U + 4U + 4U)) && (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION))
+    if ((pkt_len >= (1U + 7U + 1U + 4U + 4U)) && (!sat_data_buf.obdh.data.hibernation_on))
     {
         fsat_pkt_pl_t data_req_ans_pkt = {0};
         uint8_t data_req_ans_raw[300] = {0};
@@ -527,7 +528,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -571,7 +572,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -615,7 +616,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -659,7 +660,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -703,7 +704,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -747,7 +748,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -791,7 +792,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
 
                                 fsat_pkt_encode(&data_req_ans_pkt, data_req_ans_raw, &data_req_ans_raw_len);
 
-                                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                                if (!sat_data_buf.obdh.data.hibernation_on)
                                 {
                                     if (ttc_send(TTC_0, data_req_ans_raw, data_req_ans_raw_len) != 0)
                                     {
@@ -850,7 +851,7 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
 
         fsat_pkt_encode(&broadcast_pl, broadcast_pl_raw, &broadcast_pl_raw_len);
 
-        if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+        if (!sat_data_buf.obdh.data.hibernation_on)
         {
             if (ttc_send(TTC_1, broadcast_pl_raw, broadcast_pl_raw_len) != 0)
             {
@@ -873,7 +874,13 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
             sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
-            const event_t enter_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_MODE_HIBERNATION,  .args[1] = pkt[8], .args[2] = pkt[9] };
+            const struct conops_event enter_hib = {
+                .callback = NULL,
+                .ev_name = "ENTER_HIB",
+                .src = (uint16_t) ((pkt[8] << 8U) | pkt[9]),
+                .ev_id = EV_TC_ENTER_HIBERNATION,
+            };
+
             (void)notify_event_to_mission_manager(&enter_hib);
 
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
@@ -906,7 +913,13 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
             sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
-            const event_t leave_hib = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = OBDH_WAKE_UP,  .args[1] = 0U, .args[2] = 0U };
+            const struct conops_event leave_hib = {
+                .callback = NULL,
+                .ev_name = "LEAVE_HIB",
+                .src = 0U,
+                .ev_id = EV_TC_LEAVE_HIBERNATION,
+            };
+
             (void)notify_event_to_mission_manager(&leave_hib);
 
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
@@ -1094,8 +1107,12 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
 {
+    struct conops_event pl_event = {
+        .ev_name = "PL_EN",
+        .callback = NULL,
+    };
+
     int8_t err = 0;
-    event_t pl_event = { 0 };
 
     if (pkt_len >= 29U)
     {
@@ -1113,8 +1130,8 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_EDC_1;
+                    pl_event.ev_id = EV_TC_ENABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_EDC_1;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1138,8 +1155,8 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_EDC_2;
+                    pl_event.ev_id = EV_TC_ENABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_EDC_2;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1163,8 +1180,8 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_PAYLOAD_X;
+                    pl_event.ev_id = EV_TC_ENABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_PAYLOAD_X;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1200,7 +1217,11 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
 
 static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
 {
-    event_t pl_event = { 0 };
+    struct conops_event pl_event = {
+        .callback = NULL,
+        .ev_name = "PL_DIS",
+    };
+
     int8_t err = 0;
 
     if (pkt_len >= 29U)
@@ -1219,8 +1240,8 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_EDC_1;
+                    pl_event.ev_id = EV_TC_DISABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_EDC_1;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1244,8 +1265,8 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_EDC_2;
+                    pl_event.ev_id = EV_TC_DISABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_EDC_1;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1269,8 +1290,8 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
-                    pl_event.event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ;
-                    pl_event.args[0] = PL_ID_PAYLOAD_X;
+                    pl_event.ev_id = EV_TC_DISABLE_PAYLOAD;
+                    pl_event.src = (uint16_t)PL_ID_PAYLOAD_X;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -1421,7 +1442,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
-                        if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                        if (!sat_data_buf.obdh.data.hibernation_on)
                         {
                             if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
                             {
@@ -1452,7 +1473,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
-                        if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                        if (!sat_data_buf.obdh.data.hibernation_on)
                         {
                             if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
                             {
@@ -1502,12 +1523,12 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
                 case SUBSYSTEM_ID_OBDH:
                     if (obdh_set_param(pkt[9], &buf) == 0)
                     {
-                        if (pkt[9] == OBDH_PARAM_ID_MODE)
+                        if ((pkt[9] == OBDH_PARAM_ID_MODE) || (pkt[9] == OBDH_PARAM_ID_MAIN_PAYLOAD_STATE) || (pkt[9] == OBDH_PARAM_ID_SEC_PAYLOAD_STATE))
                         {
                             /* Check for notification from mission_manager */
                             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) != pdTRUE)
                             {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Set param MODE\"");
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Set Param\"");
                                 sys_log_new_line();
                                 err = -1;
                             }
@@ -1675,7 +1696,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
 
                 fsat_pkt_encode(&param_pl, param_pl_raw, &param_pl_raw_len);
 
-                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                if (!sat_data_buf.obdh.data.hibernation_on)
                 {
                     if (ttc_send(TTC_0, param_pl_raw, param_pl_raw_len) != 0)
                     {
@@ -1748,7 +1769,7 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
 
                 fsat_pkt_encode(&pkt_broacast, raw_pkt, &raw_pkt_len);
 
-                if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+                if (!sat_data_buf.obdh.data.hibernation_on)
                 {
                     if (ttc_send(TTC_0, raw_pkt, raw_pkt_len) != 0)
                     {
@@ -1798,6 +1819,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 		{
 			obdh_telemetry_t *tel = (obdh_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 			sys_time_t mode_duration = tel->timestamp - tel->data.ts_last_mode_change;
+            uint32_t data_log_page = sat_data_buf.obdh.data.media.last_page_obdh_data - CONFIG_MEM_OBDH_DATA_START_PAGE;
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;
@@ -1831,71 +1853,51 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[29] = mode_duration & 0xFFU;
 			pl[30] = tel->data.initial_hib_executed;
 			pl[31] = tel->data.ant_deployment_executed;
-			pl[32] = tel->data.manual_mode_on;
+			pl[32] = tel->data.hibernation_on;
 			pl[33] = tel->data.main_edc;
 			pl[34] = tel->data.general_telemetry_on;
-			pl[35] = (tel->data.media.last_page_obdh_data >> 24U) & 0xFFU;
-			pl[36] = (tel->data.media.last_page_obdh_data >> 16U) & 0xFFU;
-			pl[37] = (tel->data.media.last_page_obdh_data >> 8U) & 0xFFU;
-			pl[38] = tel->data.media.last_page_obdh_data & 0xFFU;
-			pl[39] = (tel->data.media.last_page_eps_data >> 24U) & 0xFFU;
-			pl[40] = (tel->data.media.last_page_eps_data >> 16U) & 0xFFU;
-			pl[41] = (tel->data.media.last_page_eps_data >> 8U) & 0xFFU;
-			pl[42] = tel->data.media.last_page_eps_data & 0xFFU;
-			pl[43] = (tel->data.media.last_page_ttc_0_data >> 24U) & 0xFFU;
-			pl[44] = (tel->data.media.last_page_ttc_0_data >> 16U) & 0xFFU;
-			pl[45] = (tel->data.media.last_page_ttc_0_data >> 8U) & 0xFFU;
-			pl[46] = tel->data.media.last_page_ttc_0_data & 0xFFU;
-			pl[47] = (tel->data.media.last_page_ttc_1_data >> 24U) & 0xFFU;
-			pl[48] = (tel->data.media.last_page_ttc_1_data >> 16U) & 0xFFU;
-			pl[49] = (tel->data.media.last_page_ttc_1_data >> 8U) & 0xFFU;
-			pl[50] = tel->data.media.last_page_ttc_1_data & 0xFFU;
-			pl[51] = (tel->data.media.last_page_ant_data >> 24U) & 0xFFU;
-			pl[52] = (tel->data.media.last_page_ant_data >> 16U) & 0xFFU;
-			pl[53] = (tel->data.media.last_page_ant_data >> 8U) & 0xFFU;
-			pl[54] = tel->data.media.last_page_ant_data & 0xFFU;
-			pl[55] = (tel->data.media.last_page_edc_data >> 24U) & 0xFFU;
-			pl[56] = (tel->data.media.last_page_edc_data >> 16U) & 0xFFU;
-			pl[57] = (tel->data.media.last_page_edc_data >> 8U) & 0xFFU;
-			pl[58] = tel->data.media.last_page_edc_data & 0xFFU;
-			pl[59] = (tel->data.media.last_page_px_data >> 24U) & 0xFFU;
-			pl[60] = (tel->data.media.last_page_px_data >> 16U) & 0xFFU;
-			pl[61] = (tel->data.media.last_page_px_data >> 8U) & 0xFFU;
-			pl[62] = tel->data.media.last_page_px_data & 0xFFU;
-			pl[63] = (tel->data.media.last_page_sbcd_pkts >> 24U) & 0xFFU;
-			pl[64] = (tel->data.media.last_page_sbcd_pkts >> 16U) & 0xFFU;
-			pl[65] = (tel->data.media.last_page_sbcd_pkts >> 8U) & 0xFFU;
-			pl[66] = tel->data.media.last_page_sbcd_pkts & 0xFFU;
-			pl[67] = (tel->data.position.timestamp >> 24U) & 0xFFU;
-			pl[68] = (tel->data.position.timestamp >> 16U) & 0xFFU;
-			pl[69] = (tel->data.position.timestamp >> 8U) & 0xFFU;
-			pl[70] = tel->data.position.timestamp & 0xFFU;
-			pl[71] = (((uint16_t)tel->data.position.latitude) >> 8U) & 0xFFU;
-			pl[72] = ((uint16_t)tel->data.position.latitude) & 0xFFU;
-			pl[73] = (((uint16_t)tel->data.position.longitude) >> 8U) & 0xFFU;
-			pl[74] = ((uint16_t)tel->data.position.longitude) & 0xFFU;
-			pl[75] = (((uint16_t)tel->data.position.altitude) >> 8U) & 0xFFU;
-			pl[76] = ((uint16_t)tel->data.position.altitude) & 0xFFU;
-			pl[77] = (tel->data.position.ts_last_tle_update >> 24U) & 0xFFU;
-			pl[78] = (tel->data.position.ts_last_tle_update >> 16U) & 0xFFU;
-			pl[79] = (tel->data.position.ts_last_tle_update >> 8U) & 0xFFU;
-			pl[80] = tel->data.position.ts_last_tle_update & 0xFFU;
-			pl[81] = (tel->data.ts_read_sensors >> 24U) & 0xFFU;
-			pl[82] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
-			pl[83] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
-			pl[84] = tel->data.ts_read_sensors & 0xFFU;
-			pl[85] = tel->data.main_payload_state;
-			pl[86] = tel->data.sec_payload_state;
-			pl[87] = (tel->data.hib_duration >> 24U) & 0xFFU;
-			pl[88] = (tel->data.hib_duration >> 16U) & 0xFFU;
-			pl[89] = (tel->data.hib_duration >> 8U) & 0xFFU;
-			pl[90] = tel->data.hib_duration & 0xFFU;
-			pl[91] = (tel->data.ts_last_contact >> 24U) & 0xFFU;
-			pl[92] = (tel->data.ts_last_contact >> 16U) & 0xFFU;
-			pl[93] = (tel->data.ts_last_contact >> 8U) & 0xFFU;
-			pl[94] = tel->data.ts_last_contact & 0xFFU;
+			pl[35] = (data_log_page >> 24U) & 0xFFU;
+			pl[36] = (data_log_page >> 16U) & 0xFFU;
+			pl[37] = (data_log_page >> 8U) & 0xFFU;
+			pl[38] = data_log_page & 0xFFU;
+			pl[39] = (tel->data.media.last_page_sbcd_pkts >> 24U) & 0xFFU;
+			pl[40] = (tel->data.media.last_page_sbcd_pkts >> 16U) & 0xFFU;
+			pl[41] = (tel->data.media.last_page_sbcd_pkts >> 8U) & 0xFFU;
+			pl[42] = tel->data.media.last_page_sbcd_pkts & 0xFFU;
+			pl[43] = (tel->data.position.timestamp >> 24U) & 0xFFU;
+			pl[44] = (tel->data.position.timestamp >> 16U) & 0xFFU;
+			pl[45] = (tel->data.position.timestamp >> 8U) & 0xFFU;
+			pl[46] = tel->data.position.timestamp & 0xFFU;
+			pl[47] = (((uint16_t)tel->data.position.latitude) >> 8U) & 0xFFU;
+			pl[48] = ((uint16_t)tel->data.position.latitude) & 0xFFU;
+			pl[49] = (((uint16_t)tel->data.position.longitude) >> 8U) & 0xFFU;
+			pl[50] = ((uint16_t)tel->data.position.longitude) & 0xFFU;
+			pl[51] = (((uint16_t)tel->data.position.altitude) >> 8U) & 0xFFU;
+			pl[52] = ((uint16_t)tel->data.position.altitude) & 0xFFU;
+			pl[53] = (tel->data.position.ts_last_tle_update >> 24U) & 0xFFU;
+			pl[54] = (tel->data.position.ts_last_tle_update >> 16U) & 0xFFU;
+			pl[55] = (tel->data.position.ts_last_tle_update >> 8U) & 0xFFU;
+			pl[56] = tel->data.position.ts_last_tle_update & 0xFFU;
+			pl[57] = (tel->data.ts_read_sensors >> 24U) & 0xFFU;
+			pl[58] = (tel->data.ts_read_sensors >> 16U) & 0xFFU;
+			pl[59] = (tel->data.ts_read_sensors >> 8U) & 0xFFU;
+			pl[60] = tel->data.ts_read_sensors & 0xFFU;
+			pl[61] = tel->data.main_payload_state;
+			pl[62] = tel->data.sec_payload_state;
+			pl[63] = (tel->data.hib_duration >> 24U) & 0xFFU;
+			pl[64] = (tel->data.hib_duration >> 16U) & 0xFFU;
+			pl[65] = (tel->data.hib_duration >> 8U) & 0xFFU;
+			pl[66] = tel->data.hib_duration & 0xFFU;
+			pl[67] = (tel->data.ts_last_contact >> 24U) & 0xFFU;
+			pl[68] = (tel->data.ts_last_contact >> 16U) & 0xFFU;
+			pl[69] = (tel->data.ts_last_contact >> 8U) & 0xFFU;
+			pl[70] = tel->data.ts_last_contact & 0xFFU;
+			pl[71] = (tel->data.batt_crit_level_mv >> 8U) & 0xFFU;
+			pl[72] = tel->data.batt_crit_level_mv & 0xFFU;
+			pl[73] = (tel->data.last_tran_ev_id >> 8U) & 0xFFU;
+			pl[74] = tel->data.last_tran_ev_id & 0xFFU;
 
-			*pkt_pl_len = (uint16_t) 103U; /* 7b RQ CALLSIGN + 1b TC ID + 95b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 83U; /* 7b RQ CALLSIGN + 1b TC ID + 75b OBDH DATA */
 
 			break;
 		}
@@ -2246,7 +2248,7 @@ static int8_t send_tc_feedback(uint8_t *pkt)
 
     fsat_pkt_encode(&feedback, feedback_pkt, &feedback_pkt_len);
 
-    if (sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION)
+    if (!sat_data_buf.obdh.data.hibernation_on)
     {
         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Transmitting \"TC Feedback\"...");
         sys_log_new_line();
