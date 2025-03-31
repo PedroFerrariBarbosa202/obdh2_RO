@@ -211,7 +211,7 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len);
 static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len);
 
 /**
- * \brief Get payload data telecommand.
+ * \brief Get subsystem table telecommand.
  *
  * \param[in] pkt is the packet to process.
  *
@@ -219,7 +219,7 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len);
 
 /**
  * \brief Set parameter telecommand.
@@ -391,11 +391,11 @@ void vTaskProcessTC(void *p)
                         process_tc_force_reset(pkt, pkt_len);
 
                         break;
-                    case PKT_ID_UPLINK_GET_PAYLOAD_DATA:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Payload Data\"...");
+                    case PKT_ID_UPLINK_GET_SUBSYSTEM_TABLE:
+                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Subsystem Table\"...");
                         sys_log_new_line();
 
-                        process_tc_get_payload_data(pkt, pkt_len);
+                        process_tc_get_subsystem_table(pkt, pkt_len);
                         break;
                     case PKT_ID_UPLINK_SET_PARAM:
                         sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Set Parameter\"...");
@@ -999,6 +999,8 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
                     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the beacon...");
                     sys_log_new_line();
 
+                    sat_data_buf.obdh.data.eps_beacon_on = true;
+
                     if (eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 0x01U) == 0)
                     {
                         (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
@@ -1089,6 +1091,8 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
                 {
                     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the beacon...");
                     sys_log_new_line();
+
+                    sat_data_buf.obdh.data.eps_beacon_on = false;
 
                     if (eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 0x00U) == 0)
                     {
@@ -1437,35 +1441,36 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len)
 {
-    if (pkt_len >= (1U + 7U + 1U + 12U + 20U))
+    if (pkt_len >= (1U + 7U + 1U + 20U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PAYLOAD_DATA; // cppcheck-suppress misra-c2012-7.4
+        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE; // cppcheck-suppress misra-c2012-7.4
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 12U, &pkt[21], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_PAYLOAD_DATA) - 1U))
+        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE) - 1U))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
             sat_data_buf.obdh.data.ts_last_contact = system_get_time();
 
+            /* The table request just responds with the current RAM stored tables/structs so it makes sense to 
+             * reuse the format_data_request function used to download the flash stored tables/structs. However,
+             * that means IDs must match or be adapted like the EDC ids that use payload info. */
             switch (pkt[8]) 
             {
-                case PL_ID_EDC_1:
+                case TABLE_ID_OBDH:
                 {
-                    uint8_t data_id = pkt[9];
-
                     fsat_pkt_pl_t pl_data;
 
-                    if (format_data_request(pl_data.payload, &pl_data.length, data_id, &sat_data_buf.edc_0) == 0)
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.obdh) == 0)
                     {
                         uint8_t pkt_raw[60];
                         uint16_t pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
-                        pl_data.payload[7] = pkt[9]; /* Payload Arg */
-                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_PAYLOAD_DATA);
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
@@ -1473,7 +1478,7 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         {
                             if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
                             {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Payload Data\" answer!");
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
                             }
                         }
@@ -1482,21 +1487,19 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
 
                     break;
                 }
-                case PL_ID_EDC_2:
+                case TABLE_ID_EPS:
                 {
-                    uint8_t data_id = pkt[9];
-
                     fsat_pkt_pl_t pl_data;
 
-                    if (format_data_request(pl_data.payload, &pl_data.length, data_id, &sat_data_buf.edc_1) == 0)
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.eps) == 0)
                     {
                         uint8_t pkt_raw[60];
                         uint16_t pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
-                        pl_data.payload[7] = pkt[9]; /* Payload Arg */
-                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_PAYLOAD_DATA);
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
                         fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
                         
@@ -1504,7 +1507,186 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                         {
                             if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
                             {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Payload Data\" answer!");
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_TTC_0:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.ttc_0) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_TTC_1:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.ttc_1) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_ANT:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.antenna) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_SBCD:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    uint8_t *buf = (sat_data_buf.obdh.data.main_edc == (uint8_t)PL_ID_EDC_1) ? sat_data_buf.edc_0.data : sat_data_buf.edc_1.data;
+
+                    /* The most recent PTT packet is stored right after housekeeping and state frames */
+                    void *ptt_buffer = &buf[EDC_FRAME_HK_LEN + EDC_FRAME_STATE_LEN];
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], ptt_buffer) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_EDC_0:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, DATA_ID_PAYLOAD_INFO, &sat_data_buf.edc_0) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
+                                sys_log_new_line();
+                            }
+                        }
+                        
+                    }
+
+                    break;
+                }
+                case TABLE_ID_EDC_1:
+                {
+                    fsat_pkt_pl_t pl_data;
+
+                    if (format_data_request(pl_data.payload, &pl_data.length, DATA_ID_PAYLOAD_INFO, &sat_data_buf.edc_1) == 0)
+                    {
+                        uint8_t pkt_raw[60];
+                        uint16_t pkt_len;
+
+                        /* Prepare Packet */
+                        (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
+                        pl_data.payload[7] = pkt[8]; /* Table ID */
+                        fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
+                        (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        
+                        if (!sat_data_buf.obdh.data.hibernation_on)
+                        {
+                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            {
+                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
                             }
                         }
@@ -1513,14 +1695,14 @@ static void process_tc_get_payload_data(uint8_t *pkt, uint16_t pkt_len)
                     break;
                 }
                 default:
-                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Invalid payload ID!");
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Invalid table ID!");
                     sys_log_new_line();
                     break;
             }
         }
         else
         {
-            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error executing the \"Get Payload Data\" TC! Invalid key!");
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error executing the \"Get Subsystem Table\" TC! Invalid key!");
             sys_log_new_line();
         }
     }
@@ -1930,9 +2112,16 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			pl[71] = (tel->data.batt_crit_level_mv >> 8U) & 0xFFU;
 			pl[72] = tel->data.batt_crit_level_mv & 0xFFU;
 			pl[73] = (tel->data.last_tran_ev_id >> 8U) & 0xFFU;
-			pl[74] = tel->data.last_tran_ev_id & 0xFFU;
+			pl[74] = tel->data.last_tran_ev_id & 0xFFU; /**/
+            pl[75] = tel->data.manual_experiments;
+            pl[76] = tel->data.eps_beacon_on;
+			pl[77] = (tel->data.ts_commission_timeout >> 24U) & 0xFFU;
+			pl[78] = (tel->data.ts_commission_timeout >> 16U) & 0xFFU;
+			pl[79] = (tel->data.ts_commission_timeout >> 8U) & 0xFFU;
+			pl[80] = tel->data.ts_commission_timeout & 0xFFU;
+            (void)memcpy(&pl[81], tel->data.position.bin_tle, 50U);
 
-			*pkt_pl_len = (uint16_t) 83U; /* 7b RQ CALLSIGN + 1b TC ID + 75b OBDH DATA */
+			*pkt_pl_len = (uint16_t) 139U; /* 7b RQ CALLSIGN + 1b TC ID + 131b OBDH DATA */
 
 			break;
 		}
@@ -2166,6 +2355,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_SBCD_PKTS:
 		{
+            /* Cast is safe since the buffer is internally copied from an edc_ptt_t */
 			edc_ptt_t *tel = (edc_ptt_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->time_tag >> 24U) & 0xFFU;
@@ -2189,11 +2379,12 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 			break;
 		}
 
+        /* Also used for EDC 0 and EDC 1 subsystem tables */
 		case DATA_ID_PAYLOAD_INFO:
 		{
 			payload_telemetry_t *tel = (payload_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
-            /* Cast is safe since the buffer is internally copied from a edc_ptt_t */
+            /* Cast is safe since the buffer is internally copied from an edc_hk_t */
 			edc_hk_t *hk = (edc_hk_t*)&tel->data[0]; // cppcheck-suppress misra-c2012-11.3
 
             /* The state data is stored right after the housekeeping data 
@@ -2242,7 +2433,6 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 			break;
 		}
-
 		default: 
 			err = -1;
 			break;
@@ -2277,7 +2467,7 @@ static int8_t send_tc_feedback(uint8_t *pkt, int16_t error_code)
     feedback.payload[9] = (time >> 16U) & 0xFFU;
     feedback.payload[10] = (time >> 8U) & 0xFFU;
     feedback.payload[11] = time & 0xFFU;
-    feedback.payload[12] = (error_code >> 8) & 0xFF;
+    feedback.payload[12] = ((uint16_t)error_code >> 8U) & 0xFFU;
     feedback.payload[13] = error_code & 0xFF;
 
     /* Payload lenght */

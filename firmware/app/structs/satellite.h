@@ -57,7 +57,7 @@ typedef enum {
     PKT_ID_DOWNLINK_PING_ANS          =  0x02,
     PKT_ID_DOWNLINK_GENERAL_TELEMETRY =  0x10,
     PKT_ID_DOWNLINK_DATA_REQUEST_ANS  =  0x11,
-    PKT_ID_DOWNLINK_PAYLOAD_DATA      =  0x12,
+    PKT_ID_DOWNLINK_SUBSYSTEM_TABLE   =  0x12,
     PKT_ID_DOWNLINK_TC_FEEDBACK       =  0x13,
     PKT_ID_DOWNLINK_PARAM_VALUE       =  0x14,
     PKT_ID_DOWNLINK_PACKET_BROADCAST  =  0x15,
@@ -72,7 +72,7 @@ typedef enum {
     PKT_ID_UPLINK_DEACTIVATE_PAYLOAD  =  0x48,
     PKT_ID_UPLINK_ERASE_MEMORY        =  0x49,
     PKT_ID_UPLINK_FORCE_RESET         =  0x4A,
-    PKT_ID_UPLINK_GET_PAYLOAD_DATA    =  0x4B,
+    PKT_ID_UPLINK_GET_SUBSYSTEM_TABLE =  0x4B,
     PKT_ID_UPLINK_SET_PARAM           =  0x4C,
     PKT_ID_UPLINK_GET_PARAM           =  0x4D,
     PKT_ID_UPLINK_TRANSMIT_PACKET     =  0x4E,
@@ -120,6 +120,21 @@ typedef enum {
     DATA_ID_SBCD_PKTS                  = 5,
     DATA_ID_PAYLOAD_INFO               = 6,
 } data_id_e;
+
+/**
+ * \brief Table IDs
+ */
+typedef enum {
+    TABLE_ID_OBDH                       = 0,
+    TABLE_ID_EPS                        = 1,
+    TABLE_ID_TTC_0                      = 2,
+    TABLE_ID_TTC_1                      = 3,
+    TABLE_ID_ANT                        = 4,
+    TABLE_ID_SBCD                       = 5,
+    TABLE_ID_EDC_0                      = 6,
+    TABLE_ID_EDC_1                      = 7,
+    TABLE_ID_PAYLOAD_X                  = 8,
+} table_id_e;
 
 /**
  * \brief Memory IDs
