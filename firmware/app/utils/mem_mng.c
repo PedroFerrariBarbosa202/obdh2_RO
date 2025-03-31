@@ -132,6 +132,7 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.ts_commission_timeout         = OBDH_PARAM_TS_COMMISSION_TIMEOUT_DEFAULT_VAL;
     tel->data.eps_beacon_on                 = OBDH_PARAM_EPS_BEACON_ON_DEFAULT_VAL;
     tel->data.batt_crit_level_mv            = OBDH_PARAM_BATT_CRITICAL_LEVEL_MV_DEFAULT_VAL;
+    tel->data.manual_experiments            = OBDH_PARAM_MANUAL_EXPERIMENT_ON_DEFAUL_VAL;
 
     uint8_t buf[50] = OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL;
 
