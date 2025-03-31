@@ -117,6 +117,11 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             }
             break;
         }
+        case OBDH_PARAM_ID_ANT_DEPLOYMENT_COUNTER:    
+        {
+            sat_data_buf.obdh.data.ant_deployment_counter = (uint8_t)(*buf);
+            break;
+        }
         case OBDH_PARAM_ID_MAIN_EDC:
         {
             if ((*buf == PL_ID_EDC_1) || (*buf == PL_ID_EDC_2))
@@ -272,6 +277,19 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             sat_data_buf.obdh.data.batt_crit_level_mv = *buf;
             break;
         }
+        case OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON:
+        {
+            if ((*buf == 0x00U) || (*buf == 0x01U))
+            {
+                sat_data_buf.obdh.data.manual_experiments = (bool)(*buf);
+            }
+            else 
+            {
+                err = -1;
+            }
+
+            break;
+        }
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);
@@ -329,6 +347,7 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_EPS_BEACON_ON:            *buf = sat_data_buf.obdh.data.eps_beacon_on;                             break;
         case OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV:   *buf = sat_data_buf.obdh.data.batt_crit_level_mv;                        break;
         case OBDH_PARAM_ID_HIBERNATION_ON:           *buf = sat_data_buf.obdh.data.hibernation_on;                            break;
+        case OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON:     *buf = sat_data_buf.obdh.data.manual_experiments;                        break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);

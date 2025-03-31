@@ -89,6 +89,7 @@
 #define OBDH_PARAM_ID_LAST_TRAN_EV_ID           40U /**< Last valid event id that caused an mode transition. */
 #define OBDH_PARAM_ID_EPS_BEACON_ON             41U /**< EPS beacon on flag. */
 #define OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV    42U /**< Battery critical level threshold in millivolts. */
+#define OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON      43U /**< Flag to state if the experiments are manually enabled. */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -112,6 +113,7 @@
 #define OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL       0U
 #define OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL        0U
 #define OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL      1U
+#define OBDH_PARAM_MANUAL_EXPERIMENT_ON_DEFAUL_VAL      1U
 #define OBDH_PARAM_POSITION_TIMESTAMP_DEFAULT_VAL       0U
 #define OBDH_PARAM_POSITION_TS_LAST_TLE_UPT_DEFAULT_VAL 0U
 #define OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL         {0x00, 0x19, 0x40, 0x50, 0x14, 0x90, 0xFC, 0x7C, 0x92, 0xCE, 0x00, 0x00, 0x1C, 0xA3, 0x43, 0x4E, 0x4F, 0xCC, 0x43, 0x19, 0xCA, 0x37, 0x3A, 0x87, 0x80, 0x92, 0x40, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4C, 0x4F, 0x4B, 0xC6, 0xA7, 0xEF, 0x9E, 0x40, 0x2E, 0x9D, 0x69, 0xF3, 0xE4, 0x93, 0xBE} /* HORYU-4 TLE converted to libpredict compact format */
@@ -193,6 +195,7 @@ typedef struct
     bool hibernation_on;		        /**< Satellite in hibernation flag. */
     bool general_telemetry_on;          /**< General telemetry on flag. */
     bool eps_beacon_on;                 /**< EPS beacon on. */
+    bool manual_experiments;            /**< Flag to state if the experiments are manually enabled. */
     position_data_t position;           /**< Current position of the satellite. */
 } obdh_data_t;
 
