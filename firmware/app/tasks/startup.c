@@ -61,7 +61,93 @@ xTaskHandle xTaskStartupHandle;
 
 EventGroupHandle_t task_startup_status;
 
-static int media_nor_clean(void);
+static int media_nor_clean(void)
+{
+    int err = 0;
+    int die0_err = -1;
+    int die1_err = -1;
+    uint8_t retries = 5U;
+
+    do 
+    {
+        if (die0_err != 0)
+        {
+            die0_err = media_erase(MEDIA_NOR, MEDIA_ERASE_DIE, 0U);
+        }
+
+        if (die1_err != 0)
+        {
+             die1_err = media_erase(MEDIA_NOR, MEDIA_ERASE_DIE, 1U);
+        }
+
+        if ((die0_err != 0) || (die0_err != 0))
+        {
+            err = -1;
+        }
+        else
+        {
+            err = 0;
+        }
+
+        --retries;
+    } while((err != 0) && (retries > 0U));
+
+    return err;
+}
+
+static void sys_log_print_obdh_parameters(obdh_telemetry_t *params)
+{
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Operation Mode: ");
+    sys_log_print_hex((uint32_t)params->data.mode);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Antenna Deployment Params: deploy_counter (");
+    sys_log_print_uint((uint32_t)params->data.ant_deployment_counter);
+    sys_log_print_msg("), deploy_exec (");
+    sys_log_print_uint((uint32_t)params->data.ant_deployment_executed);
+    sys_log_print_msg("), init_hib_count (");
+    sys_log_print_uint((uint32_t)params->data.initial_hib_time_count);
+    sys_log_print_msg("), init_hib_exec (");
+    sys_log_print_uint((uint32_t)params->data.initial_hib_executed);
+    sys_log_print_msg(")");
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Used flash pages: ");
+    sys_log_print_uint(params->data.media.last_page_obdh_data);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Last flash update timestamp: ");
+    sys_log_print_uint(params->timestamp);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Main EDC: ");
+    sys_log_print_hex((uint32_t)params->data.main_edc);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Main payload state: ");
+    sys_log_print_hex((uint32_t)params->data.main_payload_state);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Secondary payload state: ");
+    sys_log_print_hex((uint32_t)params->data.sec_payload_state);
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Battery Critical Level: ");
+    sys_log_print_hex((uint32_t)params->data.batt_crit_level_mv);
+    sys_log_print_msg(" mA");
+    sys_log_new_line();
+
+    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Operation flags: hibernation_on (");
+    sys_log_print_uint((uint32_t)params->data.hibernation_on);
+    sys_log_print_msg("), general_telemetry_on (");
+    sys_log_print_uint((uint32_t)params->data.general_telemetry_on);
+    sys_log_print_msg("), eps_beacon (");
+    sys_log_print_uint((uint32_t)params->data.eps_beacon_on);
+    sys_log_print_msg("), manual_experiments (");
+    sys_log_print_uint((uint32_t)params->data.manual_experiments);
+    sys_log_print_msg(")");
+    sys_log_new_line();
+}
 
 void vTaskStartup(void *p)
 {
@@ -221,6 +307,11 @@ void vTaskStartup(void *p)
     }
 #endif /* CONFIG_DEV_MEDIA_FRAM_ENABLED */
 
+    /* Print OBDH parameters */
+#if defined(CONFIG_PRINT_OBDH_PARAMS) && (CONFIG_PRINT_OBDH_PARAMS == 1)
+    sys_log_print_obdh_parameters(&sat_data_buf.obdh);
+#endif
+
 #if defined(CONFIG_DEV_LEDS_ENABLED) && (CONFIG_DEV_LEDS_ENABLED == 1)
     /* LEDs device initialization */
     if (leds_init() != 0)
@@ -335,23 +426,6 @@ void vTaskStartup(void *p)
     (void)xEventGroupSetBits(task_startup_status, TASK_STARTUP_DONE);
 
     vTaskSuspend(xTaskStartupHandle);
-}
-
-static int media_nor_clean(void)
-{
-    int err = 0;
-
-    if (media_erase(MEDIA_NOR, MEDIA_ERASE_DIE, 0U) != 0)
-    {
-        err--;
-    }
-
-    if (media_erase(MEDIA_NOR, MEDIA_ERASE_DIE, 1U) != 0)
-    {
-        err--;
-    }
-
-    return err;
 }
 
 /** \} End of startup group */
