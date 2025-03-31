@@ -149,6 +149,8 @@ void vTaskReadEDC(void *p)
                                     sys_log_new_line();
                                 }
 
+                                (void)memcpy(&edc->data[EDC_FRAME_HK_LEN + EDC_FRAME_STATE_LEN], ptt_arr, sizeof(ptt_arr));
+
                                 /* Cast is safe since the buffer is internally copied from a edc_ptt_t */
                                 edc_ptt_t *ptt = (edc_ptt_t*)&ptt_arr[0]; // cppcheck-suppress misra-c2012-11.3
 
