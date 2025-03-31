@@ -130,6 +130,15 @@ typedef enum {
 } memory_id_e;
 
 /**
+ * \brief Feedback Error codes.
+ */
+#define ERRNO_FB_SUCESSFULL_EXEC                    (0)
+#define ERRNO_FB_MISSION_MANAGER_NOTIFY_TIMEOUT     (-1)
+#define ERRNO_FB_SUBSYSTEM_COMM_FAIL                (-2)
+#define ERRNO_FB_DEVICE_COMM_FAIL                   (-3)
+#define ERRNO_FB_FAILED_TO_UPDATE_FRAM              (-4)
+
+/**
  * \brief OBDH telemetry type.
  */
 typedef struct

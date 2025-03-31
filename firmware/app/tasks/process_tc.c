@@ -82,9 +82,12 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
  *
  * \param[in] pkt is the received packet.
  *
+ * \param[in] error_code is the status/error_code of the action performed 
+ * through telecommand request.
+ *
  * \return The status/error code.
  */
-static int8_t send_tc_feedback(uint8_t *pkt);
+static int8_t send_tc_feedback(uint8_t *pkt, int16_t error_code);
 
 /**
  * \brief Ping request telecommand.
@@ -885,12 +888,13 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
 
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
             else 
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Enter hibernation\"");
                 sys_log_new_line();
+                (void)send_tc_feedback(pkt, ERRNO_FB_MISSION_MANAGER_NOTIFY_TIMEOUT);
             }
         }
         else
@@ -924,12 +928,13 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
 
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
             else 
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Leave hibernation\"");
                 sys_log_new_line();
+                (void)send_tc_feedback(pkt, ERRNO_FB_MISSION_MANAGER_NOTIFY_TIMEOUT);
             }
         }
         else
@@ -980,7 +985,11 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     if (err == 0)
                     {
-                        (void)send_tc_feedback(pkt);
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+                    }
+                    else
+                    {
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
                     }
 
                     break;
@@ -992,7 +1001,11 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     if (eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 0x01U) == 0)
                     {
-                        (void)send_tc_feedback(pkt);
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+                    }
+                    else
+                    {
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
                     }
 
                     break;
@@ -1004,7 +1017,7 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     /* Enable periodic general telemetry */
                     sat_data_buf.obdh.data.general_telemetry_on = true;
-                    (void)send_tc_feedback(pkt);
+                    (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
 
                     break;
                 }
@@ -1063,7 +1076,11 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     if (err == 0)
                     {
-                        (void)send_tc_feedback(pkt);
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+                    }
+                    else
+                    {
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
                     }
 
                     break;
@@ -1075,7 +1092,11 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     if (eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 0x00U) == 0)
                     {
-                        (void)send_tc_feedback(pkt);
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+                    }
+                    else
+                    {
+                        (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
                     }
 
                     break;
@@ -1087,7 +1108,7 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
 
                     /* Disable periodic general telemetry */
                     sat_data_buf.obdh.data.general_telemetry_on = false;
-                    (void)send_tc_feedback(pkt);
+                    (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
 
                     break;
                 }
@@ -1204,12 +1225,13 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
         {
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
             else 
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Activate payload\"");
                 sys_log_new_line();
+                (void)send_tc_feedback(pkt, ERRNO_FB_MISSION_MANAGER_NOTIFY_TIMEOUT);
             }
         }
     }
@@ -1314,12 +1336,13 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
         {
             if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
             else 
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Deactivate payload\"");
                 sys_log_new_line();
+                (void)send_tc_feedback(pkt, ERRNO_FB_MISSION_MANAGER_NOTIFY_TIMEOUT);
             }
         }
     }
@@ -1378,7 +1401,11 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
 
             if (err == 0)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+            }
+            else
+            {
+                (void)send_tc_feedback(pkt, ERRNO_FB_DEVICE_COMM_FAIL);
             }
         }
         else
@@ -1602,7 +1629,11 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
 
             if (err == 0)
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+            }
+            else
+            {
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
             }
         }
         else
@@ -1734,7 +1765,11 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
 
             if (update_tle_line(&sat_data_buf.obdh, &pkt[8]) == 0) 
             {
-                (void)send_tc_feedback(pkt);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
+            }
+            else
+            {
+                (void)send_tc_feedback(pkt, ERRNO_FB_FAILED_TO_UPDATE_FRAM);
             }
         }
         else
@@ -2216,7 +2251,7 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
     return err;
 }
 
-static int8_t send_tc_feedback(uint8_t *pkt)
+static int8_t send_tc_feedback(uint8_t *pkt, int16_t error_code)
 {
     int8_t err = 0;
     fsat_pkt_pl_t feedback = {0};
@@ -2242,9 +2277,11 @@ static int8_t send_tc_feedback(uint8_t *pkt)
     feedback.payload[9] = (time >> 16U) & 0xFFU;
     feedback.payload[10] = (time >> 8U) & 0xFFU;
     feedback.payload[11] = time & 0xFFU;
+    feedback.payload[12] = (error_code >> 8) & 0xFF;
+    feedback.payload[13] = error_code & 0xFF;
 
     /* Payload lenght */
-    feedback.length = 12U;
+    feedback.length = 14U;
 
     fsat_pkt_encode(&feedback, feedback_pkt, &feedback_pkt_len);
 
