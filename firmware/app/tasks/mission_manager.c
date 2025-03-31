@@ -187,13 +187,20 @@ static inline int32_t handle_commission_evs(const struct conops_fsm *ctx, const 
 
 static inline int32_t handle_nominal_evs(const struct conops_fsm *ctx, const struct conops_event *ev)
 {
-    (void)ctx;
+    sat_data_t *sat = ctx->user_data;
     int32_t transition_to = OBDH_MODE_NORMAL;
 
     switch (ev->ev_id) 
     {
         case EV_OUT_OF_BRAZIL:
-            transition_to = OBDH_MODE_EXPERIMENT;
+            if (sat->obdh.data.manual_experiments)
+            {
+                transition_to = OBDH_MODE_STAND_BY;
+            }
+            else
+            {
+                transition_to = OBDH_MODE_EXPERIMENT;
+            }
             break;
         case EV_IN_BRAZIL:
             break;
@@ -951,10 +958,10 @@ static conops_transition_handler_t mode_transition_table[MISSION_OPERATION_MODES
             /* Deployment (DM) | Commission (CM) | Normal (NM) | Stand-by (SBM) | Experiment (EXM) | FDIR (FDM) | Manual (MNM) */
 /* DM */   {NULL, goto_commission_mode, NULL, NULL, NULL, goto_fdir_mode, goto_manual_mode},
 /* CM */   {NULL, NULL, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
-/* NM */   {NULL, NULL, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
-/* SBM */  {NULL, NULL, goto_nominal_mode, NULL, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
-/* EXM */  {NULL, NULL, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
-/* FDM */  {NULL, NULL, goto_nominal_mode, goto_standby_mode, NULL, NULL, goto_manual_mode},
+/* NM */   {NULL, goto_commission_mode, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
+/* SBM */  {NULL, goto_commission_mode, goto_nominal_mode, NULL, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
+/* EXM */  {NULL, goto_commission_mode, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
+/* FDM */  {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, NULL, NULL, goto_manual_mode},
 /* MNM */  {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, NULL},
 };
 
