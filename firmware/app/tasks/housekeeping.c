@@ -99,22 +99,25 @@ void vTaskHousekeeping(void *p)
             }
         }
 
-        if (system_get_time() >= sat_data_buf.obdh.data.ts_commission_timeout)
+        if (sat_data_buf.obdh.data.mode == OBDH_MODE_COMMISSION)
         {
-            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HOUSEKEEPING_NAME, "Commission Mode timedout! Notifying Mission Manager...");
-            sys_log_new_line();
-
-            const struct conops_event commission_timeout = {
-                .callback = NULL,
-                .ev_name = "COMM-TIME",
-                .src = 0U,
-                .ev_id = EV_COMISSION_TIMEOUT,
-            };
-
-            if (notify_event_to_mission_manager(&commission_timeout) != 0)
+            if (system_get_time() >= sat_data_buf.obdh.data.ts_commission_timeout)
             {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Failed to notify Commission Timeout event");
+                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HOUSEKEEPING_NAME, "Commission Mode timedout! Notifying Mission Manager...");
                 sys_log_new_line();
+
+                const struct conops_event commission_timeout = {
+                    .callback = NULL,
+                    .ev_name = "COMM-TIME",
+                    .src = 0U,
+                    .ev_id = EV_COMISSION_TIMEOUT,
+                };
+
+                if (notify_event_to_mission_manager(&commission_timeout) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Failed to notify Commission Timeout event");
+                    sys_log_new_line();
+                }
             }
         }
 
