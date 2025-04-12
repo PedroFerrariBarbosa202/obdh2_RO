@@ -57,6 +57,8 @@
 
 TaskHandle_t xTaskSchedTCHandle;
 
+static struct conops_cmd_queue tc_queue;
+
 static void tc_queue_lock(void *lock)
 {
     SemaphoreHandle_t sem = *(SemaphoreHandle_t*)lock;
@@ -75,11 +77,15 @@ static void tc_queue_unlock(void *lock)
     (void)xSemaphoreGive(sem);
 }
 
+void reset_sched_tc_queue(void)
+{
+    cmd_queue_reset(&tc_queue);
+}
+
 void vTaskSchedTC(void* p)
 {
     (void)p;
 
-    static struct conops_cmd_queue tc_queue;
     SemaphoreHandle_t xSemQueuelock = NULL;
     int err = 0;
 

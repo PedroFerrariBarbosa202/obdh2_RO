@@ -62,6 +62,13 @@ extern TaskHandle_t xTaskSchedTCHandle;
  */
 void vTaskSchedTC(void* p);
 
+/**
+ * \brief Resets TC Queue.
+ *
+ * \return None.
+ */
+void reset_sched_tc_queue(void);
+
 #endif 
 
 /** \} End of sched_tc group */
