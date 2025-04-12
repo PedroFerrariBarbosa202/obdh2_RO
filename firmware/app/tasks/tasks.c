@@ -62,6 +62,7 @@
 #include "mission_manager.h"
 #include "mode_check.h"
 #include "antenna_deployment.h"
+#include "sched_tc.h"
 
 static void create_queues(void);
 
@@ -249,6 +250,15 @@ void create_tasks(void)
         /* Error creating the Health Check Operation Mode task */
     }
 #endif /* CONFIG_TASK_HEALTH_CHECK_MODE_ENABLED */
+
+#if defined(CONFIG_TASK_SCHED_TC_ENABLED) && (CONFIG_TASK_SCHED_TC_ENABLED == 1)
+    (void)xTaskCreate(vTaskSchedTC, TASK_SCHED_TC_NAME, TASK_SCHED_TC_STACK_SIZE, NULL, TASK_SCHED_TC_PRIORITY, &xTaskSchedTCHandle);
+
+    if (xTaskSchedTCHandle == NULL)
+    {
+        /* Error creating the Scheduled TC task */
+    }
+#endif /* CONFIG_TASK_MISSION_MANAGER_ENABLED */
 
     create_queues();
     create_event_groups();

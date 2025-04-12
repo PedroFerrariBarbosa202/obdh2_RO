@@ -59,6 +59,7 @@
 #define CONFIG_TASK_PAYLOAD_X_ENABLED                   1
 #define CONFIG_TASK_HOUSEKEEPING_ENABLED                1
 #define CONFIG_TASK_MISSION_MANAGER_ENABLED             1
+#define CONFIG_TASK_SCHED_TC_ENABLED                    1
 #define CONFIG_TASK_HEALTH_CHECK_MEM_ENABLED            0
 #define CONFIG_TASK_HEALTH_CHECK_MODE_ENABLED           0
 
