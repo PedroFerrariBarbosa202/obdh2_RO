@@ -133,8 +133,8 @@ static void sys_log_print_obdh_parameters(obdh_telemetry_t *params)
     sys_log_new_line();
 
     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Battery Critical Level: ");
-    sys_log_print_hex((uint32_t)params->data.batt_crit_level_mv);
-    sys_log_print_msg(" mA");
+    sys_log_print_uint((uint32_t)params->data.batt_crit_level_mv);
+    sys_log_print_msg(" mV");
     sys_log_new_line();
 
     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_STARTUP_NAME, "Operation flags: hibernation_on (");
@@ -249,6 +249,11 @@ void vTaskStartup(void *p)
                         /* Failed to read FRAM data or CRC was not valid */
                         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_STARTUP_NAME, "Failed to load OBDH data correctly!");
                         sys_log_new_line();
+
+                        sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Cleaning NOR memory...");
+                        sys_log_new_line();
+
+                        (void)media_nor_clean();
 
                         sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_STARTUP_NAME, "Loading default values to memory...");
                         sys_log_new_line();
