@@ -112,7 +112,7 @@
 #define OBDH_PARAM_MAIN_EDC_DEFAULT_VAL                 1U
 #define OBDH_PARAM_MAIN_PAYLOAD_STATE_DEFAULT_VAL       0U
 #define OBDH_PARAM_SEC_PAYLOAD_STATE_DEFAULT_VAL        0U
-#define OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL      1U
+#define OBDH_PARAM_GENERAL_TELEMETRY_ON_DEFAUL_VAL      0U
 #define OBDH_PARAM_MANUAL_EXPERIMENT_ON_DEFAUL_VAL      1U
 #define OBDH_PARAM_POSITION_TIMESTAMP_DEFAULT_VAL       0U
 #define OBDH_PARAM_POSITION_TS_LAST_TLE_UPT_DEFAULT_VAL 0U
@@ -197,7 +197,7 @@ typedef struct
     bool eps_beacon_on;                 /**< EPS beacon on. */
     bool manual_experiments;            /**< Flag to state if the experiments are manually enabled. */
     position_data_t position;           /**< Current position of the satellite. */
-} obdh_data_t;
+} obdh_data_t; 
 
 /**
  * \brief Reads a OBDH parameter.
