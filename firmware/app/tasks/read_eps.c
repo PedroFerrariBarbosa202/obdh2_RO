@@ -40,6 +40,7 @@
 #include <structs/satellite.h>
 
 #include "read_eps.h"
+#include "mission_manager.h"
 #include "startup.h"
 
 #define READ_EPS_MAX_RETRIES        (3U)
@@ -94,7 +95,41 @@ void vTaskReadEPS(void *p)
             }
         } while ((err != 0) && (retry_count > 0U));
 
-        if (retry_count == 0U)
+        if (retry_count != 0U)
+        {
+            if (sat_data_buf.eps.data.battery_voltage <= sat_data_buf.obdh.data.batt_crit_level_mv)
+            {
+                const struct conops_event fdir = {
+                    .callback = NULL,
+                    .ev_name = "FDIR",
+                    .src = 0U,
+                    .ev_id = EV_BATTERY_LEVEL_CRITICAL,
+                };
+
+                if (notify_event_to_mission_manager(&fdir) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EPS_NAME, "Failed to notify Mission Manager of critical level on batteries!");
+                    sys_log_new_line();
+                }
+            }
+
+            if ((sat_data_buf.obdh.data.mode == OBDH_MODE_FDIR) && (sat_data_buf.eps.data.battery_voltage >= (sat_data_buf.obdh.data.batt_crit_level_mv + 150U)))
+            {
+                const struct conops_event fdir_res = {
+                    .callback = NULL,
+                    .ev_name = "FDIR-RES",
+                    .src = 0U,
+                    .ev_id = EV_FDIR_RESOLVED,
+                };
+
+                if (notify_event_to_mission_manager(&fdir_res) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EPS_NAME, "Failed to notify Mission Manager of FDIR resolution!");
+                    sys_log_new_line();
+                }
+            }
+        }
+        else
         {
             sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_EPS_NAME, "Max retries reached trying to read data from EPS!!!");
             sys_log_new_line();
