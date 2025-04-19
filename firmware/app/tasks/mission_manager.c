@@ -554,43 +554,49 @@ static int goto_standby_mode(struct conops_fsm *ctx, const struct conops_event *
     sys_log_print_msg(")...");
     sys_log_new_line();
 
-    do 
+    if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
 
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
+
+        err = 0;
+        retry_count = 5U;
     }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
-        sys_log_new_line();
-        retval = -1;
-    }
 
-    err = 0;
-    retry_count = 5U;
+    if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
+    {
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
 
-    do 
-    {
-        err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
-
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
-    }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
-        sys_log_new_line();
-        retval = -1;
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
     }
 
     if ((ev->ev_id != EV_PERSIST_STATE_ON_INIT) && (retval == 0))
@@ -617,26 +623,29 @@ static int goto_nominal_mode(struct conops_fsm *ctx, const struct conops_event *
     sys_log_print_msg(")...");
     sys_log_new_line();
 
-    do 
+    if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
 
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
-    }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
-        sys_log_new_line();
-        retval = -1;
-    }
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
 
-    err = 0;
-    retry_count = 5U;
+        err = 0;
+        retry_count = 5U;
+    }
 
     payload_t main = (payload_t)sat->obdh.data.main_edc;
 
@@ -691,26 +700,29 @@ static int goto_experiment_mode(struct conops_fsm *ctx, const struct conops_even
     sys_log_print_msg(")...");
     sys_log_new_line();
 
-    do 
+    if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
 
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
-    }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
-        sys_log_new_line();
-        retval = -1;
-    }
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
 
-    err = 0;
-    retry_count = 5U;
+        err = 0;
+        retry_count = 5U;
+    }
 
     do 
     {
@@ -758,47 +770,53 @@ static int goto_fdir_mode(struct conops_fsm *ctx, const struct conops_event *ev,
     sys_log_print_msg(")...");
     sys_log_new_line();
 
-    do 
+    if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
 
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
-    }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
-        sys_log_new_line();
-        retval = -1;
-    }
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Main payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
 
-    err = 0;
-    retry_count = 5U;
-
-    do 
-    {
-        err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
-        vTaskDelay(100U);
-        --retry_count;
-    } while ((err < 0) && (retry_count > 0U));
-
-    if (retry_count != 0U)
-    {
-        sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
-    }
-    else
-    {
-        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
-        sys_log_new_line();
-        retval = -1;
+        err = 0;
+        retry_count = 5U;
     }
 
-    err = 0;
-    retry_count = 5U;
+    if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
+    {
+        do 
+        {
+            err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
+            vTaskDelay(100U);
+            --retry_count;
+        } while ((err < 0) && (retry_count > 0U));
+
+        if (retry_count != 0U)
+        {
+            sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_NONE;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable Secondary payload!");
+            sys_log_new_line();
+            retval = -1;
+        }
+
+        err = 0;
+        retry_count = 5U;
+    }
 
     do 
     {
@@ -828,21 +846,20 @@ static int goto_manual_mode(struct conops_fsm *ctx, const struct conops_event *e
 {
     (void)transition_to;
     sat_data_t *sat = ctx->user_data;
-    int retval = 0;
 
     sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_MISSION_MANAGER_NAME, "Transitioning to Manual Mode because of event (");
     sys_log_print_hex((uint32_t)ev->ev_id);
     sys_log_print_msg(")...");
     sys_log_new_line();
 
-    if ((ev->ev_id != EV_PERSIST_STATE_ON_INIT) && (retval == 0))
+    if (ev->ev_id != EV_PERSIST_STATE_ON_INIT)
     {
         satellite_change_mode(OBDH_MODE_MANUAL);
         sat->obdh.data.last_tran_ev_id = ev->ev_id;
         ctx->state = OBDH_MODE_MANUAL;
     }
 
-    return retval;
+    return 0;
 }
 
 static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_event *ev)
