@@ -525,6 +525,10 @@ static int goto_commission_mode(struct conops_fsm *ctx, const struct conops_even
         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to enable EPS beacon!");
         sys_log_new_line();
     }
+    else
+    {
+        sat->obdh.data.eps_beacon_on = true;
+    }
 
     if ((ev->ev_id != EV_PERSIST_STATE_ON_INIT) && (retval == 0))
     {
@@ -1046,10 +1050,13 @@ void vTaskMissionManager(void *p)
 
             err = conops_fsm_process_event(&op_mode_fsm, &ev);
             
-            if ((err == 0) && (EV_CHECK_CRIT_BITMASK(ev.ev_id)))
+            if (err == 0)
             {
-                /* Notify Process TC task that the event was processed sucessfully */
-                (void)xTaskNotify(xTaskProcessTCHandle, 0U, eNoAction);
+                if (EV_CHECK_CRIT_BITMASK(ev.ev_id))
+                {
+                    /* Notify Process TC task that the event was processed sucessfully */
+                    (void)xTaskNotify(xTaskProcessTCHandle, 0U, eNoAction);
+                }
             }
             else
             {
