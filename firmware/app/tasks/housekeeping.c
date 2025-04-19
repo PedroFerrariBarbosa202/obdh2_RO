@@ -144,7 +144,7 @@ void vTaskHousekeeping(void *p)
 
                 do 
                 {
-                    err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 1U);
+                    err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, (uint32_t)sat_data_buf.obdh.data.eps_beacon_on);
                     vTaskDelay(100U);
                     --retry_count;
                 } while ((err < 0) && (retry_count > 0U));
