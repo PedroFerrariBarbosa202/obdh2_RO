@@ -166,7 +166,7 @@ void vTaskHealthCheckMode(void *p)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_DEPLOYMENT) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
+            payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_COMMISSION) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
 
             sys_log_print_test_result(payload_test, "CM(InBrazil) - Payload State test");
             sys_log_new_line();
@@ -179,7 +179,7 @@ void vTaskHealthCheckMode(void *p)
 
             vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
-            payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_DEPLOYMENT) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
+            payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_COMMISSION) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
 
             sys_log_print_test_result(payload_test, "CM(OutBrazil) - Payload State test");
             sys_log_new_line();
