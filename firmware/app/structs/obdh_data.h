@@ -90,6 +90,7 @@
 #define OBDH_PARAM_ID_EPS_BEACON_ON             41U /**< EPS beacon on flag. */
 #define OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV    42U /**< Battery critical level threshold in millivolts. */
 #define OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON      43U /**< Flag to state if the experiments are manually enabled. */
+#define OBDH_PARAM_ID_RESET_TC_QUEUE            44U /**< Resets the TC Queue (Only write param, writing "0x01" to it resets the queue) */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U

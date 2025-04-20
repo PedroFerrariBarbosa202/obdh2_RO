@@ -39,6 +39,7 @@
 #include <system/system.h>
 #include <conops/conops.h>
 #include <tasks/mission_manager.h>
+#include <tasks/sched_tc.h>
 #include <devices/payload/payload.h>
 #include <devices/eps/eps.h>
 
@@ -153,6 +154,15 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             if (*buf == 0x01U)
             {
                 system_reset();
+            }
+
+            break;
+        }
+        case OBDH_PARAM_ID_RESET_TC_QUEUE:
+        {
+            if (*buf == 0x01U)
+            {
+                reset_sched_tc_queue();
             }
 
             break;
