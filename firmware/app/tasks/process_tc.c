@@ -98,7 +98,7 @@ static int8_t send_tc_feedback(uint8_t *pkt, int16_t error_code);
  *
  * \return None.
  */
-static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Data request telecommand.
@@ -109,7 +109,7 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Broadcast message telecommand.
@@ -120,7 +120,7 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Enter hibernation telecommand.
@@ -131,7 +131,7 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Leave hibernation telecommand.
@@ -142,7 +142,7 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Activate module telecommand.
@@ -153,7 +153,7 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Deactivate module telecommand.
@@ -164,7 +164,7 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Activate payload telecommand.
@@ -175,7 +175,7 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Deactivate payload telecommand.
@@ -186,7 +186,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Erase memory telecommand.
@@ -197,7 +197,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Force reset telecommand.
@@ -208,7 +208,7 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Get subsystem table telecommand.
@@ -219,7 +219,7 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Set parameter telecommand.
@@ -230,7 +230,7 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Get parameter telecommand.
@@ -241,7 +241,7 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Update TLE telecommand.
@@ -252,7 +252,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Transmit packet telecommand.
@@ -263,7 +263,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len);
  *
  * \return None.
  */
-static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len);
+static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Checks if a given HMAC is valid or not.
@@ -283,6 +283,155 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len);
  * \return TRUE/FALSE if the key is valid or not.
  */
 static bool process_tc_validate_hmac(uint8_t *msg, uint16_t msg_len, uint8_t *msg_hash, uint16_t msg_hash_len, uint8_t *key, uint16_t key_len);
+
+int execute_tc(uint8_t *pkt, uint8_t pkt_len, bool is_scheduled)
+{
+    int err = 0;
+
+    switch(pkt[0])
+    {
+        case PKT_ID_UPLINK_PING_REQ:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Ping TC received!");
+            sys_log_new_line();
+
+            process_tc_ping_request(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_DATA_REQ:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Data request TC received!");
+            sys_log_new_line();
+
+            process_tc_data_request(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_BROADCAST_MSG:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Broadcast message TC received!");
+            sys_log_new_line();
+
+            if (!is_scheduled)
+            {
+                process_tc_broadcast_message(pkt, pkt_len, is_scheduled);
+            }
+            else
+            {
+                err = -1;
+            }
+
+            break;
+        case PKT_ID_UPLINK_ENTER_HIBERNATION:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Enter Hibernation\"...");
+            sys_log_new_line();
+
+            process_tc_enter_hibernation(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_LEAVE_HIBERNATION:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Leave Hibernation\"...");
+            sys_log_new_line();
+
+            process_tc_leave_hibernation(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_ACTIVATE_MODULE:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Activate Module\"...");
+            sys_log_new_line();
+
+            process_tc_activate_module(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_DEACTIVATE_MODULE:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Deactivate Module\"...");
+            sys_log_new_line();
+
+            process_tc_deactivate_module(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_ACTIVATE_PAYLOAD:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Activate Payload\"...");
+            sys_log_new_line();
+
+            process_tc_activate_payload(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_DEACTIVATE_PAYLOAD:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Deactivate Payload\"...");
+            sys_log_new_line();
+
+            process_tc_deactivate_payload(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_ERASE_MEMORY:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Erase Memory\"...");
+            sys_log_new_line();
+
+            process_tc_erase_memory(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_FORCE_RESET:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Force Reset\"...");
+            sys_log_new_line();
+
+            process_tc_force_reset(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_GET_SUBSYSTEM_TABLE:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Subsystem Table\"...");
+            sys_log_new_line();
+
+            process_tc_get_subsystem_table(pkt, pkt_len, is_scheduled);
+            break;
+        case PKT_ID_UPLINK_SET_PARAM:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Set Parameter\"...");
+            sys_log_new_line();
+
+            process_tc_set_parameter(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_GET_PARAM:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Parameter\"...");
+            sys_log_new_line();
+
+            process_tc_get_parameter(pkt, pkt_len, is_scheduled);
+
+            break;
+        case PKT_ID_UPLINK_TRANSMIT_PACKET:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Transmit Packet\"...");
+            sys_log_new_line();
+
+            if (!is_scheduled)
+            {
+                process_tc_transmit_packet(pkt, pkt_len, is_scheduled);
+            }
+            else
+            {
+                err = -1;
+            }
+
+            break;
+        case PKT_ID_UPLINK_UPDATE_TLE:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Update TLE\"...");
+            sys_log_new_line();
+
+            if (!is_scheduled)
+            {
+                process_tc_update_tle(pkt, pkt_len, is_scheduled);
+            }
+            else
+            {
+                err = -1;
+            }
+
+            break;
+        default:
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Unknown packet received!");
+            sys_log_new_line();
+            err = -1;
+
+            break;
+    }
+
+    return err;
+}
 
 void vTaskProcessTC(void *p)
 {
@@ -312,124 +461,10 @@ void vTaskProcessTC(void *p)
 
             if (ttc_recv(TTC_1, pkt, &pkt_len) == 0)
             {
-                switch(pkt[0])
+                if (execute_tc(pkt, pkt_len, false) != 0)
                 {
-                    case PKT_ID_UPLINK_PING_REQ:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Ping TC received!");
-                        sys_log_new_line();
-
-                        process_tc_ping_request(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_DATA_REQ:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Data request TC received!");
-                        sys_log_new_line();
-
-                        process_tc_data_request(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_BROADCAST_MSG:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Broadcast message TC received!");
-                        sys_log_new_line();
-
-                        process_tc_broadcast_message(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_ENTER_HIBERNATION:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Enter Hibernation\"...");
-                        sys_log_new_line();
-
-                        process_tc_enter_hibernation(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_LEAVE_HIBERNATION:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Leave Hibernation\"...");
-                        sys_log_new_line();
-
-                        process_tc_leave_hibernation(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_ACTIVATE_MODULE:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Activate Module\"...");
-                        sys_log_new_line();
-
-                        process_tc_activate_module(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_DEACTIVATE_MODULE:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Deactivate Module\"...");
-                        sys_log_new_line();
-
-                        process_tc_deactivate_module(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_ACTIVATE_PAYLOAD:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Activate Payload\"...");
-                        sys_log_new_line();
-
-                        process_tc_activate_payload(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_DEACTIVATE_PAYLOAD:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Deactivate Payload\"...");
-                        sys_log_new_line();
-
-                        process_tc_deactivate_payload(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_ERASE_MEMORY:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Erase Memory\"...");
-                        sys_log_new_line();
-
-                        process_tc_erase_memory(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_FORCE_RESET:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Force Reset\"...");
-                        sys_log_new_line();
-
-                        process_tc_force_reset(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_GET_SUBSYSTEM_TABLE:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Subsystem Table\"...");
-                        sys_log_new_line();
-
-                        process_tc_get_subsystem_table(pkt, pkt_len);
-                        break;
-                    case PKT_ID_UPLINK_SET_PARAM:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Set Parameter\"...");
-                        sys_log_new_line();
-
-                        process_tc_set_parameter(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_GET_PARAM:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Get Parameter\"...");
-                        sys_log_new_line();
-
-                        process_tc_get_parameter(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_TRANSMIT_PACKET:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Transmit Packet\"...");
-                        sys_log_new_line();
-
-                        process_tc_transmit_packet(pkt, pkt_len);
-
-                        break;
-                    case PKT_ID_UPLINK_UPDATE_TLE:
-                        sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Update TLE\"...");
-                        sys_log_new_line();
-
-                        process_tc_update_tle(pkt, pkt_len);
-
-                        break;
-                    default:
-                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Unknown packet received!");
-                        sys_log_new_line();
-
-                        break;
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Invalid TC request!");
+                    sys_log_new_line();
                 }
             }
         }
@@ -438,8 +473,10 @@ void vTaskProcessTC(void *p)
     }
 }
 
-static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
+    (void)is_scheduled;
+
     if (pkt_len >= 8U)
     {
         /* Update last valid tc parameters */
@@ -474,25 +511,35 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
+    bool authed = false;
+
     /* If the satellite is in hibernation mode there is no point in processing this telecommand */
     if ((pkt_len >= (1U + 7U + 1U + 4U + 4U)) && (!sat_data_buf.obdh.data.hibernation_on))
     {
-        fsat_pkt_pl_t data_req_ans_pkt = {0};
-        uint8_t data_req_ans_raw[300] = {0};
-        uint16_t data_req_ans_raw_len = UINT16_MAX;
-
-        /* Packet ID */
-        fsat_pkt_add_id(&data_req_ans_pkt, PKT_ID_DOWNLINK_DATA_REQUEST_ANS);
-
-        /* Source callsign */
-        (void)fsat_pkt_add_callsign(&data_req_ans_pkt, CONFIG_SATELLITE_CALLSIGN);
-
-        uint8_t tc_key[16] = CONFIG_TC_KEY_DATA_REQUEST; // cppcheck-suppress misra-c2012-7.4
-
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 4U + 4U, &pkt[17], 20U, tc_key, sizeof(CONFIG_TC_KEY_DATA_REQUEST)-1U))
+        if (!is_scheduled)
         {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_DATA_REQUEST; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 4U + 4U, &pkt[17], 20U, tc_key, sizeof(CONFIG_TC_KEY_DATA_REQUEST)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
+        {
+            fsat_pkt_pl_t data_req_ans_pkt = {0};
+            uint8_t data_req_ans_raw[300] = {0};
+            uint16_t data_req_ans_raw_len = UINT16_MAX;
+
+            /* Packet ID */
+            fsat_pkt_add_id(&data_req_ans_pkt, PKT_ID_DOWNLINK_DATA_REQUEST_ANS);
+
+            /* Source callsign */
+            (void)fsat_pkt_add_callsign(&data_req_ans_pkt, CONFIG_SATELLITE_CALLSIGN);
+
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
             sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -827,8 +874,10 @@ static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
+    (void)is_scheduled;
+
     if ((pkt_len >= 15U) && (pkt_len <= 53U))
     {
         /* Update last valid tc parameter */
@@ -865,13 +914,23 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
-    if (pkt_len >= 30U)
-    {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ENTER_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
+    bool authed = false;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 2U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_ENTER_HIBERNATION)-1U))
+    if (pkt_len >= (1U + 7U + 2U))
+    {
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_ENTER_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 2U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_ENTER_HIBERNATION)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -905,13 +964,23 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
-    if (pkt_len >= 28U)
-    {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_LEAVE_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
+    bool authed = false;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_LEAVE_HIBERNATION)-1U))
+    if (pkt_len >= (1U + 7U))
+    {
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_LEAVE_HIBERNATION; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_LEAVE_HIBERNATION)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -945,15 +1014,24 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     int8_t err = -2;
+    bool authed = false;
 
-    if (pkt_len >= 29U)
+    if (pkt_len >= (1U + 7U + 1U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_MODULE)-1U))
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_MODULE)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1038,15 +1116,24 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     int8_t err = -2;
+    bool authed = false;
 
-    if (pkt_len >= 29U)
+    if (pkt_len >= (1U + 7U + 1U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_MODULE; // cppcheck-suppress misra-c2012-7.4
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_MODULE)-1U))
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_MODULE)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1130,7 +1217,7 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     struct conops_event pl_event = {
         .ev_name = "PL_EN",
@@ -1138,20 +1225,29 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
     };
 
     int8_t err = 0;
+    bool authed = false;
 
-    if (pkt_len >= 29U)
+    if (pkt_len >= (1U + 7U + 1U))
     {
         switch(pkt[8])
         {
             case PL_ID_EDC_1:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 1 payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 1 payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1170,13 +1266,21 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
             }
             case PL_ID_EDC_2:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 2 payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_EDC)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the EDC 2 payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1195,13 +1299,21 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
             }
             case PL_ID_PAYLOAD_X:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the Payload-X payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the Payload-X payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1241,7 +1353,7 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     struct conops_event pl_event = {
         .callback = NULL,
@@ -1249,20 +1361,29 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
     };
 
     int8_t err = 0;
+    bool authed = false;
 
-    if (pkt_len >= 29U)
+    if (pkt_len >= (1U + 7U + 1U))
     {
         switch(pkt[8])
         {
             case PL_ID_EDC_1:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 1 payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 1 payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1281,13 +1402,21 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
             }
             case PL_ID_EDC_2:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 2 payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_EDC)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the EDC 2 payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1306,13 +1435,21 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
             }
             case PL_ID_PAYLOAD_X:
             {
-                sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the Payload-X payload...");
-                sys_log_new_line();
-
-                uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
-
-                if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
+                if (!is_scheduled)
                 {
+                    uint8_t tc_key[16] = CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X; // cppcheck-suppress misra-c2012-7.4
+
+                    if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X)-1U))
+                    {
+                        authed = true;
+                    }
+                }
+
+                if ((authed) || (is_scheduled))
+                {
+                    sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the Payload-X payload...");
+                    sys_log_new_line();
+
                     /* Update last valid tc parameter */
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
@@ -1352,15 +1489,24 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     int8_t err = 0;
+    bool authed = false;
     
-    if (pkt_len >= 29U)
+    if (pkt_len >= (1U + 7U + 1U)) 
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_ERASE_MEMORY; // cppcheck-suppress misra-c2012-7.4
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_ERASE_MEMORY; // cppcheck-suppress misra-c2012-7.4
 
-        if (process_tc_validate_hmac(pkt, 1U + 1U + 7U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ERASE_MEMORY)-1U))
+            if (process_tc_validate_hmac(pkt, 1U + 1U + 7U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_ERASE_MEMORY)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1420,13 +1566,23 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
-    if (pkt_len >= 28U)
-    {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_FORCE_RESET; // cppcheck-suppress misra-c2012-7.4
+    bool authed = false;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_FORCE_RESET)-1U))
+    if (pkt_len >= (1U + 7U))
+    {
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_FORCE_RESET; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U, &pkt[8], 20U, tc_key, sizeof(CONFIG_TC_KEY_FORCE_RESET)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             (void)eps_set_param(SL_EPS2_REG_RESET_EPS, 0x01U);
             (void)ttc_set_param(TTC_0, SL_TTC2_REG_RESET_DEVICE, 0x01U);
@@ -1441,13 +1597,23 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
-    if (pkt_len >= (1U + 7U + 1U + 20U))
-    {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE; // cppcheck-suppress misra-c2012-7.4
+    bool authed = false;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE) - 1U))
+    if (pkt_len >= (1U + 7U + 1U))
+    {
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U, &pkt[9], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE) - 1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1708,15 +1874,24 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     int8_t err = 0;
+    bool authed = false;
 
-    if (pkt_len >= (1U + 7U + 1U + 1U + 4U + 20U))
+    if (pkt_len >= (1U + 7U + 1U + 1U + 4U))
     {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_SET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_SET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U + 4U, &pkt[14], 20U, tc_key, sizeof(CONFIG_TC_KEY_SET_PARAMETER)-1U))
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U + 4U, &pkt[14], 20U, tc_key, sizeof(CONFIG_TC_KEY_SET_PARAMETER)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             /* Update last valid tc parameter */
             sat_data_buf.obdh.data.last_valid_tc = pkt[0];
@@ -1826,13 +2001,23 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
-    if (pkt_len >= (1U + 7U + 1U + 1U + 20U))
-    {
-        uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
+    bool authed = false;
 
-        if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_PARAMETER)-1U))
+    if (pkt_len >= (1U + 7U + 1U + 1U))
+    {
+        if (!is_scheduled)
+        {
+            uint8_t tc_key[16] = CONFIG_TC_KEY_GET_PARAMETER; // cppcheck-suppress misra-c2012-7.4
+
+            if (process_tc_validate_hmac(pkt, 1U + 7U + 1U + 1U, &pkt[10], 20U, tc_key, sizeof(CONFIG_TC_KEY_GET_PARAMETER)-1U))
+            {
+                authed = true;
+            }
+        }
+
+        if ((authed) || (is_scheduled))
         {
             int err = 0;
 
@@ -1933,7 +2118,7 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     if (pkt_len >= (1U + 7U + 50U + 20U))
     {
@@ -1962,7 +2147,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len)
     }
 }
 
-static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len)
+static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
     if ((pkt_len >= (1U + 7U + 20U)) && (pkt_len <= 73U))
     {

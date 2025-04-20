@@ -38,6 +38,8 @@
 #ifndef PROCESS_TC_H_
 #define PROCESS_TC_H_
 
+#include <stdbool.h>
+
 #include <FreeRTOS.h>
 #include <task.h>
 
@@ -60,6 +62,22 @@ extern xTaskHandle xTaskProcessTCHandle;
  * \return None.
  */
 void vTaskProcessTC(void* p);
+
+/**
+ * \brief Executes/Processes a telecommand.
+ *
+ * \param[in] pkt is the packet to process.
+ *
+ * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
+ * \return The status/error code.
+ */
+int execute_tc(uint8_t *pkt, uint8_t pkt_len, bool is_scheduled);
 
 #endif /* PROCESS_TC_H_ */
 
