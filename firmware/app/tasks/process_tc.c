@@ -55,6 +55,7 @@
 
 #include <fsat_pkt/fsat_pkt.h>
 
+#include "sched_tc.h"
 #include "process_tc.h"
 #include "mission_manager.h"
 #include "pos_det.h"
@@ -107,6 +108,11 @@ static void process_tc_ping_request(uint8_t *pkt, uint16_t pkt_len, bool is_sche
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_data_request(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -129,6 +135,11 @@ static void process_tc_broadcast_message(uint8_t *pkt, uint16_t pkt_len, bool is
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -139,6 +150,11 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -151,6 +167,11 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -161,6 +182,11 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len, bool is_s
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -173,6 +199,11 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len, bool is
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -183,6 +214,11 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -195,6 +231,11 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len, bool i
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -205,6 +246,11 @@ static void process_tc_erase_memory(uint8_t *pkt, uint16_t pkt_len, bool is_sche
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -217,6 +263,11 @@ static void process_tc_force_reset(uint8_t *pkt, uint16_t pkt_len, bool is_sched
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -227,6 +278,11 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -239,6 +295,11 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
@@ -249,6 +310,11 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
  * \param[in] pkt is the packet to process.
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
  *
  * \return None.
  */
@@ -261,9 +327,30 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_schedu
  *
  * \param[in] pkt_len is the number of bytes of the given packet.
  *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
  * \return None.
  */
 static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
+
+/**
+ * \brief Schedule TC telecommand.
+ *
+ * \param[in] pkt is the packet to process.
+ *
+ * \param[in] pkt_len is the number of bytes of the given packet.
+ *
+ * \param[in] is_scheduled is a flag to mark if a telecommand packet
+ * was scheduled instead of just received. This is needed because in a
+ * scheduled TC there is no need to authenticate it, since it was 
+ * authenticated on queue insertion.
+ *
+ * \return None.
+ */
+static void process_tc_schedule(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled);
 
 /**
  * \brief Checks if a given HMAC is valid or not.
@@ -415,6 +502,20 @@ int execute_tc(uint8_t *pkt, uint8_t pkt_len, bool is_scheduled)
             if (!is_scheduled)
             {
                 process_tc_update_tle(pkt, pkt_len, is_scheduled);
+            }
+            else
+            {
+                err = -1;
+            }
+
+            break;
+        case PKT_ID_UPLINK_SCHED_TC:
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Executing the TC \"Schedule TC\"...");
+            sys_log_new_line();
+
+            if (!is_scheduled)
+            {
+                process_tc_schedule(pkt, pkt_len, is_scheduled);
             }
             else
             {
@@ -1631,18 +1732,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.obdh) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1660,18 +1761,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.eps) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1689,18 +1790,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.ttc_0) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1718,18 +1819,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.ttc_1) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1747,18 +1848,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &sat_data_buf.antenna) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1781,18 +1882,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], ptt_buffer) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1810,18 +1911,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, DATA_ID_PAYLOAD_INFO, &sat_data_buf.edc_0) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -1839,18 +1940,18 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                     if (format_data_request(pl_data.payload, &pl_data.length, DATA_ID_PAYLOAD_INFO, &sat_data_buf.edc_1) == 0)
                     {
                         uint8_t pkt_raw[60];
-                        uint16_t pkt_len;
+                        uint16_t raw_pkt_len;
 
                         /* Prepare Packet */
                         (void)memcpy(&pl_data.payload[0], &pkt[1], 7); /* Requester callsign */
                         pl_data.payload[7] = pkt[8]; /* Table ID */
                         fsat_pkt_add_id(&pl_data, PKT_ID_DOWNLINK_SUBSYSTEM_TABLE);
                         (void)fsat_pkt_add_callsign(&pl_data, CONFIG_SATELLITE_CALLSIGN);
-                        fsat_pkt_encode(&pl_data, pkt_raw, &pkt_len);
+                        fsat_pkt_encode(&pl_data, pkt_raw, &raw_pkt_len);
                         
                         if (!sat_data_buf.obdh.data.hibernation_on)
                         {
-                            if (ttc_send(TTC_0, pkt_raw, pkt_len) != 0)
+                            if (ttc_send(TTC_0, pkt_raw, raw_pkt_len) != 0)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error transmitting a \"Get Subsystem Table\" answer!");
                                 sys_log_new_line();
@@ -2120,6 +2221,8 @@ static void process_tc_get_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
 
 static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
+    (void)is_scheduled;
+
     if (pkt_len >= (1U + 7U + 50U + 20U))
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_UPDATE_TLE; // cppcheck-suppress misra-c2012-7.4
@@ -2132,7 +2235,7 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_schedu
 
             if (update_tle_line(&sat_data_buf.obdh, &pkt[8]) == 0) 
             {
-                (void)send_tc_feedback(pkt, ERRNO_FB_SUBSYSTEM_COMM_FAIL);
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
             else
             {
@@ -2149,6 +2252,8 @@ static void process_tc_update_tle(uint8_t *pkt, uint16_t pkt_len, bool is_schedu
 
 static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
 {
+    (void)is_scheduled;
+
     if ((pkt_len >= (1U + 7U + 20U)) && (pkt_len <= 73U))
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_TRANSMIT_PACKET; // cppcheck-suppress misra-c2012-7.4
@@ -2188,6 +2293,38 @@ static void process_tc_transmit_packet(uint8_t *pkt, uint16_t pkt_len, bool is_s
         }
 
     }
+}
+
+static void process_tc_schedule(uint8_t *pkt, uint16_t pkt_len, bool is_scheduled)
+{
+    (void)is_scheduled;
+
+    if (pkt_len >= (1U + 4U + 1U + 7U + 20U))
+    {
+        uint8_t tc_key[16] = CONFIG_TC_KEY_SCHEDULE_TC; // cppcheck-suppress misra-c2012-7.4
+
+        if (process_tc_validate_hmac(pkt, pkt_len - 20U, &pkt[pkt_len - 20U], 20U, tc_key, sizeof(CONFIG_TC_KEY_SCHEDULE_TC)-1U))
+        {
+            /* Update last valid tc parameter */
+            sat_data_buf.obdh.data.last_valid_tc = pkt[0];
+            sat_data_buf.obdh.data.ts_last_contact = system_get_time();
+
+            if (schedule_tc(pkt, pkt_len) == 0) 
+            {
+                (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
+            }
+            else
+            {
+                (void)send_tc_feedback(pkt, ERRNO_FB_FAILED_TO_SCHED_TC);
+            }
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error executing the \"Schedule TC\" TC! Invalid key!");
+            sys_log_new_line();
+        }
+    }
+
 }
 
 static bool process_tc_validate_hmac(uint8_t *msg, uint16_t msg_len, uint8_t *msg_hash, uint16_t msg_hash_len, uint8_t *key, uint16_t key_len)

@@ -77,6 +77,7 @@ typedef enum {
     PKT_ID_UPLINK_GET_PARAM           =  0x4D,
     PKT_ID_UPLINK_TRANSMIT_PACKET     =  0x4E,
     PKT_ID_UPLINK_UPDATE_TLE          =  0x4F,
+    PKT_ID_UPLINK_SCHED_TC            =  0x50,
 } packet_id_e;
 
 /**
@@ -152,6 +153,7 @@ typedef enum {
 #define ERRNO_FB_SUBSYSTEM_COMM_FAIL                (-2)
 #define ERRNO_FB_DEVICE_COMM_FAIL                   (-3)
 #define ERRNO_FB_FAILED_TO_UPDATE_FRAM              (-4)
+#define ERRNO_FB_FAILED_TO_SCHED_TC                 (-5)
 
 /**
  * \brief OBDH telemetry type.
