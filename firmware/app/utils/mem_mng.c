@@ -297,6 +297,47 @@ int mem_mng_erase_flash(obdh_telemetry_t *tel)
     return err;
 }
 
+int mem_mng_load_tc_queue_from_fram(struct conops_cmd_queue *queue)
+{
+    int err = -1;
+
+    uint8_t sys_par[sizeof(*queue) + 1U];
+
+    if (media_read(MEDIA_FRAM, CONFIG_MEM_ADR_TC_QUEUE, sys_par, (sizeof(*queue) + 1U)) == 0)
+    {
+        if (crc_is_valid(sys_par, sizeof(*queue), sys_par[sizeof(*queue)]))
+        {
+            (void)memcpy((void*)queue, sys_par, sizeof(*queue));
+            err = 0;
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, MEM_MNG_NAME, "TC queue CRC wasn't valid!");
+            sys_log_new_line();
+        }
+    }
+
+    return err;
+}
+
+int mem_mng_save_tc_queue_to_fram(struct conops_cmd_queue *queue)
+{
+    int err = -1;
+
+    uint8_t buf[sizeof(*queue) + 1U];
+
+    (void)memcpy(buf, (void*)queue, sizeof(*queue));
+
+    buf[sizeof(*queue)] = crc8(buf, sizeof(*queue));
+
+    if (media_write(MEDIA_FRAM, CONFIG_MEM_ADR_TC_QUEUE, buf, (sizeof(*queue) + 1U)) == 0)
+    {
+        err = 0;
+    }
+
+    return err;
+}
+
 static uint8_t crc8(uint8_t *data, uint8_t len)
 {
     uint8_t crc = CRC8_INITIAL_VAL;
