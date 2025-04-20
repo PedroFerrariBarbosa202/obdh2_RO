@@ -49,6 +49,7 @@
 #include <conops/util/cmd_queue.h>
 #include <system/sys_log/sys_log.h>
 #include <system/system.h>
+#include <utils/mem_mng.h>
 #include <config/config.h>
 
 #include "sched_tc.h"
@@ -61,7 +62,7 @@ static struct conops_cmd_queue tc_queue;
 
 static void tc_queue_lock(void *lock)
 {
-    SemaphoreHandle_t sem = *(SemaphoreHandle_t*)lock;
+    SemaphoreHandle_t sem = *(SemaphoreHandle_t*)lock; // cppcheck-suppress misra-c2012-11.2
 
     if (xSemaphoreTake(sem, pdMS_TO_TICKS(TC_QUEUE_MUTEX_TIMEOUT_MS)) == pdFALSE)
     {
@@ -72,7 +73,7 @@ static void tc_queue_lock(void *lock)
 
 static void tc_queue_unlock(void *lock)
 {
-    SemaphoreHandle_t sem = *(SemaphoreHandle_t*)lock;
+    SemaphoreHandle_t sem = *(SemaphoreHandle_t*)lock; // cppcheck-suppress misra-c2012-11.2
 
     (void)xSemaphoreGive(sem);
 }
@@ -82,16 +83,45 @@ void reset_sched_tc_queue(void)
     cmd_queue_reset(&tc_queue);
 }
 
+int save_sched_tc_queue_to_fram(void)
+{
+    return mem_mng_save_tc_queue_to_fram(&tc_queue);
+}
+
+int schedule_tc(uint8_t *pkt, uint16_t pkt_size)
+{
+    struct conops_cmd tc = {0};
+
+    tc.timestamp = ((uint32_t)pkt[1] << 24U) |
+                   ((uint32_t)pkt[2] << 16U) |
+                   ((uint32_t)pkt[3] << 8U)  |
+                   ((uint32_t)pkt[4] << 0U);
+
+    /* Remove packet ID, timestamp and hmac hash from the packet size before copying */
+    (void)memcpy(tc.payload, &pkt[5], pkt_size - 1U - 4U - 20U); 
+
+    return cmd_queue_enqueue(&tc_queue, &tc);
+}
+
 void vTaskSchedTC(void* p)
 {
     (void)p;
 
     SemaphoreHandle_t xSemQueuelock = NULL;
+    uint16_t qsize = 0U;
     int err = 0;
 
     (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_SCHED_TC_STARTUP_TIMEOUT_MS));
 
-    // mem_mng_load_tc_queue_from_fram(&tc_queue); /* Load Sched TCs from FRAM */
+    if (mem_mng_load_tc_queue_from_fram(&tc_queue) == 0)
+    {
+        qsize = tc_queue.size;
+    }
+    else
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_SCHED_TC_NAME, "Failed to load TC queue from FRAM!");
+        sys_log_new_line();
+    }
 
     xSemQueuelock = xSemaphoreCreateMutex();
 
@@ -105,6 +135,12 @@ void vTaskSchedTC(void* p)
         sys_log_new_line();
 
         cmd_queue_init(&tc_queue, NULL, NULL, NULL);
+    }
+
+    /* The cmd_queue_init function resets the queue size, thus this step is needed to preserve its size */
+    if (qsize != 0U)
+    {
+        tc_queue.size = qsize;
     }
 
     TickType_t last_cycle = xTaskGetTickCount();
@@ -121,7 +157,13 @@ void vTaskSchedTC(void* p)
             sys_log_print_uint(tc.timestamp);
             sys_log_new_line();
 
-            //err = execute_tc(tc.payload, sizeof(tc.payload), true);
+            err = execute_tc(tc.payload, sizeof(tc.payload), true);
+
+            if (err != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_SCHED_TC_NAME, "Invalid TC was scheduled!");
+                sys_log_new_line();
+            }
         }
 
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_SCHED_TC_PERIOD_MS));

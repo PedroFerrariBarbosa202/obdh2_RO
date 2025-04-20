@@ -43,7 +43,7 @@
 #include <task.h>
 
 #define TASK_SCHED_TC_NAME                      "Sched-TC"             /**< Task name. */
-#define TASK_SCHED_TC_STACK_SIZE                512U                   /**< Stack size in bytes. */
+#define TASK_SCHED_TC_STACK_SIZE                1024U                  /**< Stack size in bytes. */
 #define TASK_SCHED_TC_PRIORITY                  2U                     /**< Task priority. */
 #define TASK_SCHED_TC_PERIOD_MS                 1000U                  /**< Task period. */
 #define TASK_SCHED_TC_STARTUP_TIMEOUT_MS        (5000UL)               /**< Task startup event group notification timeout */
@@ -68,6 +68,24 @@ void vTaskSchedTC(void* p);
  * \return None.
  */
 void reset_sched_tc_queue(void);
+
+/**
+ * \brief Saves TC Queue to FRAM.
+ *
+ * \return The status/error code.
+ */
+int save_sched_tc_queue_to_fram(void);
+
+/**
+ * \brief Schedule TC.
+ *
+ * \param[in] pkt is the received 'Schedule TC' telecommand packet.
+ *
+ * \param[in] pkt_len is the packet size.
+ *
+ * \return The status/error code.
+ */
+int schedule_tc(uint8_t *pkt, uint16_t pkt_size);
 
 #endif 
 
