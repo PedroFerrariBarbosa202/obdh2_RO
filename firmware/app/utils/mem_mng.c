@@ -326,7 +326,11 @@ int mem_mng_save_tc_queue_to_fram(struct conops_cmd_queue *queue)
 
     uint8_t buf[sizeof(*queue) + 1U];
 
+    queue->queue_lock(queue->lock);
+
     (void)memcpy(buf, (void*)queue, sizeof(*queue));
+    
+    queue->queue_unlock(queue->lock);
 
     buf[sizeof(*queue)] = crc8(buf, sizeof(*queue));
 
