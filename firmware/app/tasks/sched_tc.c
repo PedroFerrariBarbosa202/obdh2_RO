@@ -92,13 +92,13 @@ int schedule_tc(uint8_t *pkt, uint16_t pkt_size)
 {
     struct conops_cmd tc = {0};
 
-    tc.timestamp = ((uint32_t)pkt[1] << 24U) |
-                   ((uint32_t)pkt[2] << 16U) |
-                   ((uint32_t)pkt[3] << 8U)  |
-                   ((uint32_t)pkt[4] << 0U);
+    tc.timestamp = ((uint32_t)pkt[8] << 24U) |
+                   ((uint32_t)pkt[9] << 16U) |
+                   ((uint32_t)pkt[10] << 8U)  |
+                   ((uint32_t)pkt[11] << 0U);
 
-    /* Remove packet ID, timestamp and hmac hash from the packet size before copying */
-    (void)memcpy(tc.payload, &pkt[5], pkt_size - 1U - 4U - 20U); 
+    /* Remove packet ID, callsign, timestamp and hmac hash from the packet size before copying */
+    (void)memcpy(tc.payload, &pkt[12], pkt_size - 1U - 7U - 4U - 20U); 
 
     return cmd_queue_enqueue(&tc_queue, &tc);
 }

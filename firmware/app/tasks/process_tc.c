@@ -2303,7 +2303,7 @@ static void process_tc_schedule(uint8_t *pkt, uint16_t pkt_len, bool is_schedule
 {
     (void)is_scheduled;
 
-    if (pkt_len >= (1U + 4U + 1U + 7U + 20U))
+    if (pkt_len >= (1U + 7U + 4U + 1U + 7U + 20U))
     {
         uint8_t tc_key[16] = CONFIG_TC_KEY_SCHEDULE_TC; // cppcheck-suppress misra-c2012-7.4
 
