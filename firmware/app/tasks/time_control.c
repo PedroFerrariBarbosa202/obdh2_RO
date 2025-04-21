@@ -84,7 +84,7 @@ void vTaskTimeControl(void *p)
     (void)p;
 
     /* Wait startup task to finish */
-    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_TIME_CONTROL_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, FRAM_INIT_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_TIME_CONTROL_INIT_TIMEOUT_MS));
 
     /* Load the last saved system time */
     sys_time_t last_sys_time = 0;

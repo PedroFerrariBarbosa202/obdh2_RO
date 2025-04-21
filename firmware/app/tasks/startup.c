@@ -312,6 +312,9 @@ void vTaskStartup(void *p)
     }
 #endif /* CONFIG_DEV_MEDIA_FRAM_ENABLED */
 
+    /* FRAM initialization status = Done */
+    (void)xEventGroupSetBits(task_startup_status, FRAM_INIT_DONE);
+
     /* Print OBDH parameters */
 #if defined(CONFIG_PRINT_OBDH_PARAMS) && (CONFIG_PRINT_OBDH_PARAMS == 1)
     sys_log_print_obdh_parameters(&sat_data_buf.obdh);
