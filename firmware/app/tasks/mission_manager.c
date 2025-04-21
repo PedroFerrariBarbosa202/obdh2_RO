@@ -1071,8 +1071,8 @@ void vTaskMissionManager(void *p)
             {
                 if (EV_CHECK_CRIT_BITMASK(ev.ev_id))
                 {
-                    /* Notify Process TC task that the event was processed sucessfully */
-                    (void)xTaskNotify(xTaskProcessTCHandle, 0U, eNoAction);
+                    /* Notify TC executing task that the event was processed sucessfully */
+                    (void)xEventGroupSetBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT);
                 }
             }
             else

@@ -1046,7 +1046,8 @@ static void process_tc_enter_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is
 
             (void)notify_event_to_mission_manager(&enter_hib);
 
-            if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
+            /* Waits for Mission Manager notification. [Reuses startup event group to avoid memory usage] */
+            if ((xEventGroupWaitBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT, pdTRUE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) & MISSION_MANAGER_NOTIFICATION_BIT) != 0U)
             {
                 (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
@@ -1096,7 +1097,8 @@ static void process_tc_leave_hibernation(uint8_t *pkt, uint16_t pkt_len, bool is
 
             (void)notify_event_to_mission_manager(&leave_hib);
 
-            if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
+            /* Waits for Mission Manager notification. [Reuses startup event group to avoid memory usage] */
+            if ((xEventGroupWaitBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT, pdTRUE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) & MISSION_MANAGER_NOTIFICATION_BIT) != 0U)
             {
                 (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
@@ -1440,7 +1442,8 @@ static void process_tc_activate_payload(uint8_t *pkt, uint16_t pkt_len, bool is_
 
         if (err == 0)
         {
-            if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
+            /* Waits for Mission Manager notification. [Reuses startup event group to avoid memory usage] */
+            if ((xEventGroupWaitBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT, pdTRUE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) & MISSION_MANAGER_NOTIFICATION_BIT) != 0U)
             {
                 (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
@@ -1576,7 +1579,8 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len, bool i
 
         if (err == 0)
         {
-            if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) == pdTRUE)
+            /* Waits for Mission Manager notification. [Reuses startup event group to avoid memory usage] */
+            if ((xEventGroupWaitBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT, pdTRUE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) & MISSION_MANAGER_NOTIFICATION_BIT) != 0U)
             {
                 (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
             }
@@ -2010,8 +2014,8 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
                     {
                         if ((pkt[9] == OBDH_PARAM_ID_MODE) || (pkt[9] == OBDH_PARAM_ID_MAIN_PAYLOAD_STATE) || (pkt[9] == OBDH_PARAM_ID_SEC_PAYLOAD_STATE))
                         {
-                            /* Check for notification from mission_manager */
-                            if (xTaskNotifyWait(0U, UINT32_MAX, NULL, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) != pdTRUE)
+                            /* Waits for Mission Manager notification. [Reuses startup event group to avoid memory usage] */
+                            if ((xEventGroupWaitBits(task_startup_status, MISSION_MANAGER_NOTIFICATION_BIT, pdTRUE, pdTRUE, pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS)) & MISSION_MANAGER_NOTIFICATION_BIT) != 0U)
                             {
                                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Mission manager notify timed out for \"Set Param\"");
                                 sys_log_new_line();

@@ -51,6 +51,8 @@
 #define TASK_PROCESS_TC_INIT_TIMEOUT_MS     10000               /**< Wait time to initialize the task in milliseconds. */
 #define TASK_PROCESS_TC_MAX_WAIT_TIME_MS    (5000)              /**< Max wait time to received a confirmation notification from mission manager in milliseconds. */
 
+#define MISSION_MANAGER_NOTIFICATION_BIT    (1U << 2U)          /**< Mission Manager notification bit on event group. */
+
 /**
  * \brief Process TC handle.
  */
