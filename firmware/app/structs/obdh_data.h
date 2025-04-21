@@ -91,6 +91,8 @@
 #define OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV    42U /**< Battery critical level threshold in millivolts. */
 #define OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON      43U /**< Flag to state if the experiments are manually enabled. */
 #define OBDH_PARAM_ID_RESET_TC_QUEUE            44U /**< Resets the TC Queue (Only write param, writing "0x01" to it resets the queue) */
+#define OBDH_PARAM_ID_TC_QUEUE_SIZE             45U /**< Current TC Queue size */
+#define OBDH_PARAM_ID_TS_NEXT_SCHED_TC          46U /**< Next scheduled telecommand execution timestamp. */
 
 /* Default values */
 #define OBDH_TIMESTAMP_DEFAULT_VAL                      0U
@@ -135,6 +137,8 @@
 #define OBDH_PARAM_LAST_TRAN_EV_ID_DEFAULT_VAL          0U
 #define OBDH_PARAM_EPS_BEACON_ON_DEFAULT_VAL            0U
 #define OBDH_PARAM_BATT_CRITICAL_LEVEL_MV_DEFAULT_VAL   6500U
+#define OBDH_PARAM_TC_QUEUE_SIZE_DEFAULT_VAL            0U             
+#define OBDH_PARAM_TS_NEXT_SCHED_TC_DEFAULT_VAL         0U
 
 /**
  * \brief Position data.
@@ -175,6 +179,7 @@ typedef struct
     sys_time_t ts_last_contact;         /**< Timestamp of the last TC reception. */
     sys_time_t ts_commission_timeout;   /**< Timestamp when the commission mode will timeout. */
     sys_time_t hib_duration;            /**< Hibernation duration in seconds. */
+    sys_time_t ts_next_sched_tc;        /**< Next scheduled telecommand execution timestamp. */
     uint32_t fw_version;                /**< Firmware version (ex.: "v1.2.3" = 0x00010203). */
     uint16_t temperature;               /**< Temperature of the uC in Kelvin. */
     uint16_t current;                   /**< Input current in mA. */
@@ -191,6 +196,7 @@ typedef struct
     uint8_t main_edc;                   /**< Main EDC. */
     uint8_t main_payload_state;         /**< Main payload state. (PL_ID for active and 0 for inactive.) */
     uint8_t sec_payload_state;          /**< Secundary payload state. (PL_ID for active and 0 for inactive.) */
+    uint8_t tc_queue_size;              /**< Current TC Queue size */
     bool initial_hib_executed;          /**< Initial hibernation executed flag. */
     bool ant_deployment_executed;       /**< Antenna deployment executed flag. */
     bool hibernation_on;		        /**< Satellite in hibernation flag. */

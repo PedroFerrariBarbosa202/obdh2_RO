@@ -358,6 +358,8 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV:   *buf = sat_data_buf.obdh.data.batt_crit_level_mv;                        break;
         case OBDH_PARAM_ID_HIBERNATION_ON:           *buf = sat_data_buf.obdh.data.hibernation_on;                            break;
         case OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON:     *buf = sat_data_buf.obdh.data.manual_experiments;                        break;
+        case OBDH_PARAM_ID_TC_QUEUE_SIZE:            *buf = sat_data_buf.obdh.data.tc_queue_size;                             break;
+        case OBDH_PARAM_ID_TS_NEXT_SCHED_TC:         *buf = sat_data_buf.obdh.data.ts_next_sched_tc;                          break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);

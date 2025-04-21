@@ -166,6 +166,9 @@ void vTaskSchedTC(void* p)
             }
         }
 
+        sat_data_buf.obdh.data.tc_queue_size = (uint8_t)tc_queue.size;
+        sat_data_buf.obdh.data.ts_next_sched_tc = (tc_queue.size > 0U) ? ((uint32_t)tc_queue.buffer[0].timestamp) : (0U);
+
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_SCHED_TC_PERIOD_MS));
     }
 }

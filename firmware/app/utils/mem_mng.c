@@ -133,6 +133,8 @@ void mem_mng_load_obdh_data_from_default_values(obdh_telemetry_t *tel)
     tel->data.eps_beacon_on                 = OBDH_PARAM_EPS_BEACON_ON_DEFAULT_VAL;
     tel->data.batt_crit_level_mv            = OBDH_PARAM_BATT_CRITICAL_LEVEL_MV_DEFAULT_VAL;
     tel->data.manual_experiments            = OBDH_PARAM_MANUAL_EXPERIMENT_ON_DEFAUL_VAL;
+    tel->data.tc_queue_size                 = OBDH_PARAM_TC_QUEUE_SIZE_DEFAULT_VAL;
+    tel->data.ts_next_sched_tc              = OBDH_PARAM_TS_NEXT_SCHED_TC_DEFAULT_VAL;
 
     uint8_t buf[50] = OBDH_PARAM_POSITION_BIN_TLE_DEFAULT_VAL;
 
