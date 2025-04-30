@@ -226,6 +226,8 @@ void vTaskHealthCheckMode(void *p)
             sys_log_print_test_result(edc_pointer_test, "NM(InBRAZIL) - EDC pointer test");
             sys_log_new_line();
 
+            sat_data_buf.obdh.data.manual_experiments = true;
+
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MODE_NAME, "Testing Stand-by Mode transition...");
             sys_log_new_line();
 
@@ -235,15 +237,14 @@ void vTaskHealthCheckMode(void *p)
                 sys_log_new_line();
             }
 
+            vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
+
             payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
-            edc_pointer_test = (sat_data_buf.state.c_edc == NULL);
 
             sys_log_print_test_result(payload_test, "NM(OutBRAZIL) - Payload State test");
             sys_log_new_line();
             sys_log_print_test_result(edc_pointer_test, "NM(OutBRAZIL) - EDC pointer test");
             sys_log_new_line();
-
-            vTaskDelay(pdMS_TO_TICKS(TASK_PROCESS_TC_MAX_WAIT_TIME_MS));
 
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_HEALTH_CHECK_MODE_NAME, "Testing Normal Mode transition and EDC switch...");
             sys_log_new_line();
@@ -355,7 +356,7 @@ void vTaskHealthCheckMode(void *p)
                 payload_test = (sat_data_buf.obdh.data.mode == OBDH_MODE_STAND_BY) && ((sat_data_buf.obdh.data.main_payload_state == (uint8_t)PAYLOAD_NONE) && (sat_data_buf.obdh.data.sec_payload_state == (uint8_t)PAYLOAD_NONE));
             }
 
-            sys_log_print_test_result(payload_test, "FDIR(BATT_LVL) - Payload State test");
+            sys_log_print_test_result(payload_test, "FDIR(BATT_LVL_RECOVERY) - Payload State test");
             sys_log_new_line();
 
             const struct conops_event enter_hib = {
