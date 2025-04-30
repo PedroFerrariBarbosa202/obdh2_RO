@@ -651,7 +651,7 @@ static int goto_nominal_mode(struct conops_fsm *ctx, const struct conops_event *
 
     if (main != PAYLOAD_NONE)
     {
-        if (sat->obdh.data.main_payload_state != (uint8_t)main)
+        if ((sat->obdh.data.main_payload_state != (uint8_t)main) && (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE))
         {
             (void)payload_disable((payload_t)sat_data_buf.obdh.data.main_payload_state);
         }
@@ -734,7 +734,7 @@ static int goto_experiment_mode(struct conops_fsm *ctx, const struct conops_even
     if (retry_count != 0U)
     {
         const uint32_t px_active_time_ms = (uint32_t)PAYLOAD_X_EXPERIMENT_PERIOD_MS;
-        sat->obdh.data.main_payload_state = (uint8_t)PAYLOAD_X;
+        sat->obdh.data.sec_payload_state = (uint8_t)PAYLOAD_X;
 
         /* Send notifcation to read_px task to initialize experiment */
         (void)xTaskNotify(xTaskReadPXHandle, px_active_time_ms, eSetValueWithOverwrite);
@@ -978,10 +978,10 @@ static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_ev
 static conops_transition_handler_t mode_transition_table[MISSION_OPERATION_MODES][MISSION_OPERATION_MODES] = {  // cppcheck-suppress misra-c2012-8.9
             /* Deployment (DM) | Commission (CM) | Normal (NM) | Stand-by (SBM) | Experiment (EXM) | FDIR (FDM) | Manual (MNM) */
 /* DM */   {NULL, goto_commission_mode, NULL, NULL, NULL, goto_fdir_mode, goto_manual_mode},
-/* CM */   {NULL, NULL, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
-/* NM */   {NULL, goto_commission_mode, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
+/* CM */   {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
+/* NM */   {NULL, goto_commission_mode, NULL, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
 /* SBM */  {NULL, goto_commission_mode, goto_nominal_mode, NULL, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
-/* EXM */  {NULL, goto_commission_mode, NULL, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
+/* EXM */  {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, NULL, goto_fdir_mode, goto_manual_mode},
 /* FDM */  {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, NULL, NULL, goto_manual_mode},
 /* MNM */  {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, NULL},
 };
