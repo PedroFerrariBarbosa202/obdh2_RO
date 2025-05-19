@@ -43,8 +43,8 @@
 #include "mission_manager.h"
 #include "startup.h"
 
-#define READ_EPS_MAX_RETRIES        (3U)
-#define READ_EPS_RETRY_DELAY_MS     (500U)
+#define READ_EPS_MAX_RETRIES        (10U)
+#define READ_EPS_RETRY_DELAY_MS     (400U)
 
 xTaskHandle xTaskReadEPSHandle;
 
