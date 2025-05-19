@@ -199,17 +199,26 @@ int mem_mng_load_obdh_data_from_fram(obdh_telemetry_t *tel)
 int mem_mng_write_data_to_flash_page(uint8_t *data, uint32_t *page, uint32_t page_size, uint32_t start_page, uint32_t end_page)
 {
     int err = -1;
+    (void)start_page;
+
+    if ((*page) > end_page)
+    {
+        sys_log_print_event_from_module(SYS_LOG_INFO, MEM_MNG_NAME, "Module sector will overflow! Cleaning memory to avoid corruption...");
+        sys_log_new_line();
+
+        uint8_t retry_count = 5U;
+
+        do
+        {
+            err = mem_mng_erase_flash(&sat_data_buf.obdh);
+        } while ((err < 0) && (retry_count > 0U));
+    }
 
     if (media_write(MEDIA_NOR, (*page) * page_size, data, page_size) == 0)
     {
         portENTER_CRITICAL();
 
         (*page)++;    // cppcheck-suppress misra-c2012-17.8
-
-        if (*page > end_page)
-        {
-            *page = start_page;
-        }
 
         portEXIT_CRITICAL();
 
