@@ -34,7 +34,7 @@
  * \{
  */
 
-#include "system/system.h"
+#include <system/system.h>
 #include <conops/conops.h>
 #include <devices/eps/eps.h>
 #include <system/sys_log/sys_log.h>
@@ -100,6 +100,8 @@ void vTaskHousekeeping(void *p)
             }
         }
 
+        vTaskDelay(pdMS_TO_TICKS(100U));
+
         if (sat_data_buf.obdh.data.mode == OBDH_MODE_COMMISSION)
         {
             if (system_get_time() >= sat_data_buf.obdh.data.ts_commission_timeout)
@@ -134,6 +136,8 @@ void vTaskHousekeeping(void *p)
             sys_log_new_line();
         }
 
+        vTaskDelay(pdMS_TO_TICKS(50U));
+
         uint32_t eps_beacon_state = UINT32_MAX;
 
         if (eps_get_param(SL_EPS2_REG_BEACON_ENABLE, &eps_beacon_state) == 0)
@@ -157,6 +161,8 @@ void vTaskHousekeeping(void *p)
                 }
             }
         }
+         
+        vTaskDelay(pdMS_TO_TICKS(50U));
 
         /* Save the last available TC Queue at every minute */
         if (save_sched_tc_queue_to_fram() == 0)
