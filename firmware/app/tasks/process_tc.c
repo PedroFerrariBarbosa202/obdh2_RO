@@ -1147,24 +1147,34 @@ static void process_tc_activate_module(uint8_t *pkt, uint16_t pkt_len, bool is_s
                     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Activating the battery heater...");
                     sys_log_new_line();
 
-                    /* Enable the EPS heater */
-                    if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
-                    {
-                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_DUTY_CYCLE, 20U) == 0)
-                        {
-                            ++err;
-                        }
-                    }
+                    uint8_t retry_count = 5U;
 
-                    if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                    do
                     {
-                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_DUTY_CYCLE, 20U) == 0)
-                        {
-                            ++err;
-                        }
-                    }
+                        err = -2;
 
-                    if (err == 0)
+                        /* Enable the EPS heater */
+                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                        {
+                            if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_DUTY_CYCLE, 20U) == 0)
+                            {
+                                ++err;
+                            }
+                        }
+
+                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                        {
+                            if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_DUTY_CYCLE, 20U) == 0)
+                            {
+                                ++err;
+                            }
+                        }
+
+                        vTaskDelay(pdMS_TO_TICKS(50U));
+                        --retry_count;
+                    } while((err < 0) && (retry_count > 0U));
+
+                    if (retry_count != 0U)
                     {
                         (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
                     }
@@ -1249,24 +1259,34 @@ static void process_tc_deactivate_module(uint8_t *pkt, uint16_t pkt_len, bool is
                     sys_log_print_event_from_module(SYS_LOG_INFO, TASK_PROCESS_TC_NAME, "Deactivating the battery heater...");
                     sys_log_new_line();
 
-                    /* Disable the EPS heater */
-                    if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
-                    {
-                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_DUTY_CYCLE, 0U) == 0)
-                        {
-                            ++err;
-                        }
-                    }
+                    uint8_t retry_count = 5U;
 
-                    if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                    do
                     {
-                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_DUTY_CYCLE, 0U) == 0)
-                        {
-                            ++err;
-                        }
-                    }
+                        err = -2;
 
-                    if (err == 0)
+                        /* Disable the EPS heater */
+                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                        {
+                            if (eps_set_param(SL_EPS2_REG_BAT_HEATER_1_DUTY_CYCLE, 0U) == 0)
+                            {
+                                ++err;
+                            }
+                        }
+
+                        if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_MODE, SL_EPS2_HEATER_MODE_MANUAL) == 0)
+                        {
+                            if (eps_set_param(SL_EPS2_REG_BAT_HEATER_2_DUTY_CYCLE, 0U) == 0)
+                            {
+                                ++err;
+                            }
+                        }
+
+                        vTaskDelay(pdMS_TO_TICKS(50U));
+                        --retry_count;
+                    } while((err < 0) && (retry_count > 0U));
+
+                    if (retry_count != 0U)
                     {
                         (void)send_tc_feedback(pkt, ERRNO_FB_SUCESSFULL_EXEC);
                     }
@@ -1983,6 +2003,7 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
 {
     int8_t err = 0;
     bool authed = false;
+    uint8_t retry_count = 5;
 
     if (pkt_len >= (1U + 7U + 1U + 1U + 4U))
     {
@@ -2025,26 +2046,32 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
 
                         if (pkt[9] == OBDH_PARAM_ID_SYSTEM_TIME)
                         {
-                            if (eps_set_param(SL_EPS2_REG_TIME_COUNTER, buf) != 0)
+                            do
                             {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with EPS!");
-                                sys_log_new_line();
-                                err = -1;
-                            }
+                                if (eps_set_param(SL_EPS2_REG_TIME_COUNTER, buf) != 0)
+                                {
+                                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with EPS!");
+                                    sys_log_new_line();
+                                    err = -1;
+                                }
 
-                            if (ttc_set_param(TTC_0, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
-                            {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with TTC 0!");
-                                sys_log_new_line();
-                                err = -1;
-                            }
+                                if (ttc_set_param(TTC_0, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
+                                {
+                                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with TTC 0!");
+                                    sys_log_new_line();
+                                    err = -1;
+                                }
 
-                            if (ttc_set_param(TTC_1, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
-                            {
-                                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with TTC 1!");
-                                sys_log_new_line();
-                                err = -1;
-                            }
+                                if (ttc_set_param(TTC_1, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
+                                {
+                                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Failed to synchronize system time with TTC 1!");
+                                    sys_log_new_line();
+                                    err = -1;
+                                }
+                            
+                                vTaskDelay(pdMS_TO_TICKS(50U));
+                                --retry_count;
+                            } while ((err < 0) && (retry_count > 0U));
                         }
                     }
                     else 
@@ -2056,27 +2083,48 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
 
                     break;
                 case SUBSYSTEM_ID_TTC_1:
-                    if (ttc_set_param(TTC_0, pkt[9], buf) != 0)
+                    do
                     {
-                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error writing a TTC 0 parameter!");
+                        err = ttc_set_param(TTC_0, pkt[9], buf);
+                        vTaskDelay(pdMS_TO_TICKS(50U));
+                        --retry_count;
+                    } while ((err < 0) && (retry_count > 0U));
+
+                    if (retry_count == 0U)
+                    {
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Max retries reached trying to write TTC 0 parameter!");
                         sys_log_new_line();
                         err = -1;
                     }
 
                     break;
                 case SUBSYSTEM_ID_TTC_2:
-                    if (ttc_set_param(TTC_1, pkt[9], buf) != 0)
+                    do
                     {
-                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error writing a TTC 1 parameter!");
+                        err = ttc_set_param(TTC_1, pkt[9], buf);
+                        vTaskDelay(pdMS_TO_TICKS(50U));
+                        --retry_count;
+                    } while ((err < 0) && (retry_count > 0U));
+
+                    if (retry_count == 0U)
+                    {
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Max retries reached trying to write TTC 1 parameter!");
                         sys_log_new_line();
                         err = -1;
                     }
 
                     break;
                 case SUBSYSTEM_ID_EPS:
-                    if (eps_set_param(pkt[9], buf) != 0)
+                    do
                     {
-                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Error writing a EPS parameter!");
+                        err = eps_set_param(pkt[9], buf);
+                        vTaskDelay(pdMS_TO_TICKS(50U));
+                        --retry_count;
+                    } while ((err < 0) && (retry_count > 0U));
+
+                    if (retry_count == 0U)
+                    {
+                        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_PROCESS_TC_NAME, "Max retries reached trying to write EPS parameter!");
                         sys_log_new_line();
                         err = -1;
                     }
