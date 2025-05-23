@@ -65,7 +65,7 @@ void vTaskHousekeeping(void *p)
     while(1)
     {
         /* Hibernation mode check */
-        if (sat_data_buf.obdh.data.hibernation_on)
+        if ((sat_data_buf.obdh.data.hibernation_on) && (sat_data_buf.obdh.data.mode != OBDH_MODE_DEPLOYMENT))
         {
             uint32_t hib = sat_data_buf.obdh.data.hib_duration;
 
@@ -175,7 +175,7 @@ void vTaskHousekeeping(void *p)
             sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_HOUSEKEEPING_NAME, "Error saving TC Queue to FRAM!");
             sys_log_new_line();
         }
-        
+
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_HOUSEKEEPING_PERIOD_MS));
     }
 }
