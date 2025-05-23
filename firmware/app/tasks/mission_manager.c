@@ -977,7 +977,7 @@ static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_ev
 
 static conops_transition_handler_t mode_transition_table[MISSION_OPERATION_MODES][MISSION_OPERATION_MODES] = {  // cppcheck-suppress misra-c2012-8.9
             /* Deployment (DM) | Commission (CM) | Normal (NM) | Stand-by (SBM) | Experiment (EXM) | FDIR (FDM) | Manual (MNM) */
-/* DM */   {NULL, goto_commission_mode, NULL, NULL, NULL, goto_fdir_mode, goto_manual_mode},
+/* DM */   {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
 /* CM */   {NULL, goto_commission_mode, goto_nominal_mode, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
 /* NM */   {NULL, goto_commission_mode, NULL, goto_standby_mode, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
 /* SBM */  {NULL, goto_commission_mode, goto_nominal_mode, NULL, goto_experiment_mode, goto_fdir_mode, goto_manual_mode},
