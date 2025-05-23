@@ -94,6 +94,10 @@ void vTaskReadEDC(void *p)
 
             vTaskDelay(pdMS_TO_TICKS(50));     /* Wait a while for the next command */
 
+            sys_log_print_event_from_module(SYS_LOG_INFO, TASK_READ_EDC_NAME, "Active EDC ID: ");
+            sys_log_print_hex((uint32_t)pl_edc_active);
+            sys_log_new_line();
+
             /* Read housekeeping data */
             if (payload_get_data(pl_edc_active, PAYLOAD_EDC_RAW_HK, edc_hk_buf.buffer, &edc_hk_buf.length) == 0)
             {
