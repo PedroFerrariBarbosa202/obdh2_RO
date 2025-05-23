@@ -504,6 +504,7 @@ static int goto_commission_mode(struct conops_fsm *ctx, const struct conops_even
 
     sat->obdh.data.hibernation_on = false;
     sat->obdh.data.general_telemetry_on = true;
+    sat->obdh.data.eps_beacon_on = true;
     sat->obdh.data.ts_commission_timeout = system_get_time() + (uint32_t)COMMISSION_MODE_TIMEOUT_SEC;
     sat->obdh.data.hib_duration = 0U;
 
@@ -524,10 +525,6 @@ static int goto_commission_mode(struct conops_fsm *ctx, const struct conops_even
     {
         sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to enable EPS beacon!");
         sys_log_new_line();
-    }
-    else
-    {
-        sat->obdh.data.eps_beacon_on = true;
     }
 
     if ((ev->ev_id != EV_PERSIST_STATE_ON_INIT) && (retval == 0))
