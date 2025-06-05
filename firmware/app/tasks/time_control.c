@@ -60,15 +60,6 @@ xTaskHandle xTaskTimeControlHandle;
 static int time_control_load_sys_time(sys_time_t *tm);
 
 /**
- * \brief Saves a given system time to the non-volatile memory.
- *
- * \param[in] tm is the system time value to save.
- *
- * \return The status/error code.
- */
-static int time_control_save_sys_time(sys_time_t tm);
-
-/**
  * \brief Computes the CRC-8 of a sequence of bytes.
  *
  * \param[in] data is an array of data to compute the CRC-8.
@@ -168,7 +159,7 @@ static int time_control_load_sys_time(sys_time_t *tm)
     return err;
 }
 
-static int time_control_save_sys_time(sys_time_t tm)
+int time_control_save_sys_time(sys_time_t tm)
 {
     int err = 0;
 
