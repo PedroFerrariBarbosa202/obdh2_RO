@@ -1545,7 +1545,7 @@ static void process_tc_deactivate_payload(uint8_t *pkt, uint16_t pkt_len, bool i
                     sat_data_buf.obdh.data.last_valid_tc = pkt[0];
                     sat_data_buf.obdh.data.ts_last_contact = system_get_time();
                     pl_event.ev_id = EV_TC_DISABLE_PAYLOAD;
-                    pl_event.src = (uint16_t)PL_ID_EDC_1;
+                    pl_event.src = (uint16_t)PL_ID_EDC_2;
                     (void)notify_event_to_mission_manager(&pl_event);
                 }
                 else
@@ -2061,6 +2061,8 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
                                     sys_log_new_line();
                                     err = -1;
                                 }
+
+                                //vTaskDelay(pdMS_TO_TICKS(250U));
 
                                 if (ttc_set_param(TTC_1, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
                                 {
