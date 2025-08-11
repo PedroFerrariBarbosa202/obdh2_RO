@@ -1898,12 +1898,9 @@ static void process_tc_get_subsystem_table(uint8_t *pkt, uint16_t pkt_len, bool 
                 {
                     fsat_pkt_pl_t pl_data;
 
-                    uint8_t *buf = (sat_data_buf.obdh.data.main_edc == (uint8_t)PL_ID_EDC_1) ? sat_data_buf.edc_0.data : sat_data_buf.edc_1.data;
+                    edc_telemetry_t *edc = (sat_data_buf.obdh.data.main_edc == (uint8_t)PL_ID_EDC_1) ? &sat_data_buf.edc_0 : &sat_data_buf.edc_1;
 
-                    /* The most recent PTT packet is stored right after housekeeping and state frames */
-                    void *ptt_buffer = &buf[EDC_FRAME_HK_LEN + EDC_FRAME_STATE_LEN];
-
-                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], ptt_buffer) == 0)
+                    if (format_data_request(pl_data.payload, &pl_data.length, pkt[8], &edc->ptt) == 0)
                     {
                         uint8_t pkt_raw[60];
                         uint16_t raw_pkt_len;
@@ -2061,8 +2058,6 @@ static void process_tc_set_parameter(uint8_t *pkt, uint16_t pkt_len, bool is_sch
                                     sys_log_new_line();
                                     err = -1;
                                 }
-
-                                //vTaskDelay(pdMS_TO_TICKS(250U));
 
                                 if (ttc_set_param(TTC_1, SL_TTC2_REG_TIME_COUNTER, buf) != 0)
                                 {
@@ -2736,7 +2731,6 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
 
 		case DATA_ID_SBCD_PKTS:
 		{
-            /* Cast is safe since the buffer is internally copied from an edc_ptt_t */
 			edc_ptt_t *tel = (edc_ptt_t *)data; // cppcheck-suppress misra-c2012-11.5
 
 			pl[0] = (tel->time_tag >> 24U) & 0xFFU;
@@ -2763,15 +2757,11 @@ static int8_t format_data_request(uint8_t *pkt_pl, uint16_t *pkt_pl_len, uint8_t
         /* Also used for EDC 0 and EDC 1 subsystem tables */
 		case DATA_ID_PAYLOAD_INFO:
 		{
-			payload_telemetry_t *tel = (payload_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
+			edc_telemetry_t *tel = (edc_telemetry_t *)data; // cppcheck-suppress misra-c2012-11.5
 
-            /* Cast is safe since the buffer is internally copied from an edc_hk_t */
-			edc_hk_t *hk = (edc_hk_t*)&tel->data[0]; // cppcheck-suppress misra-c2012-11.3
+			edc_hk_t *hk = &tel->hk;
 
-            /* The state data is stored right after the housekeeping data 
-             * on payload_telemetry_t's data field. The offset of 26 is 
-             * precisely the housekeeping data length*/
-			edc_state_t *st = (edc_state_t*)&tel->data[26]; // cppcheck-suppress misra-c2012-11.3
+			edc_state_t *st = &tel->state;
 
 			pl[0] = (tel->timestamp >> 24U) & 0xFFU;
 			pl[1] = (tel->timestamp >> 16U) & 0xFFU;

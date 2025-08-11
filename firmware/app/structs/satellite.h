@@ -44,6 +44,7 @@
 #include <system/system.h>
 
 #include <devices/eps/eps_data.h>
+#include <drivers/edc/edc.h>
 #include <devices/ttc/ttc_data.h>
 #include <devices/antenna/antenna_data.h>
 
@@ -202,11 +203,23 @@ typedef struct
 } payload_telemetry_t;
 
 /**
+ * \brief EDC telemetry type.
+ */
+typedef struct
+{
+    sys_time_t timestamp;           /**< Timestamp of the Payload data. */
+    uint8_t id;                     /**< Payload id [Ex: CONFIG_PL_ID_EDC_1] */
+    edc_hk_t hk;                    /**< EDC Housekeeping */
+    edc_state_t state;              /**< EDC State */
+    edc_ptt_t ptt;                  /**< EDC PTT Packet */
+} edc_telemetry_t;
+
+/**
  * \brief Payloads state type.
  */
 typedef struct
 {
-    payload_telemetry_t *c_edc;     /**< Pointer to the active EDC telemetry data. */
+    edc_telemetry_t *c_edc;     /**< Pointer to the active EDC telemetry data. */
 } payload_state_t;
 
 /**
@@ -219,8 +232,8 @@ typedef struct
     ttc_telemetry_t ttc_0;          /**< TTC 0 telemetry. */
     ttc_telemetry_t ttc_1;          /**< TTC 1 telemetry. */
     antenna_telemetry_t antenna;    /**< Antenna telemetry. */
-    payload_telemetry_t edc_0;      /**< EDC 0 telemetry. */
-    payload_telemetry_t edc_1;      /**< EDC 1 telemetry. */
+    edc_telemetry_t edc_0;          /**< EDC 0 telemetry. */
+    edc_telemetry_t edc_1;          /**< EDC 1 telemetry. */
     payload_telemetry_t payload_x;  /**< Payload-X telemetry. */
     payload_state_t state;          /**< Payload state. */
 } sat_data_t;

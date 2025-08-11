@@ -40,6 +40,7 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
+#include <drivers/edc/edc.h>
 
 #define TASK_READ_EDC_NAME                  "EDC Task"          /**< Task name. */
 #define TASK_READ_EDC_STACK_SIZE            300                 /**< Stack size in bytes. */
@@ -52,7 +53,7 @@
  */
 typedef struct
 {
-    uint8_t buffer[30];
+    uint8_t buffer[sizeof(edc_hk_t)];
     int32_t length;
 } pl_edc_hk_raw_t;
 

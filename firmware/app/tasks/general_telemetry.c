@@ -181,8 +181,9 @@ void vTaskGeneralTelemetry(void *p)
             gen_tel_pl.payload[99] = (sat_data_buf.obdh.data.ts_next_sched_tc >> 8U) & 0xFFU;
             gen_tel_pl.payload[100] = sat_data_buf.obdh.data.ts_next_sched_tc & 0xFFU;
             gen_tel_pl.payload[101] = sat_data_buf.obdh.data.tc_queue_size;
+            gen_tel_pl.payload[102] = sat_data_buf.obdh.data.mode;
 
-            gen_tel_pl.length = 102U;
+            gen_tel_pl.length = 103U;
 
             uint8_t gen_tel_pl_raw[120] = {0};
             uint16_t gen_tel_pl_raw_len = 0;

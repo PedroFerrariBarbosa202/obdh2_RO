@@ -1,34 +1,34 @@
 /*
  * mission_manager.c
- * 
+ *
  * Copyright The OBDH 2.0 Contributors.
- * 
+ *
  * This file is part of OBDH 2.0.
- * 
+ *
  * OBDH 2.0 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * OBDH 2.0 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with OBDH 2.0. If not, see <http:/\/www.gnu.org/licenses/>.
- * 
+ *
  */
 
 /**
  * \brief Mission Manager Task implementation
- * 
+ *
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
- * 
+ *
  * \version 1.0.0
- * 
+ *
  * \date 2024/08/04
- * 
+ *
  * \addtogroup mission_man
  * \{
  */
@@ -64,7 +64,7 @@ static inline int32_t handle_deployment_evs(const struct conops_fsm *ctx, const 
 
     int32_t transition_to = OBDH_MODE_DEPLOYMENT;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_OUT_OF_BRAZIL:
             break;
@@ -104,9 +104,9 @@ static inline int32_t handle_commission_evs(const struct conops_fsm *ctx, const 
     sat_data_t *sat = ctx->user_data;
     int transition_to = OBDH_MODE_COMMISSION;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
-        /* In commission there's simple no reason to react to position related 
+        /* In commission there's simple no reason to react to position related
          * events since the TLEs are still not updated */
         case EV_OUT_OF_BRAZIL:
             break;
@@ -190,7 +190,7 @@ static inline int32_t handle_nominal_evs(const struct conops_fsm *ctx, const str
     sat_data_t *sat = ctx->user_data;
     int32_t transition_to = OBDH_MODE_NORMAL;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_OUT_OF_BRAZIL:
             if (sat->obdh.data.manual_experiments)
@@ -234,7 +234,7 @@ static inline int32_t handle_standby_evs(const struct conops_fsm *ctx, const str
     (void)ctx;
     int32_t transition_to = OBDH_MODE_STAND_BY;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_OUT_OF_BRAZIL:
             break;
@@ -272,7 +272,7 @@ static inline int32_t handle_experiment_evs(const struct conops_fsm *ctx, const 
     (void)ctx;
     int32_t transition_to = OBDH_MODE_EXPERIMENT;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_OUT_OF_BRAZIL:
             break;
@@ -312,7 +312,7 @@ static inline int32_t handle_fdir_evs(const struct conops_fsm *ctx, const struct
     sat_data_t *sat = ctx->user_data;
     int32_t transition_to = OBDH_MODE_FDIR;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_OUT_OF_BRAZIL:
             break;
@@ -359,7 +359,7 @@ static inline int32_t handle_manual_evs(const struct conops_fsm *ctx, const stru
     (void)ctx;
     int transition_to = OBDH_MODE_MANUAL;
 
-    switch (ev->ev_id) 
+    switch (ev->ev_id)
     {
         case EV_TC_GOTO_NORMAL_MODE:
             transition_to = OBDH_MODE_NORMAL;
@@ -423,7 +423,7 @@ static int enable_ttc_tx(void)
     int err = 0;
     uint8_t retry_count = 5U;
 
-    do 
+    do
     {
         err = 0;
 
@@ -443,7 +443,7 @@ static int enable_ttc_tx(void)
 
         --retry_count;
     } while ((err < 0) && (retry_count > 0U));
-    
+
     if (retry_count == 0U)
     {
         err = -1;
@@ -457,7 +457,7 @@ static int disable_ttc_tx(void)
     int err = 0;
     uint8_t retry_count = 5U;
 
-    do 
+    do
     {
         err = 0;
 
@@ -514,7 +514,7 @@ static int goto_commission_mode(struct conops_fsm *ctx, const struct conops_even
         sys_log_new_line();
     }
 
-    do 
+    do
     {
         err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 1U);
         vTaskDelay(100U);
@@ -553,7 +553,7 @@ static int goto_standby_mode(struct conops_fsm *ctx, const struct conops_event *
 
     if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
             vTaskDelay(100U);
@@ -577,7 +577,7 @@ static int goto_standby_mode(struct conops_fsm *ctx, const struct conops_event *
 
     if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
             vTaskDelay(100U);
@@ -622,7 +622,7 @@ static int goto_nominal_mode(struct conops_fsm *ctx, const struct conops_event *
 
     if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
             vTaskDelay(100U);
@@ -653,7 +653,7 @@ static int goto_nominal_mode(struct conops_fsm *ctx, const struct conops_event *
             (void)payload_disable((payload_t)sat_data_buf.obdh.data.main_payload_state);
         }
 
-        do 
+        do
         {
             err = payload_enable(main);
             vTaskDelay(100U);
@@ -699,7 +699,7 @@ static int goto_experiment_mode(struct conops_fsm *ctx, const struct conops_even
 
     if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
             vTaskDelay(100U);
@@ -721,7 +721,7 @@ static int goto_experiment_mode(struct conops_fsm *ctx, const struct conops_even
         retry_count = 5U;
     }
 
-    do 
+    do
     {
         err = payload_enable(PAYLOAD_X);
         vTaskDelay(100U);
@@ -769,7 +769,7 @@ static int goto_fdir_mode(struct conops_fsm *ctx, const struct conops_event *ev,
 
     if (sat->obdh.data.main_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.main_payload_state);
             vTaskDelay(100U);
@@ -793,7 +793,7 @@ static int goto_fdir_mode(struct conops_fsm *ctx, const struct conops_event *ev,
 
     if (sat->obdh.data.sec_payload_state != (uint8_t)PAYLOAD_NONE)
     {
-        do 
+        do
         {
             err = payload_disable((payload_t)sat->obdh.data.sec_payload_state);
             vTaskDelay(100U);
@@ -815,7 +815,7 @@ static int goto_fdir_mode(struct conops_fsm *ctx, const struct conops_event *ev,
         retry_count = 5U;
     }
 
-    do 
+    do
     {
         err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, 0U);
         vTaskDelay(100U);
@@ -881,7 +881,7 @@ static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_ev
             sys_log_print_msg(" hours...");
             sys_log_new_line();
 
-            if (disable_ttc_tx() < 0) 
+            if (disable_ttc_tx() < 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to disable transmissions through TTC!");
                 sys_log_new_line();
@@ -898,7 +898,7 @@ static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_ev
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Leaving hibernation...");
             sys_log_new_line();
 
-            if (enable_ttc_tx() < 0) 
+            if (enable_ttc_tx() < 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to enable transmissions through TTC!");
                 sys_log_new_line();
@@ -915,7 +915,7 @@ static int32_t event_mapper(const struct conops_fsm *ctx, const struct conops_ev
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Hibernation timeout! Enabling transmissions...");
             sys_log_new_line();
 
-            if (enable_ttc_tx() < 0) 
+            if (enable_ttc_tx() < 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_MISSION_MANAGER_NAME, "Failed to enable transmissions through TTC!");
                 sys_log_new_line();
@@ -985,7 +985,7 @@ static conops_transition_handler_t mode_transition_table[MISSION_OPERATION_MODES
 
 #endif
 
-static int satellite_persist_op_mode(struct conops_fsm *ctx) 
+static int satellite_persist_op_mode(struct conops_fsm *ctx)
 {
     int retval = 0;
 
@@ -1053,9 +1053,9 @@ void vTaskMissionManager(void *p)
     (void)conops_register_mapper(&op_mode_fsm, event_mapper);
     (void)conops_register_fsm_user_data(&op_mode_fsm, &sat_data_buf);
 
-    while (1) 
+    while (1)
     {
-        if (xQueueReceive(event_queue, &ev, pdMS_TO_TICKS_64(TASK_MISSION_MANAGER_EV_NOTIFICATION_TIMEOUT)) == pdPASS) 
+        if (xQueueReceive(event_queue, &ev, pdMS_TO_TICKS_64(TASK_MISSION_MANAGER_EV_NOTIFICATION_TIMEOUT)) == pdPASS)
         {
             sys_log_print_event_from_module(SYS_LOG_INFO, TASK_MISSION_MANAGER_NAME, "Received new event (");
             sys_log_print_hex((uint32_t)ev.ev_id);
@@ -1063,7 +1063,7 @@ void vTaskMissionManager(void *p)
             sys_log_new_line();
 
             err = conops_fsm_process_event(&op_mode_fsm, &ev);
-            
+
             if (err == 0)
             {
                 if (EV_CHECK_CRIT_BITMASK(ev.ev_id))
@@ -1078,7 +1078,7 @@ void vTaskMissionManager(void *p)
                 sys_log_new_line();
             }
         }
-        else 
+        else
         {
             sys_log_print_event_from_module(SYS_LOG_WARNING, TASK_MISSION_MANAGER_NAME, "Notification waiting timed out!");
             sys_log_new_line();
