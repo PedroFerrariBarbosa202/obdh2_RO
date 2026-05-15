@@ -307,6 +307,30 @@ void sys_log_print_byte(uint8_t byte)
     sys_log_uart_write_byte(byte);
 }
 
+void sys_log_print_bit_array_as_hex(uint64_t bit_array, uint16_t bytes_to_read)
+{
+    uint16_t offset = 0;
+
+    for (uint16_t n = 0; n < bytes_to_read; n++)
+    {
+        uint8_t curr_byte = 0;
+
+        for (uint16_t i = 0; i < 8; i++)
+        {
+            uint8_t curr_bit = (bit_array >> (i + offset)) & 1;
+            curr_byte |= (curr_bit << i);
+        }
+
+        sys_log_print_hex(curr_byte);
+        sys_log_print_msg(" ");
+
+        offset += 8;
+    }
+
+    sys_log_print_msg("\n");
+}
+
+
 void sys_log_print_system_time(void)
 {
     sys_log_set_color(SYS_LOG_SYSTEM_TIME_COLOR);

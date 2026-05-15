@@ -35,6 +35,8 @@
 
 #include <stdbool.h>
 
+#include <stdint.h>
+
 #include <system/sys_log/sys_log.h>
 
 #include <drivers/sl_eps2/sl_eps2.h>
@@ -190,7 +192,8 @@ int eps_get_data(eps_data_t *data)
 
     if (eps_is_open)
     {
-        int err_drv = sl_eps2_read_data(eps_config, data);
+        uint64_t err_id = 0;
+        int err_drv = sl_eps2_read_data(eps_config, data, &err_id);
 
         if (err_drv == 0)
         {
@@ -200,6 +203,11 @@ int eps_get_data(eps_data_t *data)
         {
             sys_log_print_event_from_module(SYS_LOG_ERROR, EPS_MODULE_NAME, "Error reading the data! (error ");
             sys_log_print_int(err_drv);
+            sys_log_print_msg(")");
+            sys_log_new_line();
+
+            sys_log_print_event_from_module(SYS_LOG_ERROR, EPS_MODULE_NAME, "Array of errors! - (");
+            sys_log_print_bit_array_as_hex(err_id, 3);
             sys_log_print_msg(")");
             sys_log_new_line();
         }
