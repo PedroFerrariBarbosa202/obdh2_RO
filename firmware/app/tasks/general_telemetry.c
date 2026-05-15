@@ -176,15 +176,21 @@ void vTaskGeneralTelemetry(void *p)
             gen_tel_pl.payload[94] = (sat_data_buf.obdh.data.ts_last_contact >> 16U) & 0xFFU;
             gen_tel_pl.payload[95] = (sat_data_buf.obdh.data.ts_last_contact >> 8U) & 0xFFU;
             gen_tel_pl.payload[96] = sat_data_buf.obdh.data.ts_last_contact & 0xFFU;
+            gen_tel_pl.payload[97] = (sat_data_buf.obdh.data.ts_next_sched_tc >> 24U) & 0xFFU;
+            gen_tel_pl.payload[98] = (sat_data_buf.obdh.data.ts_next_sched_tc >> 16U) & 0xFFU;
+            gen_tel_pl.payload[99] = (sat_data_buf.obdh.data.ts_next_sched_tc >> 8U) & 0xFFU;
+            gen_tel_pl.payload[100] = sat_data_buf.obdh.data.ts_next_sched_tc & 0xFFU;
+            gen_tel_pl.payload[101] = sat_data_buf.obdh.data.tc_queue_size;
+            gen_tel_pl.payload[102] = sat_data_buf.obdh.data.mode;
 
-            gen_tel_pl.length = 97U;
+            gen_tel_pl.length = 103U;
 
             uint8_t gen_tel_pl_raw[120] = {0};
             uint16_t gen_tel_pl_raw_len = 0;
 
             fsat_pkt_encode(&gen_tel_pl, gen_tel_pl_raw, &gen_tel_pl_raw_len);
 
-            if ((sat_data_buf.obdh.data.mode != OBDH_MODE_HIBERNATION) && (sat_data_buf.obdh.data.general_telemetry_on))
+            if ((!sat_data_buf.obdh.data.hibernation_on) && (sat_data_buf.obdh.data.general_telemetry_on))
             {
                 if (ttc_send(TTC_0, gen_tel_pl_raw, gen_tel_pl_raw_len) != 0)
                 {

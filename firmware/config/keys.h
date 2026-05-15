@@ -51,11 +51,12 @@
 #define CONFIG_TC_KEY_DEACTIVATE_PAYLOAD_PAYLOAD_X      "fna%&wM|Y(wIF32J"
 #define CONFIG_TC_KEY_ERASE_MEMORY                      "C:8RkJE${^>%wYVR"
 #define CONFIG_TC_KEY_FORCE_RESET                       "@A)Z-t(x+@nDHpKF"
-#define CONFIG_TC_KEY_GET_PAYLOAD_DATA                  "BkN&a):^fr(@(5x?"
+#define CONFIG_TC_KEY_GET_SUBSYSTEM_TABLE               "BkN&a):^fr(@(5x?"
 #define CONFIG_TC_KEY_SET_PARAMETER                     "x&veg;r[y{z{{T;7"
 #define CONFIG_TC_KEY_GET_PARAMETER                     "EB'YThpxu7,yla,m"
 #define CONFIG_TC_KEY_UPDATE_TLE                        "LJ(@y#xd7%@|#@;g" // cppcheck-suppress misra-c2012-20.10
 #define CONFIG_TC_KEY_TRANSMIT_PACKET                   "($%87<#{E:?Gwd3*" // cppcheck-suppress misra-c2012-20.10
+#define CONFIG_TC_KEY_SCHEDULE_TC                       "iT>&H);^f)(|1y?C"
 
 #endif /* KEYS_H_ */
 

@@ -33,9 +33,15 @@
  * \{
  */
 
+#include <FreeRTOS.h>
+#include <task.h>
 #include <system/sys_log/sys_log.h>
 #include <system/system.h>
+#include <conops/conops.h>
 #include <tasks/mission_manager.h>
+#include <tasks/sched_tc.h>
+#include <devices/payload/payload.h>
+#include <devices/eps/eps.h>
 
 #include "obdh_data.h"
 #include "satellite.h"
@@ -55,7 +61,41 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
         }
         case OBDH_PARAM_ID_MODE:
         {
-            const event_t mode_change = { .event = EV_NOTIFY_MODE_CHANGE_RQ, .args[0] = (uint8_t)(*buf), .args[1] = 0U, .args[2] = 0U };
+            uint16_t mode = UINT16_MAX; 
+
+            switch (*buf)
+            {
+                case OBDH_MODE_DEPLOYMENT:
+                    mode = EV_TC_GOTO_DEPLOYMENT_MODE;
+                    break;
+                case OBDH_MODE_NORMAL:
+                    mode = EV_TC_GOTO_NORMAL_MODE;
+                    break;
+                case OBDH_MODE_STAND_BY:
+                    mode = EV_TC_GOTO_STAND_BY_MODE;
+                    break;
+                case OBDH_MODE_EXPERIMENT:
+                    mode = EV_TC_GOTO_EXPERIMENT_MODE;
+                    break;
+                case OBDH_MODE_FDIR:
+                    mode = EV_TC_GOTO_FDIR_MODE;
+                    break;
+                case OBDH_MODE_MANUAL:
+                    mode = EV_TC_GOTO_MANUAL_MODE;
+                    break;
+                case OBDH_MODE_COMMISSION:
+                    mode = EV_TC_GOTO_COMMISSION_MODE;
+                    break;
+                default:
+                    break;
+            }
+
+            const struct conops_event mode_change = {
+                .ev_id = mode,
+                .ev_name = "ModeCH",
+                .callback = NULL,
+                .src = 0U,
+            };
 
             if (notify_event_to_mission_manager(&mode_change) != 0)
             {
@@ -78,29 +118,9 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             }
             break;
         }
-        case OBDH_PARAM_ID_MANUAL_MODE_ON:
+        case OBDH_PARAM_ID_ANT_DEPLOYMENT_COUNTER:    
         {
-            if (*buf == 0x00U)
-            {
-                sat_data_buf.obdh.data.manual_mode_on = false;
-
-                sys_log_print_event_from_module(SYS_LOG_INFO, OBDH_DATA_LOG_NAME, "Manual mode is now Off!");
-                sys_log_new_line();
-            }
-            else if (*buf == 0x01U)
-            {
-                sat_data_buf.obdh.data.manual_mode_on = true;
-
-                sys_log_print_event_from_module(SYS_LOG_INFO, OBDH_DATA_LOG_NAME, "Manual mode is now On!");
-                sys_log_new_line();
-            }
-            else
-            {
-                sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Invalid value for Manual Mode ID");
-                sys_log_new_line();
-                err = -1;
-            }
-
+            sat_data_buf.obdh.data.ant_deployment_counter = (uint8_t)(*buf);
             break;
         }
         case OBDH_PARAM_ID_MAIN_EDC:
@@ -138,11 +158,25 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
 
             break;
         }
+        case OBDH_PARAM_ID_RESET_TC_QUEUE:
+        {
+            if (*buf == 0x01U)
+            {
+                reset_sched_tc_queue();
+            }
+
+            break;
+        }
         case OBDH_PARAM_ID_MAIN_PAYLOAD_STATE:
         {
             if ((*buf == PL_ID_EDC_1) || (*buf == PL_ID_EDC_2))
             {
-                const event_t payload_activate = { .event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)(*buf), .args[1] = 0U, .args[2] = 0U };
+                const struct conops_event payload_activate = {
+                    .ev_id = EV_TC_ENABLE_PAYLOAD,
+                    .src = (uint16_t)*buf,
+                    .callback = NULL,
+                    .ev_name = "MAIN_PL",
+                };
 
                 if (notify_event_to_mission_manager(&payload_activate) != 0)
                 {
@@ -153,7 +187,12 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             }
             else if (*buf == 0U)
             {
-                const event_t payload_deactivate = { .event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ, .args[0] = sat_data_buf.obdh.data.main_payload_state, .args[1] = 0U, .args[2] = 0U };
+                const struct conops_event payload_deactivate = {
+                    .ev_id = EV_TC_DISABLE_PAYLOAD,
+                    .src = sat_data_buf.obdh.data.main_payload_state,
+                    .callback = NULL,
+                    .ev_name = "MAIN_PL",
+                };
 
                 if (notify_event_to_mission_manager(&payload_deactivate) != 0)
                 {
@@ -172,7 +211,12 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
         {
             if (*buf == PL_ID_PAYLOAD_X)
             {
-                const event_t payload_activate = { .event = EV_NOTIFY_ACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)(*buf), .args[1] = 0U, .args[2] = 0U };
+                const struct conops_event payload_activate = {
+                    .ev_id = EV_TC_ENABLE_PAYLOAD,
+                    .src = (uint16_t)*buf,
+                    .callback = NULL,
+                    .ev_name = "SEC_PL",
+                };
 
                 if (notify_event_to_mission_manager(&payload_activate) != 0)
                 {
@@ -183,7 +227,12 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             }
             else if (*buf == 0U)
             {
-                const event_t payload_deactivate = { .event = EV_NOTIFY_DEACTIVATE_PAYLOAD_RQ, .args[0] = (uint8_t)PL_ID_PAYLOAD_X, .args[1] = 0U, .args[2] = 0U };
+                const struct conops_event payload_deactivate = {
+                    .ev_id = EV_TC_DISABLE_PAYLOAD,
+                    .src = (uint16_t)PAYLOAD_X,
+                    .callback = NULL,
+                    .ev_name = "SEC_PL",
+                };
 
                 if (notify_event_to_mission_manager(&payload_deactivate) != 0)
                 {
@@ -203,6 +252,52 @@ int8_t obdh_set_param(uint8_t param_id, uint32_t *buf)
             taskENTER_CRITICAL();
             sat_data_buf.obdh.data.hib_duration = *buf;
             taskEXIT_CRITICAL();
+            break;
+        }
+        case OBDH_PARAM_ID_TS_COMMISSION_TIMEOUT:
+        {
+            taskENTER_CRITICAL();
+            sat_data_buf.obdh.data.ts_commission_timeout = *buf;
+            taskEXIT_CRITICAL();
+            break;
+        }
+        case OBDH_PARAM_ID_EPS_BEACON_ON:
+        {
+            uint8_t retry_count = 5U;
+
+            if ((*buf == 0x00U) || (*buf == 0x01U))
+            {
+                sat_data_buf.obdh.data.eps_beacon_on = (bool)(*buf);
+                do 
+                {
+                    err = eps_set_param(SL_EPS2_REG_BEACON_ENABLE, *buf);
+                    vTaskDelay(100U);
+                    --retry_count;
+                } while ((err < 0) && (retry_count > 0U));
+            }
+            else 
+            {
+                err = -1;
+            }
+
+            break;
+        }
+        case OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV:
+        {
+            sat_data_buf.obdh.data.batt_crit_level_mv = *buf;
+            break;
+        }
+        case OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON:
+        {
+            if ((*buf == 0x00U) || (*buf == 0x01U))
+            {
+                sat_data_buf.obdh.data.manual_experiments = (bool)(*buf);
+            }
+            else 
+            {
+                err = -1;
+            }
+
             break;
         }
         default:
@@ -249,7 +344,6 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_LAST_PAGE_EDC_DATA:       *buf = sat_data_buf.obdh.data.media.last_page_edc_data;                  break;
         case OBDH_PARAM_ID_LAST_PAGE_PX_DATA:        *buf = sat_data_buf.obdh.data.media.last_page_px_data;                   break;
         case OBDH_PARAM_ID_LAST_PAGE_SBCD_PKTS:      *buf = sat_data_buf.obdh.data.media.last_page_sbcd_pkts;                 break;
-        case OBDH_PARAM_ID_MANUAL_MODE_ON:           *buf = sat_data_buf.obdh.data.manual_mode_on;                            break;
         case OBDH_PARAM_ID_MAIN_EDC:                 *buf = sat_data_buf.obdh.data.main_edc;                                  break;
         case OBDH_PARAM_ID_GENERAL_TELEMETRY_ON:     *buf = sat_data_buf.obdh.data.general_telemetry_on;                      break;
         case OBDH_PARAM_ID_TS_LAST_TLE_UPDATE:       *buf = sat_data_buf.obdh.data.position.ts_last_tle_update;               break;
@@ -259,6 +353,13 @@ int8_t obdh_get_param(uint8_t param_id, uint32_t *buf)
         case OBDH_PARAM_ID_HIB_DURATION:             *buf = sat_data_buf.obdh.data.hib_duration;                              break;
         case OBDH_PARAM_ID_TS_POSITION:              *buf = sat_data_buf.obdh.data.position.timestamp;                        break;
         case OBDH_PARAM_ID_TS_LAST_CONTACT:          *buf = sat_data_buf.obdh.data.ts_last_contact;                           break;
+        case OBDH_PARAM_ID_TS_COMMISSION_TIMEOUT:    *buf = sat_data_buf.obdh.data.ts_commission_timeout;                     break;
+        case OBDH_PARAM_ID_EPS_BEACON_ON:            *buf = sat_data_buf.obdh.data.eps_beacon_on;                             break;
+        case OBDH_PARAM_ID_BATT_CRITICAL_LEVEL_MV:   *buf = sat_data_buf.obdh.data.batt_crit_level_mv;                        break;
+        case OBDH_PARAM_ID_HIBERNATION_ON:           *buf = sat_data_buf.obdh.data.hibernation_on;                            break;
+        case OBDH_PARAM_ID_MANUAL_EXPERIMENT_ON:     *buf = sat_data_buf.obdh.data.manual_experiments;                        break;
+        case OBDH_PARAM_ID_TC_QUEUE_SIZE:            *buf = sat_data_buf.obdh.data.tc_queue_size;                             break;
+        case OBDH_PARAM_ID_TS_NEXT_SCHED_TC:         *buf = sat_data_buf.obdh.data.ts_next_sched_tc;                          break;
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, OBDH_DATA_LOG_NAME, "Received invalid parameter: ");
             sys_log_print_hex((uint32_t)param_id);
