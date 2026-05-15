@@ -239,6 +239,15 @@ void sys_log_print_byte(uint8_t byte);
  *
  * \return None.
  */
+
+void sys_log_print_bit_array_as_hex(uint64_t bit_array, uint16_t bytes_to_read);
+
+/**
+ * \brief Prints the hex representation of a uint64_t number representing a bit array.
+ *
+ * \return None.
+ */
+
 void sys_log_print_system_time(void);
 
 /**
