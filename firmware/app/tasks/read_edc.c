@@ -101,7 +101,7 @@ void vTaskReadEDC(void *p)
             /* Read housekeeping data */
             if (payload_get_data(pl_edc_active, PAYLOAD_EDC_HK, edc_hk_buf.buffer, &edc_hk_buf.length) == 0)
             {
-                (void)memcpy(&edc->hk, edc_hk_buf.buffer, sizeof(edc_hk_t));
+                (void)memcpy(&edc->hk, edc_hk_buf.buffer, sizeof(edc_hk_t)); // cppcheck-suppress misra-c2012-21.15
 
                 vTaskDelay(pdMS_TO_TICKS(50U));
 
@@ -123,7 +123,7 @@ void vTaskReadEDC(void *p)
             {
                 if (state_len >= (int32_t)sizeof(edc_state_t))
                 {
-                    (void)memcpy(&edc->state, state_arr, EDC_FRAME_STATE_LEN);
+                    (void)memcpy(&edc->state, state_arr, EDC_FRAME_STATE_LEN); // cppcheck-suppress misra-c2012-21.15
 
                     edc->timestamp = system_get_time();
 
@@ -139,7 +139,7 @@ void vTaskReadEDC(void *p)
                         uint8_t i = 0;
                         for(i = 0; i < edc->state.ptt_available; i++)
                         {
-                            uint8_t ptt_arr[50] = {0};
+                            uint8_t ptt_arr[sizeof(edc_ptt_t)] = {0};
                             int32_t ptt_len = 0;
 
                             if (payload_get_data(pl_edc_active, PAYLOAD_EDC_PTT, ptt_arr, &ptt_len) == 0)
@@ -150,7 +150,7 @@ void vTaskReadEDC(void *p)
                                     sys_log_new_line();
                                 }
 
-                                (void)memcpy(&edc->ptt, ptt_arr, sizeof(edc_ptt_t));
+                                (void)memcpy(&edc->ptt, ptt_arr, sizeof(edc_ptt_t)); // cppcheck-suppress misra-c2012-21.15
 
                                 int32_t ptt_power = -67 + (20 * log10(edc->ptt.carrier_abs/32768.0));
 
