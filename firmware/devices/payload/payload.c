@@ -27,7 +27,7 @@
  * \author João Cláudio Elsen Barcellos <joaoclaudiobarcellos@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.19
+ * \version 1.0.0
  * 
  * \date 2021/08/15
  * 
@@ -35,6 +35,7 @@
  * \{
  */
 
+#include <config/config.h>
 #include <system/system.h>
 #include <system/sys_log/sys_log.h>
 
@@ -45,7 +46,7 @@
 
 #include "payload.h"
 
-#define PAYLOAD_UNIX_TO_J2000_EPOCH(x)      ((x) - 946684800)   /* Unix to J2000 epoch conversion */
+#define PAYLOAD_UNIX_TO_J2000_EPOCH(x)      ((x) - 946684800UL)   /* Unix to J2000 epoch conversion */
 
 static edc_config_t edc_0_conf;
 static edc_config_t edc_1_conf;
@@ -298,26 +299,87 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd)
     switch(pl)
     {
         case PAYLOAD_EDC_0:
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 0: ");
+        {
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 0: ");
             sys_log_print_hex(cmd);
             sys_log_print_msg(" command received!");
             sys_log_new_line();
 
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: write_cmd() routine not implemented yet!");
-            sys_log_new_line();
+            const edc_cmd_t edc_cmd = {
+                .id = cmd,
+                .param = 0U,
+            };
+
+            switch (cmd) 
+            {
+                case EDC_CMD_PTT_RESUME:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_PAUSE:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_POP:
+                    if (edc_write_cmd(edc_0_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                default: 
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: Received command is not implemented yet!");
+                    sys_log_new_line();
+                    break;
+            }
 
             break;
+        }
         case PAYLOAD_EDC_1:
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 1: ");
+        {
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 1: ");
             sys_log_print_hex(cmd);
             sys_log_print_msg(" command received!");
             sys_log_new_line();
 
-            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: write_cmd() routine not implemented yet!");
-            sys_log_new_line();
+            const edc_cmd_t edc_cmd = {
+                .id = cmd,
+                .param = 0U,
+            };
+
+            switch (cmd) 
+            {
+                case EDC_CMD_PTT_RESUME:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_PAUSE:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                case EDC_CMD_PTT_POP:
+                    if (edc_write_cmd(edc_1_conf, edc_cmd) == 0)
+                    {
+                        err = 0;
+                    }
+                    break;
+                default: 
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC: Received command is not implemented yet!");
+                    sys_log_new_line();
+                    break;
+            }
 
             break;
+        }
         case PAYLOAD_X:
+        {
             if (px_write(&px_conf, &cmd, 1U) == 0)
             {
                 sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "Payload-X: ");
@@ -332,6 +394,7 @@ int payload_write_cmd(payload_t pl, payload_cmd_t cmd)
             }
 
             break;
+        }
         default:
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to write command!");
             sys_log_new_line();
@@ -683,6 +746,71 @@ int payload_get_data(payload_t pl, payload_data_id_t id, uint8_t *data, int32_t 
             sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to get data!");
             sys_log_new_line();
 
+            break;
+    }
+
+    return err;
+}
+
+int payload_init_gpio_enables(void)
+{
+    int err = 0;
+
+    #if defined (CONFIG_MISSION_GOLDS_UFSC) && (CONFIG_MISSION_GOLDS_UFSC == 1)
+    const gpio_config_t conf = { .mode = GPIO_MODE_OUTPUT };
+
+    /* Initializes enable pins */
+    (void)gpio_init(GPIO_PIN_29, conf); /* EDC 0 */
+    (void)gpio_init(GPIO_PIN_30, conf); /* EDC 1 */
+    (void)gpio_init(GPIO_PIN_37, conf); /* Payload X */
+
+    /* Make sure payloads are disabled */
+    (void)gpio_set_state(GPIO_PIN_29, false); /* EDC 0 */
+    (void)gpio_set_state(GPIO_PIN_30, false); /* EDC 1 */
+    (void)gpio_set_state(GPIO_PIN_37, false); /* Payload X */
+
+    #endif
+
+    return err;
+}
+
+int payload_set_clock(const payload_t pl, const uint32_t time)
+{
+    int err = 0;
+
+    switch(pl)
+    {
+        case PAYLOAD_EDC_0:
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 0: Setting Clock/RTC time...");
+            sys_log_new_line();
+
+            if (edc_set_rtc_time(edc_0_conf, PAYLOAD_UNIX_TO_J2000_EPOCH(time)) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 0: Error setting the Clock/RTC time!");
+                sys_log_new_line();
+                err = -1;
+            }
+            break;
+        case PAYLOAD_EDC_1:
+            sys_log_print_event_from_module(SYS_LOG_INFO, PAYLOAD_MODULE_NAME, "EDC 1: Setting Clock/RTC time...");
+            sys_log_new_line();
+
+            if (edc_set_rtc_time(edc_1_conf, PAYLOAD_UNIX_TO_J2000_EPOCH(time)) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "EDC 1: Error setting the Clock/RTC time!");
+                sys_log_new_line();
+                err = -1;
+            }
+            break;
+        case PAYLOAD_X:
+            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "PX: set_clock() routine not implemented yet!");
+            sys_log_new_line();
+            err = -1;
+            break;
+        default:
+            sys_log_print_event_from_module(SYS_LOG_ERROR, PAYLOAD_MODULE_NAME, "Invalid payload to set clock!");
+            sys_log_new_line();
+            err = -1;
             break;
     }
 

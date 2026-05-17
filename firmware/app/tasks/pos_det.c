@@ -26,7 +26,7 @@
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.20
+ * \version 1.0.0
  * 
  * \date 2023/07/19
  * 
@@ -34,48 +34,58 @@
  * \{
  */
 
+#include <stdint.h>
+#include <string.h>
+
 #include <system/system.h>
 #include <system/sys_log/sys_log.h>
 #include <config/config.h>
+#include <conops/conops.h>
 #include <predict/predict.h>
 #include <predict/unsorted.h>
 #include <structs/satellite.h>
 
 #include "pos_det.h"
 #include "startup.h"
-#include "op_ctrl.h"
+#include "mission_manager.h"
 
 xTaskHandle xTaskPosDetHandle;
 
-void vTaskPosDet(void)
+void vTaskPosDet(void *p)
 {
+    (void)p;
+
     static predict_orbital_elements_t satellite;
     static struct predict_sgp4 sgp4_model;
     static struct predict_sdp4 sdp4_model;
 
-    /* Flag used to control notification sending */
-    bool sat_is_inside_brazil = false;
+    /* Pointer used to see if TLE parsing was sucessfull */
+    predict_orbital_elements_t *sat = NULL;
 
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_POS_DET_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_POS_DET_INIT_TIMEOUT_MS));
+
+    /* Parses binary TLE from FRAM (or default) */
+    sat = predict_parse_compact_tle(&satellite, &sgp4_model, &sdp4_model, sat_data_buf.obdh.data.position.bin_tle);
+
+    TickType_t last_cycle = xTaskGetTickCount();
 
     while(1)
     {
-        TickType_t last_cycle = xTaskGetTickCount();
+        /* Reload TLE lines if an update occured */
+        if (xTaskNotifyWait(0UL, UINT32_MAX, NULL, 0UL) == pdTRUE)
+        {
+            sat = predict_parse_compact_tle(&satellite, &sgp4_model, &sdp4_model, sat_data_buf.obdh.data.position.bin_tle);
+        }
 
-        /* Load TLE lines */
-        const char *tle_line_1 = "1 25544U 98067A   24223.83784911  .00020194  00000+0  36238-3 0  9994";
-        const char *tle_line_2 = "2 25544  51.6408  44.5872 0005770 185.1957 306.5656 15.49872002467029";
-        
-        /* Populate orbit elements */
-        if (predict_parse_tle(&satellite, &sgp4_model, &sdp4_model, tle_line_1, tle_line_2) != NULL)
+        if (sat != NULL)
         {
             /* Predict satellite position */
             struct predict_position my_orbit;
 
             sys_time_t now = system_get_time();
 
-            predict_julian_date_t curr_time = julian_from_timestamp(now + 1723341922ULL);   /* 1723341922ULL Corresponds to ISO Time Stamp: 2024-08-11T02:05:22Z */
+            predict_julian_date_t curr_time = julian_from_timestamp(now);
 
             (void)predict_orbit(&satellite, &my_orbit, curr_time);
 
@@ -97,29 +107,70 @@ void vTaskPosDet(void)
             sys_log_print_msg(" km");
             sys_log_new_line();
 
-            bool current_position = is_satellite_in_brazil(sat_data_buf.obdh.data.position.latitude, sat_data_buf.obdh.data.position.longitude);
+            bool in_brazil = is_satellite_in_brazil(lat, lon);
 
-            if (current_position && !sat_is_inside_brazil)
+            if (in_brazil)
             {
-                sat_is_inside_brazil = true;
-                notify_op_ctrl(SAT_NOTIFY_IN_BRAZIL);
-            }
+                const struct conops_event in_brazil_ev = {
+                    .ev_id = EV_IN_BRAZIL,
+                    .src = 0U,
+                    .ev_name = "InBrazil",
+                    .callback = NULL,
+                };
 
-            if (!current_position && sat_is_inside_brazil)
+                if (notify_event_to_mission_manager(&in_brazil_ev) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to notify \"in brazil\" event");
+                    sys_log_new_line();
+                }
+            }
+            else 
             {
-                sat_is_inside_brazil = false;
-                notify_op_ctrl(SAT_NOTIFY_OUT_OF_BRAZIL);
-            }
+                const struct conops_event out_of_brazil_ev = {
+                    .ev_id = EV_OUT_OF_BRAZIL,
+                    .src = 0U,
+                    .ev_name = "OutBrazil",
+                    .callback = NULL,
+                };
 
+                if (notify_event_to_mission_manager(&out_of_brazil_ev) != 0)
+                {
+                    sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to notify \"out of brazil\" event");
+                    sys_log_new_line();
+                }
+            }
         }
         else
         {
-            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to parse TLEs");
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to parse last available TLEs!");
             sys_log_new_line();
         }
 
         vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_POS_DET_PERIOD_MS));
     }
+}
+
+int update_tle_line(obdh_telemetry_t *obdh, const uint8_t *bin_tle)
+{
+    int err = 0;
+
+    (void)memcpy(obdh->data.position.bin_tle, bin_tle, 50U);
+
+    /* Store timestamp of the update */
+    obdh->data.position.ts_last_tle_update = system_get_time();
+
+    /* Save new OBDH data to fram */
+    if (mem_mng_save_obdh_data_to_fram(obdh) != 0)
+    {
+        sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_POS_DET_NAME, "Failed to save OBDH data after TLE Update!");
+        sys_log_new_line();
+        err = -1;
+    }
+
+    /* Notify Position Determination Task of TLE update */
+    (void)xTaskNotify(xTaskPosDetHandle, 0U, eNoAction);
+
+    return err;
 }
 
 /** \} End of pos_det group */

@@ -26,7 +26,7 @@
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.17
+ * \version 1.0.0
  * 
  * \date 2021/05/14
  * 
@@ -46,7 +46,7 @@
 #define TASK_READ_TTC_PRIORITY                  3                   /**< Task priority. */
 #define TASK_READ_TTC_PERIOD_MS                 (60000)             /**< Task period in milliseconds. */
 #define TASK_READ_TTC_INITIAL_DELAY_MS          5500                /**< Delay, in milliseconds, before the first execution. */
-#define TASK_READ_TTC_INIT_TIMEOUT_MS           2000                /**< Wait time to initialize the task in milliseconds. */
+#define TASK_READ_TTC_INIT_TIMEOUT_MS           5000                /**< Wait time to initialize the task in milliseconds. */
 
 /**
  * \brief Read TTC handle.
@@ -58,7 +58,7 @@ extern xTaskHandle xTaskReadTTCHandle;
  *
  * \return None.
  */
-void vTaskReadTTC(void);
+void vTaskReadTTC(void *p);
 
 #endif /* READ_TTC_H_ */
 

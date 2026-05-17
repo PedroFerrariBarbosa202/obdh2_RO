@@ -25,7 +25,7 @@
  *
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  *
- * \version 0.10.19
+ * \version 1.0.0
  *
  * \date 2024/08/09
  *
@@ -41,7 +41,7 @@
 #include <task.h>
 
 #define TASK_HEALTH_CHECK_MODE_NAME                       "HealthCheck Mode"     /**< Task name. */
-#define TASK_HEALTH_CHECK_MODE_STACK_SIZE                 1024U                  /**< Stack size in bytes. */
+#define TASK_HEALTH_CHECK_MODE_STACK_SIZE                 2048U                  /**< Stack size in bytes. */
 #define TASK_HEALTH_CHECK_MODE_PRIORITY                   3U                     /**< Task priority. */
 
 /**
@@ -54,7 +54,7 @@ extern TaskHandle_t xTaskHealthCheckModeHandle;
  *
  * \return None.
  */
-void vTaskHealthCheckMode(void);
+void vTaskHealthCheckMode(void* p);
 
 #endif
 

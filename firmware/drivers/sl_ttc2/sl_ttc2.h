@@ -26,7 +26,7 @@
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.17
+ * \version 1.0.0
  * 
  * \date 2021/05/12
  * 
@@ -43,7 +43,7 @@
 
 #include <drivers/spi/spi.h>
 
-#define SL_TTC2_MODULE_NAME                     "SpaceLab TTC 2.0"
+#define SL_TTC2_MODULE_NAME                     "SL_TTC2"
 
 /* TTC 2.0 IDs */
 #define SL_TTC2_DEVICE_ID_RADIO_0               0xCC2AU /**< TTC 2.0 device ID (radio 1). */
@@ -51,6 +51,10 @@
 
 /* TTC 2.0 Mutex wait time */
 #define SL_TTC2_MUTEX_WAIT_TIME_MS              5000U   /**< TTC 2.0 mutex wait time. */
+
+/* TTC 2.0 Protocol timing */
+#define SL_TTC2_TRANSACTION_DELAY_MS            110U   /**< TTC 2.0 protocol transaction delay. */
+#define SL_TTC2_EXTRA_MUTEX_DELAY_MS            100U     /**< Delay after transaction, used to give TTC 2.0 more time to process next request. */
 
 /* TTC 2.0 Preamble byte */
 #define SL_TTC2_PKT_PREAMBLE                    0x7EU   /**< Preamble byte value. */
@@ -87,6 +91,8 @@
 #define SL_TTC2_REG_FIFO_TX_PACKET              21U     /**< Number of packets in the TX FIFO. */
 #define SL_TTC2_REG_FIFO_RX_PACKET              22U     /**< Number of packets in the RX FIFO. */
 #define SL_TTC2_REG_LEN_FIRST_RX_PACKET_IN_FIFO 23U     /**< Number of bytes of the first available packet in the RX buffer. */
+#define SL_TTC2_REG_RESET_DEVICE                24U     /**< Register to reset device */
+#define SL_TTC2_REG_CONSEQ_FAILED_PACKETS       25U     /**< Number of consecutive radio decoding errors */
 
 /**
  * \brief Temperature type.
@@ -196,7 +202,7 @@ typedef struct
  *
  * \return The status/error code.
  */
-int sl_ttc2_init(sl_ttc2_config_t config);
+int sl_ttc2_init(sl_ttc2_config_t *config);
 
 /**
  * \brief Verifies the TTC ID code.
@@ -207,7 +213,7 @@ int sl_ttc2_init(sl_ttc2_config_t config);
  *
  * \return The status/error code.
  */
-int sl_ttc2_check_device(sl_ttc2_config_t config);
+int sl_ttc2_check_device(sl_ttc2_config_t *config);
 
 /**
  * \brief Writes a value to a register of the TTC module.
@@ -220,7 +226,7 @@ int sl_ttc2_check_device(sl_ttc2_config_t config);
  *
  * \return The status/error code.
  */
-int sl_ttc2_write_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t val);
+int sl_ttc2_write_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t val);
 
 /**
  * \brief Reads a register from the TTC module.
@@ -233,7 +239,7 @@ int sl_ttc2_write_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t *val);
+int sl_ttc2_read_reg(sl_ttc2_config_t *config, uint8_t adr, uint32_t *val);
 
 /**
  * \brief Reads all the TTC variables and parameters.
@@ -244,7 +250,7 @@ int sl_ttc2_read_reg(sl_ttc2_config_t config, uint8_t adr, uint32_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_hk_data(sl_ttc2_config_t config, sl_ttc2_hk_data_t *data);
+int sl_ttc2_read_hk_data(sl_ttc2_config_t *config, sl_ttc2_hk_data_t *data);
 
 /**
  * \brief Reads the device ID of the TTC module.
@@ -255,7 +261,7 @@ int sl_ttc2_read_hk_data(sl_ttc2_config_t config, sl_ttc2_hk_data_t *data);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_device_id(sl_ttc2_config_t config, uint16_t *val);
+int sl_ttc2_read_device_id(sl_ttc2_config_t *config, uint16_t *val);
 
 /**
  * \brief Reads the hardware version of the TTC 2.0 module.
@@ -266,7 +272,7 @@ int sl_ttc2_read_device_id(sl_ttc2_config_t config, uint16_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_hardware_version(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_hardware_version(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Reads the firmware version of the TTC 2.0 module.
@@ -277,7 +283,7 @@ int sl_ttc2_read_hardware_version(sl_ttc2_config_t config, uint8_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_firmware_version(sl_ttc2_config_t config, uint32_t *val);
+int sl_ttc2_read_firmware_version(sl_ttc2_config_t *config, uint32_t *val);
 
 /**
  * \brief Reads the time counter value.
@@ -288,7 +294,7 @@ int sl_ttc2_read_firmware_version(sl_ttc2_config_t config, uint32_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_time_counter(sl_ttc2_config_t config, uint32_t *val);
+int sl_ttc2_read_time_counter(sl_ttc2_config_t *config, uint32_t *val);
 
 /**
  * \brief Reads the reset counter value of the TTC module.
@@ -299,7 +305,7 @@ int sl_ttc2_read_time_counter(sl_ttc2_config_t config, uint32_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_reset_counter(sl_ttc2_config_t config, uint16_t *val);
+int sl_ttc2_read_reset_counter(sl_ttc2_config_t *config, uint16_t *val);
 
 /**
  * \brief Reads the last reset cause ID of the TTC.
@@ -310,7 +316,7 @@ int sl_ttc2_read_reset_counter(sl_ttc2_config_t config, uint16_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_reset_cause(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_reset_cause(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Reads the input voltage of the TTC module.
@@ -330,7 +336,7 @@ int sl_ttc2_read_reset_cause(sl_ttc2_config_t config, uint8_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_voltage(sl_ttc2_config_t config, uint8_t volt, sl_ttc2_voltage_t *val);
+int sl_ttc2_read_voltage(sl_ttc2_config_t *config, uint8_t volt, sl_ttc2_voltage_t *val);
 
 /**
  * \brief Reads the input current of the TTC module.
@@ -350,7 +356,7 @@ int sl_ttc2_read_voltage(sl_ttc2_config_t config, uint8_t volt, sl_ttc2_voltage_
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_current(sl_ttc2_config_t config, uint8_t cur, sl_ttc2_current_t *val);
+int sl_ttc2_read_current(sl_ttc2_config_t *config, uint8_t cur, sl_ttc2_current_t *val);
 
 /**
  * \brief Reads the temperature of  the TTC microncontroller.
@@ -371,7 +377,7 @@ int sl_ttc2_read_current(sl_ttc2_config_t config, uint8_t cur, sl_ttc2_current_t
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_temp(sl_ttc2_config_t config, uint8_t temp, sl_ttc2_temp_t *val);
+int sl_ttc2_read_temp(sl_ttc2_config_t *config, uint8_t temp, sl_ttc2_temp_t *val);
 
 /**
  * \brief Reads the ID of the last valid telecommand received by the TTC module
@@ -382,7 +388,7 @@ int sl_ttc2_read_temp(sl_ttc2_config_t config, uint8_t temp, sl_ttc2_temp_t *val
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Reads the RSSI valur of the last valid telecommand of the TTC module.
@@ -393,7 +399,7 @@ int sl_ttc2_read_last_valid_tc(sl_ttc2_config_t config, uint8_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_rssi(sl_ttc2_config_t config, sl_ttc2_rssi_t *val);
+int sl_ttc2_read_rssi(sl_ttc2_config_t *config, sl_ttc2_rssi_t *val);
 
 /**
  * \brief Reads the antenna status of the TTC module.
@@ -404,7 +410,7 @@ int sl_ttc2_read_rssi(sl_ttc2_config_t config, sl_ttc2_rssi_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_antenna_status(sl_ttc2_config_t config, uint16_t *val);
+int sl_ttc2_read_antenna_status(sl_ttc2_config_t *config, uint16_t *val);
 
 /**
  * \brief Reads the antenna deployment status (executed or not executed).
@@ -415,7 +421,7 @@ int sl_ttc2_read_antenna_status(sl_ttc2_config_t config, uint16_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Reads the antenna deployment hibernation status (executed or not executed).
@@ -426,7 +432,7 @@ int sl_ttc2_read_antenna_deployment_status(sl_ttc2_config_t config, uint8_t *val
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Reads the TX enable flag.
@@ -437,7 +443,7 @@ int sl_ttc2_read_antenna_deployment_hibernation_status(sl_ttc2_config_t config, 
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_tx_enable(sl_ttc2_config_t config, uint8_t *val);
+int sl_ttc2_read_tx_enable(sl_ttc2_config_t *config, uint8_t *val);
 
 /**
  * \brief Sets the TX enable flag of the TTC.
@@ -448,7 +454,7 @@ int sl_ttc2_read_tx_enable(sl_ttc2_config_t config, uint8_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_set_tx_enable(sl_ttc2_config_t config, bool en);
+int sl_ttc2_set_tx_enable(sl_ttc2_config_t *config, bool en);
 
 /**
  * \brief Reads the packet counter value (transmitted or received).
@@ -466,7 +472,7 @@ int sl_ttc2_set_tx_enable(sl_ttc2_config_t config, bool en);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_pkt_counter(sl_ttc2_config_t config, uint8_t pkt, uint32_t *val);
+int sl_ttc2_read_pkt_counter(sl_ttc2_config_t *config, uint8_t pkt, uint32_t *val);
 
 /**
  * \brief Reads the number of packets available in a given FIFO (TX or RX).
@@ -484,7 +490,7 @@ int sl_ttc2_read_pkt_counter(sl_ttc2_config_t config, uint8_t pkt, uint32_t *val
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t config, uint8_t pkt, uint8_t *val);
+int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t *config, uint8_t pkt, uint8_t *val);
 
 /**
  * \brief Reads the register with the number of bytes of the first available packet in the RX FIFO.
@@ -495,7 +501,7 @@ int sl_ttc2_read_fifo_pkts(sl_ttc2_config_t config, uint8_t pkt, uint8_t *val);
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t config, uint16_t *val);
+int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t *config, uint16_t *val);
 
 /**
  * \brief Verifies the number available RX packets to read.
@@ -504,7 +510,7 @@ int sl_ttc2_read_len_rx_pkt_in_fifo(sl_ttc2_config_t config, uint16_t *val);
  *
  * \return The number of available packets to read (-1 on error).
  */
-int sl_ttc2_check_pkt_avail(sl_ttc2_config_t config);
+int sl_ttc2_check_pkt_avail(sl_ttc2_config_t *config);
 
 /**
  * \brief Transmit packet command.
@@ -517,7 +523,7 @@ int sl_ttc2_check_pkt_avail(sl_ttc2_config_t config);
  *
  * \return The status/error code.
  */
-int sl_ttc2_transmit_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t len);
+int sl_ttc2_transmit_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t len);
 
 /**
  * \brief Reads a received packet.
@@ -530,7 +536,7 @@ int sl_ttc2_transmit_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t len
  *
  * \return The status/error code.
  */
-int sl_ttc2_read_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t *len);
+int sl_ttc2_read_packet(sl_ttc2_config_t *config, uint8_t *data, uint16_t *len);
 
 /**
  * \brief SPI interface initialization.
@@ -539,7 +545,7 @@ int sl_ttc2_read_packet(sl_ttc2_config_t config, uint8_t *data, uint16_t *len);
  *
  * \return The status/error code.
  */
-int sl_ttc2_spi_init(sl_ttc2_config_t config);
+int sl_ttc2_spi_init(sl_ttc2_config_t *config);
 
 /**
  * \brief Writes the device using the SPI interface.
@@ -552,7 +558,7 @@ int sl_ttc2_spi_init(sl_ttc2_config_t config);
  *
  * \return The status/error code.
  */
-int sl_ttc2_spi_write(sl_ttc2_config_t config, uint8_t *data, uint16_t len);
+int sl_ttc2_spi_write(sl_ttc2_config_t *config, uint8_t *data, uint16_t len);
 
 /**
  * \brief Reads the device using the SPI interface.
@@ -565,7 +571,7 @@ int sl_ttc2_spi_write(sl_ttc2_config_t config, uint8_t *data, uint16_t len);
  *
  * \return The status/error code.
  */
-int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len);
+int sl_ttc2_spi_read(sl_ttc2_config_t *config, uint8_t *data, uint16_t len);
 
 /**
  * \brief SPI transfer operation (write and/or read).
@@ -580,7 +586,7 @@ int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len);
  *
  * \return The status/error code.
  */
-int sl_ttc2_spi_transfer(sl_ttc2_config_t config, uint8_t *wdata, uint8_t *rdata, uint16_t len);
+int sl_ttc2_spi_transfer(sl_ttc2_config_t *config, uint8_t *wdata, uint8_t *rdata, uint16_t len);
 
 /**
  * \brief Milliseconds delay.

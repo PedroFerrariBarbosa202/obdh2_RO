@@ -25,7 +25,7 @@
  * 
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.18
+ * \version 1.0.0
  * 
  * \date 2024/07/24
  * 
@@ -55,7 +55,7 @@ extern TaskHandle_t xTaskHealthCheckMemHandle;
  *
  * \return None.
  */
-void vTaskHealthCheckMem(void);
+void vTaskHealthCheckMem(void* p);
 
 #endif 
 

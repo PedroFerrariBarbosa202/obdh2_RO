@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.10.16
+ * \version 1.0.0
  * 
  * \date 2020/01/12
  * 
@@ -59,7 +59,7 @@ extern xTaskHandle xTaskSystemResetHandle;
  *
  * \return None.
  */
-void vTaskSystemReset(void);
+void vTaskSystemReset(void *p);
 
 #endif /* SYSTEM_RESET_H_ */
 

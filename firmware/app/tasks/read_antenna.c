@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.10.9
+ * \version 1.0.0
  * 
  * \date 2021/10/13
  * 
@@ -43,15 +43,17 @@
 
 xTaskHandle xTaskReadAntennaHandle;
 
-void vTaskReadAntenna(void)
+void vTaskReadAntenna(void *p)
 {
+    (void)p;
+
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_ANTENNA_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_ANTENNA_INIT_TIMEOUT_MS));
+
+    TickType_t last_cycle = xTaskGetTickCount();
 
     while(1)
     {
-        TickType_t last_cycle = xTaskGetTickCount();
-
         if (antenna_init() != 0)
         {
             sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_ANTENNA_NAME, "Error initializing the Antenna device!");

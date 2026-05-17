@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.10.2
+ * \version 1.0.0
  * 
  * \date 2020/01/13
  * 
@@ -431,7 +431,7 @@ int gpio_get_state(gpio_pin_t pin)
             break;
     }
 
-    if (GPIO_getInputPinValue(msp_port, msp_pin) == GPIO_INPUT_PIN_HIGH)
+    if (GPIO_getInputPinValue(msp_port, msp_pin) == (uint8_t)GPIO_INPUT_PIN_HIGH)
     {
         res = 1;
     }

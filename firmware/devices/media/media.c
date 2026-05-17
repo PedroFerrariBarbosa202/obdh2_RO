@@ -26,7 +26,7 @@
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.18
+ * \version 1.0.0
  * 
  * \date 2020/07/21
  * 
@@ -168,7 +168,7 @@ int media_write(media_t med, uint32_t adr, uint8_t *data, uint16_t len)
             {
                 uintptr_t adr_counter = adr_idx + i;
 
-                flash_write_single(data[i], adr_counter);
+                flash_write_single(data[i], (uint8_t*)adr_counter); // cppcheck-suppress misra-c2012-11.4
             }
 
             err = 0;
@@ -234,7 +234,7 @@ int media_read(media_t med, uint32_t adr, uint8_t *data, uint16_t len)
             {
                 uintptr_t adr_counter = adr_idx + i;
 
-                data[i] = flash_read_single(adr_counter);
+                data[i] = flash_read_single((uint8_t*)adr_counter); // cppcheck-suppress misra-c2012-11.4
             }
 
             err = 0;
@@ -285,7 +285,7 @@ int media_erase(media_t med, media_erase_t type, uint32_t sector)
         {
             if ((sector == FLASH_SEG_A_ADR) || (sector == FLASH_SEG_B_ADR))
             {
-                flash_erase((uintptr_t)sector);
+                flash_erase((uint32_t*)((uintptr_t)sector)); // cppcheck-suppress misra-c2012-11.4
                 err = 0;
             }
             else 

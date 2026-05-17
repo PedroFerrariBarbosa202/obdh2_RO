@@ -25,7 +25,7 @@
  *
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  *
- * \version 0.10.17
+ * \version 1.0.0
  *
  * \date 2024/02/27
  *
@@ -87,7 +87,7 @@ int spi_mutex_give(void)
 
     if (spi_port0_mutex != NULL)
     {
-        xSemaphoreGiveRecursive(spi_port0_mutex);
+        (void)xSemaphoreGiveRecursive(spi_port0_mutex);
 
         err = 0;
     }

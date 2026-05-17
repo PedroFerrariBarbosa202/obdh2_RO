@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.10.2
+ * \version 1.0.0
  * 
  * \date 2020/01/15
  * 
@@ -51,8 +51,8 @@ int tps382x_init(tps382x_config_t config)
         }
     }
 
-    gpio_set_state(config.mr_pin, true);
-    gpio_set_state(config.wdi_pin, true);
+    (void)gpio_set_state(config.mr_pin, true);
+    (void)gpio_set_state(config.wdi_pin, true);
 
     return err;
 }

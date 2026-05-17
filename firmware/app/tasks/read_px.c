@@ -26,7 +26,7 @@
  * \author Augusto Cezar Boldori Vassoler <augustovassoler@gmail.com>
  * \author Carlos Augusto Porto Freitas <carlos.portof@hotmail.com>
  * 
- * \version 0.10.19
+ * \version 1.0.0
  *
  * \date 2023/08/28
  *
@@ -45,29 +45,32 @@
 #include <structs/satellite.h>
 
 #include "read_px.h"
-#include "op_ctrl.h"
+#include "mission_manager.h"
 #include "startup.h"
 
 xTaskHandle xTaskReadPXHandle;
 
-void vTaskReadPX(void)
+void vTaskReadPX(void *p)
 {
+    (void)p;
+
     payload_telemetry_t *const px = &sat_data_buf.payload_x;
 
     pl_px_buf_t px_buf = {0};
     px_buf.length = PX_PONG_BUF_SIZE;
 
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_PX_INIT_TIMEOUT_MS));
+    (void)xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_PX_INIT_TIMEOUT_MS));
+
+    vTaskDelay(pdMS_TO_TICKS(TASK_READ_PX_INITIAL_DELAY_MS));
 
     while(1)
     {
-        uint32_t cancel_flag;
         uint32_t active_period_ms;
 
         BaseType_t result = xTaskNotifyWait(0UL, UINT32_MAX, &active_period_ms, pdMS_TO_TICKS(TASK_READ_PX_MAX_WAIT_TIME_MS));
 
-        payload_t pl_px_active = sat_data_buf.state.active_payload;
+        payload_t pl_px_active = (payload_t)sat_data_buf.obdh.data.sec_payload_state;
 
         if ((pl_px_active == PAYLOAD_X) && (result == pdTRUE)) 
         {
@@ -75,16 +78,6 @@ void vTaskReadPX(void)
 
             while (active_period_ms > 0U) 
             {
-                /* Check notifications to break out of the loop if requested */
-                if (xTaskNotifyWait(0UL, PAYLOAD_X_CANCEL_EXPERIMENT_FLAG, &cancel_flag, 0U) == pdTRUE)
-                {
-                    if ((cancel_flag & PAYLOAD_X_CANCEL_EXPERIMENT_FLAG) != 0U)
-                    {
-                        active_period_ms = 0U;
-                        break;
-                    }
-                }
-
                 /* Read data */
                 if (payload_get_data(pl_px_active, PAYLOAD_X_PONG, px_buf.buffer, &px_buf.length) != 0)
                 {
@@ -119,7 +112,18 @@ void vTaskReadPX(void)
                 vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_READ_PX_PERIOD_MS));
             }
 
-            notify_op_ctrl(SAT_NOTIFY_PX_FINISHED);
+            const struct conops_event px_end = {
+                .ev_id = EV_PX_FINISHED,
+                .ev_name = "EXP-END",
+                .callback = NULL,
+                .src = 0U,
+            };
+
+            if (notify_event_to_mission_manager(&px_end) != 0)
+            {
+                sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_PX_NAME, "Failed to notify event!");
+                sys_log_new_line();
+            }
         }
     }
 }
