@@ -207,7 +207,7 @@ int eps_get_data(eps_data_t *data)
             sys_log_new_line();
 
             sys_log_print_event_from_module(SYS_LOG_ERROR, EPS_MODULE_NAME, "Array of errors! - (");
-            sys_log_print_bit_array_as_hex(err_id, 3);
+            sys_log_print_bit_array_as_hex(err_id, 6);
             sys_log_print_msg(")");
             sys_log_new_line();
         }

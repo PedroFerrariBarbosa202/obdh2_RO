@@ -314,7 +314,7 @@ int sl_eps2_read_reg(sl_eps2_config_t config, uint8_t adr, uint32_t *val);
  *
  * \return The status/error code.
  */
-int sl_eps2_read_data(sl_eps2_config_t config, sl_eps2_data_t *data);
+int sl_eps2_read_data(sl_eps2_config_t config, sl_eps2_data_t *data, uint64_t *err_id);
 
 /**
  * \brief Reads the time counter value.
