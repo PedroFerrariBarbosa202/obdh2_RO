@@ -290,7 +290,18 @@ int ro_echo(ro_config_t config)
     return err;
 }
 
-uint16_t ro_calc_checksum(uint8_t *data, uint16_t len);
+uint16_t ro_calc_checksum(uint8_t *data, uint16_t len)
+{
+    uint16_t checksum = 0;
+
+    for(uint16_t i=0; i<len; i++)
+    {
+        checksum ^= data[i];
+    }
+
+    return checksum;
+}
+
 
 /*============================================================================*/
 /* Instrument Control                                                         */
@@ -314,11 +325,150 @@ int ro_clear_event(ro_config_t config);
 /* Data Acquisition                                                           */
 /*============================================================================*/
 
-int16_t ro_get_state_pkg(ro_config_t config, uint8_t *status);
+int16_t ro_get_state_pkg(ro_config_t config, uint8_t *status)
+{
+    int16_t res = -1;
 
-int16_t ro_get_hk_pkg(ro_config_t config, uint8_t *hk);
+    ro_cmd_t cmd = {0};
 
-int16_t ro_get_event_pkg(ro_config_t config, uint8_t *event);
+    cmd.id = RO_CMD_GET_STATE;
+
+    if (ro_write_cmd(config, cmd) == 0)
+    {
+        /* A minimum time gap of 10 ms must be forced between consecutive I2C commands */
+        ro_delay_ms(100);  /* 10 ms is not enough when using the UART interface! */
+
+        if (ro_read(config, status, RO_FRAME_STATE_LEN) == 0)
+        {
+            if (status[0] == RO_FRAME_ID_STATE)
+            {
+                res = RO_FRAME_STATE_LEN;
+            }
+            else
+            {
+            #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+                sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading an state packet! Invalid frame ID (");
+                sys_log_print_hex(status[0]);
+                sys_log_print_msg(")!");
+                sys_log_new_line();
+            #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+            }
+        }
+        else
+        {
+        #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+            sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading an state packet!");
+            sys_log_new_line();
+        #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+        }
+    }
+    else
+    {
+    #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+        sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error writing the \"get state\" command!");
+        sys_log_new_line();
+    #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+    }
+
+    return res;
+}
+
+
+int16_t ro_get_hk_pkg(ro_config_t config, uint8_t *hk)
+{
+    int16_t res = -1;
+
+    ro_cmd_t cmd = {0};
+
+    cmd.id = RO_CMD_GET_HK_PKG;
+
+    if (ro_write_cmd(config, cmd) == 0)
+    {
+        /* A minimum time gap of 10 ms must be forced between consecutive I2C commands */
+        ro_delay_ms(100);  /* 10 ms is not enough when using the UART interface! */
+
+        if (ro_read(config, hk, RO_FRAME_HK_LEN) == 0)
+        {
+            if (hk[0] == RO_FRAME_ID_HK)
+            {
+                res = RO_FRAME_HK_LEN;
+            }
+            else
+            {
+            #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+                sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading a HK packet! Invalid frame ID (");
+                sys_log_print_hex(hk[0]);
+                sys_log_print_msg(")!");
+                sys_log_new_line();
+            #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+            }
+        }
+        else
+        {
+        #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+            sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading a HK packet!");
+            sys_log_new_line();
+        #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+        }
+    }
+    else
+    {
+    #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+        sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error writing the \"get HK\" command!");
+        sys_log_new_line();
+    #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+    }
+
+    return res;
+}
+
+int16_t ro_get_event_pkg(ro_config_t config, uint8_t *event)
+{
+    int16_t res = -1;
+
+    ro_cmd_t cmd = {0};
+
+    cmd.id = RO_CMD_GET_EVENT;
+
+    if (ro_write_cmd(config, cmd) == 0)
+    {
+        /* A minimum time gap of 10 ms must be forced between consecutive I2C commands */
+        ro_delay_ms(100);  /* 10 ms is not enough when using the UART interface! */
+
+        if (ro_read(config, event, RO_FRAME_EVENT_LEN) == 0)
+        {
+            if (event[0] == RO_FRAME_ID_EVENT)
+            {
+                res = RO_FRAME_EVENT_LEN;
+            }
+            else
+            {
+            #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+                sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading an event packet! Invalid frame ID (");
+                sys_log_print_hex(event[0]);
+                sys_log_print_msg(")!");
+                sys_log_new_line();
+            #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+            }
+        }
+        else
+        {
+        #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+            sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error reading an event packet!");
+            sys_log_new_line();
+        #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+        }
+    }
+    else
+    {
+    #if defined(CONFIG_DRIVERS_DEBUG_ENABLED) && (CONFIG_DRIVERS_DEBUG_ENABLED == 1)
+        sys_log_print_event_from_module(SYS_LOG_ERROR, RO_MODULE_NAME, "Error writing the \"get event\" command!");
+        sys_log_new_line();
+    #endif /* CONFIG_DRIVERS_DEBUG_ENABLED */
+    }
+
+    return res;
+}
 
 int16_t ro_get_navigation_pkg(ro_config_t config, uint8_t *navigation);
 
@@ -333,10 +483,75 @@ int16_t ro_get_iq_pkg(ro_config_t config, uint8_t *iq);
 /*============================================================================*/
 
 int ro_get_state(ro_config_t config,
-                 ro_state_t *state);
+                 ro_state_t *state)
+{
+    int err = -1;
+
+    uint8_t status[RO_FRAME_STATE_LEN] = {0};
+
+    /* Get state bytes */
+    if (ro_get_state_pkg(config, status) == RO_FRAME_STATE_LEN)
+    {
+        /* Check packet ID */
+        if (status[0] == RO_FRAME_ID_STATE)
+        {
+            if(status[0] == RO_FRAME_ID_STATE)
+            {
+                state->current_time =   (uint32_t)status[1] |
+                                        ((uint32_t)status[2] << 8) | 
+                                        ((uint32_t)status[3] << 16) | 
+                                        ((uint32_t)status[4] << 24);
+                state->operational_state = status[5];
+                state->tracking_state = status[6];
+                state->event_available = status[7];
+                state->reserved = status[8];
+
+                err = 0;
+            }
+        }
+    }
+
+    return err;
+}
 
 int ro_get_hk(ro_config_t config,
-              ro_hk_t *hk);
+              ro_hk_t *hk)
+{
+    int err = -1;
+
+    uint8_t hk_raw[RO_FRAME_HK_LEN] = {0};
+
+    /* Get hk bytes */
+    if (ro_get_hk_pkg(config, hk_raw) == RO_FRAME_HK_LEN)
+    {
+        /* Check packet ID */
+        if (hk_raw[0] == RO_FRAME_ID_HK)
+        {
+            /* Verify checksum */
+            if (hk_raw[RO_FRAME_HK_LEN-1] == ro_calc_checksum(hk_raw, RO_FRAME_HK_LEN-1))
+            {
+                hk_data->current_time       = ((uint32_t)hk_raw[4] << 24) |
+                                              ((uint32_t)hk_raw[3] << 16) |
+                                              ((uint32_t)hk_raw[2] << 8)  |
+                                              ((uint32_t)hk_raw[1] << 0);
+                hk_data->elapsed_time       = ((uint32_t)hk_raw[8] << 24) |
+                                              ((uint32_t)hk_raw[7] << 16) |
+                                              ((uint32_t)hk_raw[6] << 8)  |
+                                              ((uint32_t)hk_raw[5] << 0);
+                hk_data->fpga_temperature   = ((uint16_t)hk_raw[9] << 0) | ((uint16_t)hk_raw[10] << 8);
+                hk_data->rf_temperature     = ((uint16_t)hk_raw[11] << 0) | ((uint16_t)hk_raw[12] << 8);
+                hk_data->voltage            = ((uint16_t)hk_raw[13] << 0) | ((uint16_t)hk_raw[14] << 8);
+                hk_data->current            = ((uint16_t)hk_raw[15] << 0) | ((uint16_t)hk_raw[16] << 8);
+                hk_data->operational_state  = hk_raw[17];
+                hk_data->reserved           = hk_raw[18];
+                
+                err = 0;
+            }
+        }
+    }
+
+    return err;
+}
 
 int ro_get_event(ro_config_t config,
                  ro_event_t *event);
@@ -346,50 +561,3 @@ int ro_get_navigation(ro_config_t config,
 
 int ro_get_observation(ro_config_t config,
                        ro_observation_t *observation);
-
-
-/*============================================================================*/
-/* I2C Driver                                                                 */
-/*============================================================================*/
-
-int ro_i2c_init(ro_config_t config);
-
-int ro_i2c_write(ro_config_t config,
-                 uint8_t *data,
-                 uint16_t len);
-
-int ro_i2c_read(ro_config_t config,
-                uint8_t *data,
-                uint16_t len);
-
-/*============================================================================*/
-/* GPIO Driver                                                                */
-/*============================================================================*/
-
-int ro_gpio_init(ro_config_t config);
-
-int ro_gpio_set(ro_config_t config);
-
-int ro_gpio_clear(ro_config_t config);
-
-/*============================================================================*/
-/* UART Driver                                                                */
-/*============================================================================*/
-
-int ro_uart_init(ro_config_t config);
-
-int ro_uart_write(ro_config_t config,
-                  uint8_t *data,
-                  uint16_t len);
-
-int ro_uart_read(ro_config_t config,
-                 uint8_t *data,
-                 uint16_t len);
-
-int ro_uart_rx_available(ro_config_t config);
-
-/*============================================================================*/
-/* Delay                                                                      */
-/*============================================================================*/
-
-void ro_delay_ms(uint32_t ms);

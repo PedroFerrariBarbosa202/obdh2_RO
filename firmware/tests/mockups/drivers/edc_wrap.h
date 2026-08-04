@@ -42,45 +42,25 @@
 #include <drivers/edc/edc.h>
 
 int __wrap_edc_init(edc_config_t config);
-
 int __wrap_edc_enable(edc_config_t config);
-
 int __wrap_edc_disable(edc_config_t config);
-
 int __wrap_edc_write_cmd(edc_config_t config, edc_cmd_t cmd);
-
 int __wrap_edc_read(edc_config_t config, uint8_t *data, uint16_t len);
-
 int __wrap_edc_check_device(edc_config_t config);
-
 int __wrap_edc_set_rtc_time(edc_config_t config, uint32_t time);
-
 int __wrap_edc_pop_ptt_pkg(edc_config_t config);
-
 int __wrap_edc_pause_ptt_task(edc_config_t config);
-
 int __wrap_edc_resume_ptt_task(edc_config_t config);
-
 int __wrap_edc_start_adc_task(edc_config_t config);
-
 int16_t __wrap_edc_get_state_pkg(edc_config_t config, uint8_t *status);
-
 int16_t __wrap_edc_get_ptt_pkg(edc_config_t config, uint8_t *pkg);
-
 int16_t __wrap_edc_get_hk_pkg(edc_config_t config, uint8_t *hk);
-
 int16_t __wrap_edc_get_adc_seq(edc_config_t config, uint8_t *seq);
-
 int __wrap_edc_echo(edc_config_t config);
-
 uint16_t __wrap_edc_calc_checksum(uint8_t *data, uint16_t len);
-
 int __wrap_edc_get_state(edc_config_t config, edc_state_t *state_data);
-
 int __wrap_edc_get_ptt(edc_config_t config, edc_ptt_t *ptt_data);
-
 int __wrap_edc_get_hk(edc_config_t config, edc_hk_t *hk_data);
-
 void __wrap_edc_delay_ms(uint32_t ms);
 
 #endif /* EDC_WRAP_H_ */
