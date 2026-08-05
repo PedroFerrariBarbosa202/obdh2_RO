@@ -50,8 +50,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-firmware/drivers/ro/ro-DESKTOP-RLEUGDF.c
-firmware/drivers/ro/ro-DESKTOP-RLEUGDF.h
-obdh2.code-workspace
-.vscode/extensions.json
-chat.rapidgpt
