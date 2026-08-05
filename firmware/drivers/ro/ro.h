@@ -50,6 +50,7 @@
 #define RO_MODULE_NAME          "RO"
 
 #define RO_SLAVE_ADDRESS        0x15
+#define RO_UART_BAUDRATE         115200U
 
 /*============================================================================*/
 /* Command IDs                                                                */
@@ -68,11 +69,12 @@
 
 /* Telemetry */
 #define RO_CMD_GET_STATE            0x30U   /**< Get current instrument state. */
-#define RO_CMD_GET_HK              0x31U   /**< Get housekeeping frame. */
-#define RO_CMD_GET_EVENT           0x32U   /**< Get current occultation event metadata. */
-#define RO_CMD_GET_NAVIGATION      0x33U   /**< Get navigation solution. */
-#define RO_CMD_GET_OBSERVABLES     0x34U   /**< Get scientific observables. */
-#define RO_CMD_GET_IQ              0x35U   /**< Get raw I/Q samples. */
+#define RO_CMD_GET_HK               0x31U   /**< Get housekeeping frame. */
+#define RO_CMD_GET_EVENT            0x32U   /**< Get current occultation event metadata. */
+#define RO_CMD_GET_NAVIGATION       0x33U   /**< Get navigation solution. */
+#define RO_CMD_GET_OBSERVABLES      0x34U   /**< Get scientific observables. */
+#define RO_CMD_GET_IQ               0x35U   /**< Get raw I/Q samples. */
+#define RO_CMD_GET_HK_PKG          0x36U   /**< Updates HK Frame information, and transmit it through the RS-485 interface. */
 
 /*============================================================================*/
 /* Frame IDs                                                                  */
@@ -148,6 +150,7 @@ typedef struct
 typedef struct
 {
     uint32_t current_time;
+    uint32_t elapsed_time;
     uint16_t fpga_temperature;
     uint16_t rf_temperature;
     uint16_t voltage;
