@@ -319,10 +319,6 @@ void sys_log_print_bit_array_as_hex(uint64_t bit_array,
         for (int i = 7; i >= 0; i--)
         {
             uint8_t curr_bit = (bit_array >> (i + offset)) & 1;
-<<<<<<< HEAD
-
-=======
->>>>>>> 9d129a5439c3c4940e1613c2e3d33a24f21eaed6
             curr_byte |= (curr_bit << 7 - i);
         }
 

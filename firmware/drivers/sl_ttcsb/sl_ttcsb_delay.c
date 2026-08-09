@@ -38,7 +38,7 @@
 
 #include "sl_ttcsb.h"
 
-void sl_ttc2_delay_ms(uint32_t ms)
+void sl_ttcsb_delay_ms(uint32_t ms)
 {
     vTaskDelay(pdMS_TO_TICKS(ms));
 }

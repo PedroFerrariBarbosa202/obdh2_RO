@@ -24,7 +24,6 @@
  * \brief Read TTC SBand data task definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
-           Pedro Ferrari Barbosa <pedro.ferraribarbosa2007@gmail.com>
  * 
  * \version 0.7.47
  * 

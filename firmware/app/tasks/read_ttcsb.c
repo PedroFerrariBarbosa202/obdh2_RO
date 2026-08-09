@@ -29,12 +29,12 @@
  * 
  * \date 2021/05/14
  * 
- * \addtogroup read_ttc
+ * \addtogroup read_ttcsb
  * \{
  */
 
 #include <system/sys_log/sys_log.h>
-#include <devices/ttc/ttcsb.h>
+#include <devices/ttcsb/ttcsb.h>
 
 #include <structs/satellite.h>
 
@@ -46,7 +46,7 @@ xTaskHandle xTaskReadTTCSBHandle;
 void vTaskReadTTCSB(void)
 {
     /* Wait startup task to finish */
-    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_TTC_INIT_TIMEOUT_MS));
+    xEventGroupWaitBits(task_startup_status, TASK_STARTUP_DONE, pdFALSE, pdTRUE, pdMS_TO_TICKS(TASK_READ_TTCSB_INIT_TIMEOUT_MS));
 
     while(1)
     {
@@ -54,22 +54,32 @@ void vTaskReadTTCSB(void)
 
         if (ttcsb_init() != 0)
         {
-            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_TTC_NAME, "Error initializing the TTC SBAND device!");
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_TTCSB_NAME, "Error initializing the TTC SBAND device!");
             sys_log_new_line();
         }
 
-        if (ttc_get_data(&sat_data_buf.ttc_0.data) == 0)
+        if (ttcsb_get_data(TTCSB_0, &sat_data_buf.ttcsb_0.data) == 0)
         {
             sat_data_buf.ttc_0.timestamp = system_get_time();
         }
         else
         {
-            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_TTC_NAME, "Error reading data from the TTC 0 device!");
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_TTCSB_NAME, "Error reading data from the TTC 0 device!");
             sys_log_new_line();
         }
 
-        vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_READ_TTC_PERIOD_MS));
+        if (ttcsb_get_data(TTCSB_1, &sat_data_buf.ttcsb_1.data) == 0)
+        {
+            sat_data_buf.ttc_1.timestamp = system_get_time();
+        }
+        else
+        {
+            sys_log_print_event_from_module(SYS_LOG_ERROR, TASK_READ_TTCSB_NAME, "Error reading data from the TTC 1 device!");
+            sys_log_new_line();
+        }
+
+        vTaskDelayUntil(&last_cycle, pdMS_TO_TICKS(TASK_READ_TTCSB_PERIOD_MS));
     }
 }
 
-/** \} End of read_ttc group */
+/** \} End of read_ttcsb group */

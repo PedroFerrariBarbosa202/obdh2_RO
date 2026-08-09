@@ -43,12 +43,24 @@
 
 #include "ttcsb_data.h"
 
-#define TTC_MODULE_NAME         "TTC SBAND"
+#define TTCSB_MODULE_NAME         "TTC SBAND"
+
+#define TTCSB_SLAVE_ADDRESS           0x13    /**< 7-bit slave address. */
+
+/* Commands IDs */
+#define EDC_CMD_GET_HK_PKG          0x32U   /**< Updates HK Frame information */
+
+
+typedef enum
+{
+    TTCSB_0=0,        /**< TTCSB 0. */
+    TTCSB_1           /**< TTCSB 1. */
+} ttcsb_e;
 
 /**
  * \brief TTC configuration parameters.
  */
-typedef sl_ttcsb_config_t ttc_config_t;
+typedef sl_ttcsb_config_t ttcsb_config_t;
 
 /**
  * \brief Parameter ID type.
@@ -56,7 +68,9 @@ typedef sl_ttcsb_config_t ttc_config_t;
 typedef uint8_t ttc_param_id_t;
 
 
-int ttc_init();
+
+
+int ttcsb_init();
 
 /**
  * \brief Sets a parameter of the TTC device.
@@ -74,7 +88,7 @@ int ttc_init();
  *
  * \return The status/error code.
  */
-int ttc_set_param(ttc_param_id_t param, uint32_t val);
+int ttcsb_set_param(ttcsb_e dev, ttc_param_id_t param, uint32_t val);
 
 /**
  * \brief Gets a parameter from the TTC device.
@@ -92,7 +106,7 @@ int ttc_set_param(ttc_param_id_t param, uint32_t val);
  *
  * \return The status/error code.
  */
-int ttc_get_param(ttc_param_id_t param, uint32_t *val);
+int ttcsb_get_param(ttcsb_e dev, ttc_param_id_t param, uint32_t *val);
 
 /**
  * \brief Reads the housekeeping data from the TTC device.
@@ -108,7 +122,7 @@ int ttc_get_param(ttc_param_id_t param, uint32_t *val);
  *
  * \return The status/error code.
  */
-int ttc_get_data(ttc_data_t *data);
+int ttcsb_get_data(ttcsb_e dev, ttcsb_data_t *data);
 
 /**
  * \brief Sends a downlink packet to the TTC device.

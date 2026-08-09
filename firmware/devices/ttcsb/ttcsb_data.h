@@ -37,12 +37,12 @@
 #ifndef TTCSB_DATA_H_
 #define TTCSB_DATA_H_
 
-#include "drivers/sl_ttc2/sl_ttc2.h"
+#include "drivers/sl_ttcsb/sl_ttcsb.h"
 
 /**
  * \brief TTC data.
  */
-typedef sl_ttc2_hk_data_t ttc_data_t;
+typedef sl_ttcsb_hk_data_t ttcsb_data_t;
 
 #endif /* TTC_DATA_H_ */
 

@@ -29,7 +29,7 @@
  * 
  * \date 2021/10/13
  * 
- * \addtogroup sl_ttc2
+ * \addtogroup sl_ttcsb
  * \{
  */
 
@@ -38,24 +38,20 @@
 
 #include "sl_ttcsb.h"
 
-int sl_ttc2_spi_init(sl_ttcsb_config_t config)
+
+int sl_ttcsb_i2c_init(sl_ttcsb_config_t config)
 {
     return i2c_init(config.port, config.port_config);
 }
 
-int sl_ttc2_spi_write(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
+int sl_ttcsb_i2c_write(sl_ttcsb_config_t config, uint8_t *data, uint16_t len)
 {
-    return spi_write(config.port, config.cs_pin, data, len);
+    return i2c_write(config.port, SL_TTCSB_SLAVE_ADDR, data, len);
 }
 
-int sl_ttc2_spi_read(sl_ttc2_config_t config, uint8_t *data, uint16_t len)
+int sl_ttcsb_i2c_read(sl_ttcsb_config_t config, uint8_t *data, uint16_t len)
 {
-    return spi_read(config.port, config.cs_pin, data, len);
+    return i2c_read(config.port, SL_TTCSB_SLAVE_ADDR, data, len);
 }
 
-int sl_ttc2_spi_transfer(sl_ttc2_config_t config, uint8_t *wdata, uint8_t *rdata, uint16_t len)
-{
-    return spi_transfer(config.port, config.cs_pin, wdata, rdata, len);
-}
-
-/** \} End of sl_ttc2 group */
+/** \} End of sl_ttcsb group */
