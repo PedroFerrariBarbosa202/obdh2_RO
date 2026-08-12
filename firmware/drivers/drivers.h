@@ -53,6 +53,7 @@
 #include "sl_ttc2/sl_ttc2.h"
 #include "cy15x102qn/cy15x102qn.h"
 #include "phj/phj.h"
+#include "ro/ro.h"
 
 #endif /* DRIVERS_H_ */
 
